@@ -31,16 +31,24 @@ export class App extends React.Component<{}, GameState> {
 
     // Get audio
     const audioContext = new AudioContext();
-    const url = '/moodIndigoRemix.mp3';
-    const response = await fetch(url);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    console.log(audioBuffer);
+    // const url = '/moodIndigoRemix.mp3';
+    // const response = await fetch(url);
+    // const arrayBuffer = await response.arrayBuffer();
+    // const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    // const mp3Source: AudioBufferSourceNode = audioContext.createBufferSource();
+    // mp3Source.buffer = audioBuffer;
+    // mp3Source.connect(audioContext.destination);
+    // mp3Source.start();
+
+    // Get from mic
+    const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: true
+    })
+    const micSource = audioContext.createMediaStreamSource(stream);
+
+    const source = micSource;
 
     // Source is the Audio
-    const source: AudioBufferSourceNode = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioContext.destination);
 
     // Analyzer powers visualizations
     this.analyser = audioContext.createAnalyser();
@@ -48,8 +56,9 @@ export class App extends React.Component<{}, GameState> {
     source.connect(this.analyser);
 
     // Start the audio
-    source.start();
   }
+
+
 
   // Renderers
   public render() {
