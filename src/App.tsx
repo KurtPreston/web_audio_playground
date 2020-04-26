@@ -59,11 +59,11 @@ export class App extends React.Component<{}, GameState> {
     splitter.connect(lAnalyser, 0, 0);
     splitter.connect(rAnalyser, 1, 0);
 
-    this.analyser = rAnalyser;
+    this.analyser = lAnalyser;
     this.analyser.fftSize = 2048;
 
     // Play mic audio
-    micSource.connect(audioContext.destination);
+    // micSource.connect(audioContext.destination);
   }
 
 
