@@ -5,7 +5,7 @@ import './App.css';
 import { GameState, Sprite } from './types';
 import { characterRenderer } from './spriteRenderers/characterRenderer';
 import { instrumentRendererFactory } from './spriteRenderers/instrumentRenderer';
-import { randomWalk } from './frameTickers/randomWalk';
+import { randomWalkFactory } from './frameTickers/randomWalk';
 
 const width = 500;
 const height = 500;
@@ -27,7 +27,7 @@ export class App extends React.Component<{}, GameState> {
           angle: Math.PI / 2
         },
         renderer: characterRenderer,
-        tick: randomWalk
+        tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'}),
       },
       goodInstrument: {
         position: {
@@ -37,7 +37,7 @@ export class App extends React.Component<{}, GameState> {
           angle: 0
         },
         renderer: instrumentRendererFactory({color: 'aquamarine'}),
-        tick: randomWalk
+        tick: randomWalkFactory({velocity: 4, jitter: 0.03, jitterType: 'leanLeft'})
       },
       badInstrument: {
         position: {
@@ -47,7 +47,7 @@ export class App extends React.Component<{}, GameState> {
           angle: Math.PI
         },
         renderer: instrumentRendererFactory({color: 'red'}),
-        tick: randomWalk
+        tick: randomWalkFactory({velocity: 6, jitter: 0.05, jitterType: 'leanRight'})
       }
     }
   }
