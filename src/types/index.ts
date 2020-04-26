@@ -7,7 +7,7 @@ export interface SpritePosition {
 }
 
 export type SpriteRenderer = (position: SpritePosition) => React.ReactElement<SVGElement>;
-export type SpriteTicker = (position: SpritePosition) => SpritePosition;
+export type SpriteTicker = (position: SpritePosition, world: World) => SpritePosition;
 
 export interface Sprite {
   position: SpritePosition;
@@ -21,6 +21,7 @@ export interface World {
 }
 
 export interface GameState {
+  paused: boolean;
   world: World;
   sprites: {
     character: Sprite;

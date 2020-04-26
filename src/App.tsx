@@ -13,6 +13,7 @@ const height = 500;
 @autobind
 export class App extends React.Component<{}, GameState> {
   public state: GameState = {
+    paused: false,
     world: {
       height,
       width
@@ -20,27 +21,30 @@ export class App extends React.Component<{}, GameState> {
     sprites: {
       character: {
         position: {
+          // In center, facing up
           x: width /2,
           y: height / 2,
-          angle: 0
+          angle: Math.PI / 2
         },
         renderer: characterRenderer,
         tick: randomWalk
       },
       goodInstrument: {
         position: {
+          // On left, facing right
           x: 0,
           y: height / 2,
-          angle: 90
+          angle: 0
         },
         renderer: instrumentRendererFactory({color: 'aquamarine'}),
         tick: randomWalk
       },
       badInstrument: {
         position: {
+          // On right, facing left
           x: width,
           y: height / 2,
-          angle: 90
+          angle: Math.PI
         },
         renderer: instrumentRendererFactory({color: 'red'}),
         tick: randomWalk
@@ -49,16 +53,17 @@ export class App extends React.Component<{}, GameState> {
   }
 
   public componentDidMount() {
-    // Setup game loop
-    setInterval(this.tick, 25);
+    this.runGame();
   }
 
+  private gameLoop: NodeJS.Timeout | undefined;
+
   private tick() {
-    const {sprites} = this.state;
+    const {sprites, world} = this.state;
     this.setState({
       sprites: mapValues(sprites, (sprite: Sprite): Sprite => ({
         ...sprite,
-        position: sprite.tick(sprite.position)
+        position: sprite.tick(sprite.position, world)
       }))
     })
   }
@@ -73,12 +78,40 @@ export class App extends React.Component<{}, GameState> {
           Wamdag Quest
         </header>
         <main>
+          {this.renderPauseBtn()}
           <svg height={height} width={width}>
             {map(sprites, this.renderSprite)}
           </svg>
         </main>
       </div>
     );
+  }
+
+  private renderPauseBtn() {
+    const {paused} = this.state;
+    if(paused) {
+      return <button onClick={this.runGame}>Start</button>;
+    } else {
+      return <button onClick={this.pauseGame}>Pause</button>;
+    }
+  }
+
+  private runGame() {
+    this.setState({
+      paused: false
+    }, () => {
+      this.gameLoop = setInterval(this.tick, 25);
+    });
+  }
+
+  private pauseGame() {
+    if(this.gameLoop) {
+      clearInterval(this.gameLoop);
+      this.gameLoop = undefined;
+    }
+    this.setState({
+      paused: true
+    });
   }
 
   private renderSprite(sprite: Sprite, idx: number): React.ReactElement<SVGElement> {
