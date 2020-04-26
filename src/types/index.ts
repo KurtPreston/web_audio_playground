@@ -30,4 +30,5 @@ export interface AudioData {
   frequencies: Uint8Array;
   wave: Uint8Array;
   amplitude: number;
+  peakFreq: number;
 }
