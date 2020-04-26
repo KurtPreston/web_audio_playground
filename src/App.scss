@@ -10,10 +10,21 @@ main {
   display: flex;
 
   svg {
-    flex: 1;
+    flex: 1 1;
+
+    .instrument {
+      mix-blend-mode: color-burn;
+    }
+
+    .porcupine {
+      fill: darkgray;
+      mix-blend-mode: color-dodge;
+    }
   }
 
   .controls {
-    flex: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }

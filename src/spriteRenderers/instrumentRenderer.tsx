@@ -15,7 +15,7 @@ export function instrumentRendererFactory(props: InstrumentRendererFactoryProps)
     const {x, y} = position;
 
     return (
-      <circle cx={x} cy={y} r={20} style={style} />
+      <circle className='instrument' cx={x} cy={y} r={20} style={style} />
     );
   }
 }

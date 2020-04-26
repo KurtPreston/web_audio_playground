@@ -52,7 +52,7 @@ export function characterRenderer(position: SpritePosition, audio?: AudioData): 
         return `L${circularX},${circularY}`;
       })
     ].join(' ')
-    visualizer = <path d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
+    visualizer = <path className='porcupine' d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
   }
 
   return (
