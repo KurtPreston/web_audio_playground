@@ -39,7 +39,7 @@ export function randomWalkFactory(props: RandomWalkProps): SpriteTicker {
     const goingLeft = Math.cos(newAngle) < 0;
     const goingRight = !goingLeft;
     if((x < 0 && goingLeft) || (x > width && goingRight)) {
-      newAngle = (2 * Math.PI) - (angle - Math.PI / 2) + Math.PI / 2
+      newAngle = Math.PI - angle;
     }
 
     let newX = x + Math.cos(newAngle) * velocity;
