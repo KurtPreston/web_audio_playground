@@ -1,3 +1,18 @@
+# Wamdag and the Quest for the Violin
+
+## Notes
+
+Overhead view
+One player controls wamdag
+One person plays violin
+One person plays guitar (or whatever)
+
+Wamdag runs around, trying to chase the violin, and avoid the guitar
+Each instrument will be rendered as a circle whose size is based on amplitude and with a vibrating surface reflecting a FFT
+At first, the instrument sprites will move forward at a constant pace, randomly going straight, or rotating their direction (ideally leaving a trail?)
+(maybe the drums will be bullets fired from the guitar)
+(maybe the velocity of everything will be the song BPM?)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
