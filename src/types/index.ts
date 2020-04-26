@@ -7,10 +7,12 @@ export interface SpritePosition {
 }
 
 export type SpriteRenderer = (position: SpritePosition) => React.ReactElement<SVGElement>;
+export type SpriteTicker = (position: SpritePosition) => SpritePosition;
 
 export interface Sprite {
   position: SpritePosition;
   renderer: SpriteRenderer;
+  tick: SpriteTicker;
 }
 
 export interface World {

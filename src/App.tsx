@@ -1,13 +1,16 @@
-import {map} from 'lodash';
+import {autobind} from 'core-decorators';
+import {map, mapValues} from 'lodash';
 import React from 'react';
 import './App.css';
 import { GameState, Sprite } from './types';
 import { characterRenderer } from './spriteRenderers/characterRenderer';
 import { instrumentRendererFactory } from './spriteRenderers/instrumentRenderer';
+import { randomWalk } from './frameTickers/randomWalk';
 
 const width = 500;
 const height = 500;
 
+@autobind
 export class App extends React.Component<{}, GameState> {
   public state: GameState = {
     world: {
@@ -21,7 +24,8 @@ export class App extends React.Component<{}, GameState> {
           y: height / 2,
           angle: 0
         },
-        renderer: characterRenderer
+        renderer: characterRenderer,
+        tick: randomWalk
       },
       goodInstrument: {
         position: {
@@ -29,7 +33,8 @@ export class App extends React.Component<{}, GameState> {
           y: height / 2,
           angle: 90
         },
-        renderer: instrumentRendererFactory({color: 'aquamarine'})
+        renderer: instrumentRendererFactory({color: 'aquamarine'}),
+        tick: randomWalk
       },
       badInstrument: {
         position: {
@@ -37,10 +42,26 @@ export class App extends React.Component<{}, GameState> {
           y: height / 2,
           angle: 90
         },
-        renderer: instrumentRendererFactory({color: 'red'})
+        renderer: instrumentRendererFactory({color: 'red'}),
+        tick: randomWalk
       }
     }
-  } 
+  }
+
+  public componentDidMount() {
+    // Setup game loop
+    setInterval(this.tick, 25);
+  }
+
+  private tick() {
+    const {sprites} = this.state;
+    this.setState({
+      sprites: mapValues(sprites, (sprite: Sprite): Sprite => ({
+        ...sprite,
+        position: sprite.tick(sprite.position)
+      }))
+    })
+  }
 
   public render() {
     const {sprites, world} = this.state;
@@ -60,9 +81,13 @@ export class App extends React.Component<{}, GameState> {
     );
   }
 
-  private renderSprite(sprite: Sprite): React.ReactElement<SVGElement> {
+  private renderSprite(sprite: Sprite, idx: number): React.ReactElement<SVGElement> {
     const {position, renderer} = sprite;
-    return renderer(position);
+    return (
+      <React.Fragment key={idx}>
+        {renderer(position)}
+      </React.Fragment>
+    );
   }
 }
 
