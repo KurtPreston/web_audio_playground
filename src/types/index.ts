@@ -23,11 +23,7 @@ export interface World {
 export interface GameState {
   paused: boolean;
   world: World;
-  sprites: {
-    character: Sprite;
-    goodInstrument: Sprite;
-    badInstrument: Sprite;
-  }
+  sprites: Sprite[];
 }
 
 export interface AudioData {

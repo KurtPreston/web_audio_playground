@@ -38,7 +38,7 @@ export function flowerRenderer(position: SpritePosition, audio?: AudioData): Rea
     // visualizer = <path d={frequencyMeter} style={{stroke: 'white'}}/>;
 
     const frequencyGroups = chunk(pathCoords, pathCoords.length / numFlowers);
-    const flowerRings = frequencyGroups.map((group) => {
+    const flowerRings = frequencyGroups.map((group, idx) => {
       const circularFrequencyMeter = [
         `M${position.x},${position.y}`,
         ...group.map(({x, y}) => {
@@ -61,7 +61,7 @@ export function flowerRenderer(position: SpritePosition, audio?: AudioData): Rea
           return `L${circularX},${circularY}`;
         })
       ].join(' ')
-      return <path className='flower' d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
+      return <path key={idx} className='flower' d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
     });
 
     return <g>{flowerRings}</g>;

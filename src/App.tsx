@@ -1,11 +1,12 @@
 import {autobind} from 'core-decorators';
-import {map, mapValues} from 'lodash';
+import {map, times, random, sample} from 'lodash';
 import React from 'react';
 import './App.scss';
 import { GameState, Sprite, AudioData } from './types';
 import { flowerRenderer } from './spriteRenderers/flower';
 import { circleRendererFactory } from './spriteRenderers/circle';
-import { randomWalkFactory } from './frameTickers/randomWalk';
+import { randomWalkFactory, JitterType } from './frameTickers/randomWalk';
+import { randomColor } from './util/color';
 
 @autobind
 export class App extends React.Component<{}, GameState> {
@@ -123,14 +124,34 @@ export class App extends React.Component<{}, GameState> {
   }
 
   private initializeState(width: number, height: number) {
+    const circles: Sprite[] = times(20, (): Sprite => {
+      return {
+        position: {
+          // On left, facing right
+          x: 0,
+          y: height / 2,
+          angle: 0
+        },
+        renderer: circleRendererFactory({
+          fill: randomColor(),
+          mixBlendMode: 'color-dodge'
+        }),
+        tick: randomWalkFactory({
+          velocity: random(3, 7),
+          jitter: random(0.01, 0.08),
+          jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType
+        })
+      };
+    });
+
     const state: GameState = {
       paused: false,
       world: {
         height,
         width
       },
-      sprites: {
-        character: {
+      sprites: [
+        {
           position: {
             // In center, facing up
             x: width /2,
@@ -140,33 +161,8 @@ export class App extends React.Component<{}, GameState> {
           renderer: flowerRenderer,
           tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'}),
         },
-        goodInstrument: {
-          position: {
-            // On left, facing right
-            x: 0,
-            y: height / 2,
-            angle: 0
-          },
-          renderer: circleRendererFactory({
-            fill: 'aquamarine',
-            mixBlendMode: 'color-burn'
-          }),
-          tick: randomWalkFactory({velocity: 4, jitter: 0.03, jitterType: 'leanLeft'})
-        },
-        badInstrument: {
-          position: {
-            // On right, facing left
-            x: width,
-            y: height / 2,
-            angle: Math.PI
-          },
-          renderer: circleRendererFactory({
-            fill: 'red',
-            mixBlendMode: 'color-burn'
-          }),
-          tick: randomWalkFactory({velocity: 6, jitter: 0.05, jitterType: 'leanRight'})
-        }
-      }
+        ...circles
+      ]
     };
 
     this.setState({...state});
@@ -190,7 +186,7 @@ export class App extends React.Component<{}, GameState> {
     }
 
     this.setState({
-      sprites: mapValues(sprites, (sprite: Sprite): Sprite => ({
+      sprites: sprites.map((sprite: Sprite): Sprite => ({
         ...sprite,
         position: sprite.tick(sprite.position, world)
       }))
