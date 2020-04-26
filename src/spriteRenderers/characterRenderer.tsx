@@ -3,7 +3,7 @@ import { SpritePosition, AudioData } from '../types';
 import { scale } from '../util/scale';
 
 const minSize = 15;
-const maxSize = 60;
+const maxSize = 600;
 
 export function characterRenderer(position: SpritePosition, audio?: AudioData): React.ReactElement<SVGElement> {
   const {x, y} = position;
@@ -17,7 +17,13 @@ export function characterRenderer(position: SpritePosition, audio?: AudioData): 
   if(audio) {
     // 0 - 255
     const amplitude = Math.max(...audio.wave as any);
-    size = (maxSize - minSize) * (amplitude / 256) + minSize;
+    size = scale({
+      input: amplitude,
+      inputMin: 0,
+      inputMax: 255,
+      outputMin: minSize,
+      outputMax: maxSize
+    });
 
     const pathCoords: {x: number, y: number}[] = new Array(audio.frequencies.length);
     audio.frequencies.forEach((value: number, idx: number) => {
@@ -39,13 +45,13 @@ export function characterRenderer(position: SpritePosition, audio?: AudioData): 
           inputMax: 255,
           outputMin: 0,
           outputMax: size
-        }) * y;
+        });
         const angle = scale({
           input: x,
           inputMin: 0,
           inputMax: pathCoords.length,
           outputMin: 0,
-          outputMax: 2 * Math.PI
+          outputMax: 24 * Math.PI
         });
         const circularX = Math.cos(angle) * r + position.x;
         const circularY = Math.sin(angle) * r + position.y;
