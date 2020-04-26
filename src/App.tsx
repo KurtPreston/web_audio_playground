@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import {map, mapValues} from 'lodash';
 import React from 'react';
 import './App.scss';
-import { GameState, Sprite } from './types';
+import { GameState, Sprite, AudioData } from './types';
 import { characterRenderer } from './spriteRenderers/characterRenderer';
 import { instrumentRendererFactory } from './spriteRenderers/instrumentRenderer';
 import { randomWalkFactory } from './frameTickers/randomWalk';
@@ -10,17 +10,51 @@ import { randomWalkFactory } from './frameTickers/randomWalk';
 @autobind
 export class App extends React.Component<{}, GameState> {
   private gameLoop: NodeJS.Timeout | undefined;
-  private svgRef: SVGSVGElement | undefined;
+  private mainRef: HTMLElement | undefined;
+  private analyser: AnalyserNode | undefined;
+  private audioData: AudioData | undefined;
 
-  public componentDidMount() {
+  public async componentDidMount() {
+    window.addEventListener('resize', () => {
+      if(this.mainRef) {
+        const {clientWidth, clientHeight} = this.mainRef;
+        this.setState({
+          world: {
+            width: clientWidth,
+            height: clientHeight
+          }
+        })
+      }
+    });
     this.runGame();
+
+    // Get audio
+    const audioContext = new AudioContext();
+    const url = '/moodIndigoRemix.mp3';
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    console.log(audioBuffer);
+
+    // Source is the Audio
+    const source: AudioBufferSourceNode = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioContext.destination);
+
+    // Analyzer powers visualizations
+    this.analyser = audioContext.createAnalyser();
+    this.analyser.fftSize = 2048;
+    source.connect(this.analyser);
+
+    // Start the audio
+    source.start();
   }
 
   // Renderers
   public render() {
     return (
       <div className="App">
-        <main>
+        <main ref={this.mainRefFn}>
           {this.renderSvg()}
           <div className='controls'>
             {this.renderPauseBtn()}
@@ -32,21 +66,21 @@ export class App extends React.Component<{}, GameState> {
 
   private renderSvg() {
     if(!this.state) {
-      return <svg ref={this.svgRefFn}/>
+      return null;
     }
   
     const {sprites, world} = this.state;
     const {width, height} = world;
 
     return (
-      <svg ref={this.svgRefFn} height={height} width={width}>
+      <svg height={height} width={width}>
         {map(sprites, this.renderSprite)}
       </svg>
     );
   }
 
-  private svgRefFn(ref: SVGSVGElement) {
-    this.svgRef = ref;
+  private mainRefFn(ref: HTMLElement) {
+    this.mainRef = ref;
     const {clientWidth, clientHeight} = ref;
     this.initializeState(clientWidth, clientHeight);
   }
@@ -64,7 +98,7 @@ export class App extends React.Component<{}, GameState> {
     const {position, renderer} = sprite;
     return (
       <React.Fragment key={idx}>
-        {renderer(position)}
+        {renderer(position, this.audioData)}
       </React.Fragment>
     );
   }
@@ -134,7 +168,21 @@ export class App extends React.Component<{}, GameState> {
 
 
   private tick() {
+    const {analyser} = this;
     const {sprites, world} = this.state;
+
+    if(analyser) {
+      const bufferLength = analyser.frequencyBinCount;
+      const frequencies = new Uint8Array(bufferLength);
+      const wave = new Uint8Array(bufferLength);
+      analyser.getByteFrequencyData(frequencies);
+      analyser.getByteTimeDomainData(wave);
+      this.audioData = {
+        frequencies,
+        wave
+      };
+    }
+
     this.setState({
       sprites: mapValues(sprites, (sprite: Sprite): Sprite => ({
         ...sprite,

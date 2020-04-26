@@ -6,7 +6,7 @@ export interface SpritePosition {
   angle: number;
 }
 
-export type SpriteRenderer = (position: SpritePosition) => React.ReactElement<SVGElement>;
+export type SpriteRenderer = (position: SpritePosition, audio?: AudioData) => React.ReactElement<SVGElement>;
 export type SpriteTicker = (position: SpritePosition, world: World) => SpritePosition;
 
 export interface Sprite {
@@ -28,4 +28,9 @@ export interface GameState {
     goodInstrument: Sprite;
     badInstrument: Sprite;
   }
+}
+
+export interface AudioData {
+  frequencies: Uint8Array;
+  wave: Uint8Array;
 }
