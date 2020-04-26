@@ -1,62 +1,64 @@
 import {autobind} from 'core-decorators';
 import {map, mapValues} from 'lodash';
 import React from 'react';
-import './App.css';
+import './App.scss';
 import { GameState, Sprite } from './types';
 import { characterRenderer } from './spriteRenderers/characterRenderer';
 import { instrumentRendererFactory } from './spriteRenderers/instrumentRenderer';
 import { randomWalkFactory } from './frameTickers/randomWalk';
 
-const width = 500;
-const height = 500;
-
 @autobind
 export class App extends React.Component<{}, GameState> {
-  public state: GameState = {
-    paused: false,
-    world: {
-      height,
-      width
-    },
-    sprites: {
-      character: {
-        position: {
-          // In center, facing up
-          x: width /2,
-          y: height / 2,
-          angle: Math.PI / 2
-        },
-        renderer: characterRenderer,
-        tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'}),
+  private initializeState(width: number, height: number) {
+    const state: GameState = {
+      paused: false,
+      world: {
+        height,
+        width
       },
-      goodInstrument: {
-        position: {
-          // On left, facing right
-          x: 0,
-          y: height / 2,
-          angle: 0
+      sprites: {
+        character: {
+          position: {
+            // In center, facing up
+            x: width /2,
+            y: height / 2,
+            angle: Math.PI / 2
+          },
+          renderer: characterRenderer,
+          tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'}),
         },
-        renderer: instrumentRendererFactory({color: 'aquamarine'}),
-        tick: randomWalkFactory({velocity: 4, jitter: 0.03, jitterType: 'leanLeft'})
-      },
-      badInstrument: {
-        position: {
-          // On right, facing left
-          x: width,
-          y: height / 2,
-          angle: Math.PI
+        goodInstrument: {
+          position: {
+            // On left, facing right
+            x: 0,
+            y: height / 2,
+            angle: 0
+          },
+          renderer: instrumentRendererFactory({color: 'aquamarine'}),
+          tick: randomWalkFactory({velocity: 4, jitter: 0.03, jitterType: 'leanLeft'})
         },
-        renderer: instrumentRendererFactory({color: 'red'}),
-        tick: randomWalkFactory({velocity: 6, jitter: 0.05, jitterType: 'leanRight'})
+        badInstrument: {
+          position: {
+            // On right, facing left
+            x: width,
+            y: height / 2,
+            angle: Math.PI
+          },
+          renderer: instrumentRendererFactory({color: 'red'}),
+          tick: randomWalkFactory({velocity: 6, jitter: 0.05, jitterType: 'leanRight'})
+        }
       }
-    }
-  }
+    };
+
+    this.setState({...state});
+  };
 
   public componentDidMount() {
     this.runGame();
   }
 
   private gameLoop: NodeJS.Timeout | undefined;
+  private svgRef: SVGSVGElement | undefined;
 
   private tick() {
     const {sprites, world} = this.state;
@@ -69,26 +71,41 @@ export class App extends React.Component<{}, GameState> {
   }
 
   public render() {
-    const {sprites, world} = this.state;
-    const {width, height} = world;
-
     return (
       <div className="App">
-        <header className="App-header">
-          Wamdag Quest
-        </header>
         <main>
-          {this.renderPauseBtn()}
-          <svg height={height} width={width}>
-            {map(sprites, this.renderSprite)}
-          </svg>
+          {this.renderSvg()}
+          <div className='controls'>
+            {this.renderPauseBtn()}
+          </div>
         </main>
       </div>
     );
   }
 
+  private renderSvg() {
+    if(!this.state) {
+      return <svg ref={this.svgRefFn}/>
+    }
+  
+    const {sprites, world} = this.state;
+    const {width, height} = world;
+
+    return (
+      <svg ref={this.svgRefFn} height={height} width={width}>
+        {map(sprites, this.renderSprite)}
+      </svg>
+    );
+  }
+
+  private svgRefFn(ref: SVGSVGElement) {
+    this.svgRef = ref;
+    const {clientWidth, clientHeight} = ref;
+    this.initializeState(clientWidth, clientHeight);
+  }
+
   private renderPauseBtn() {
-    const {paused} = this.state;
+    const paused = this.state && this.state.paused;
     if(paused) {
       return <button onClick={this.runGame}>Start</button>;
     } else {
