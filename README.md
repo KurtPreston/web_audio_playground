@@ -13,6 +13,13 @@ At first, the instrument sprites will move forward at a constant pace, randomly 
 (maybe the drums will be bullets fired from the guitar)
 (maybe the velocity of everything will be the song BPM?)
 
+## Ideas
+
+Dynamically render background --- multiple layers rotating, random walk in blend mode
+One instrument controls x
+One controls y
+Try to hit player
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

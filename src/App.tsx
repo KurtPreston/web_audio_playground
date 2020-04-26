@@ -3,8 +3,8 @@ import {map, mapValues} from 'lodash';
 import React from 'react';
 import './App.scss';
 import { GameState, Sprite, AudioData } from './types';
-import { characterRenderer } from './spriteRenderers/characterRenderer';
-import { instrumentRendererFactory } from './spriteRenderers/instrumentRenderer';
+import { flowerRenderer } from './spriteRenderers/flower';
+import { circleRendererFactory } from './spriteRenderers/circle';
 import { randomWalkFactory } from './frameTickers/randomWalk';
 
 @autobind
@@ -137,7 +137,7 @@ export class App extends React.Component<{}, GameState> {
             y: height / 2,
             angle: Math.PI / 2
           },
-          renderer: characterRenderer,
+          renderer: flowerRenderer,
           tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'}),
         },
         goodInstrument: {
@@ -147,7 +147,10 @@ export class App extends React.Component<{}, GameState> {
             y: height / 2,
             angle: 0
           },
-          renderer: instrumentRendererFactory({color: 'aquamarine'}),
+          renderer: circleRendererFactory({
+            fill: 'aquamarine',
+            mixBlendMode: 'color-burn'
+          }),
           tick: randomWalkFactory({velocity: 4, jitter: 0.03, jitterType: 'leanLeft'})
         },
         badInstrument: {
@@ -157,7 +160,10 @@ export class App extends React.Component<{}, GameState> {
             y: height / 2,
             angle: Math.PI
           },
-          renderer: instrumentRendererFactory({color: 'red'}),
+          renderer: circleRendererFactory({
+            fill: 'red',
+            mixBlendMode: 'color-burn'
+          }),
           tick: randomWalkFactory({velocity: 6, jitter: 0.05, jitterType: 'leanRight'})
         }
       }

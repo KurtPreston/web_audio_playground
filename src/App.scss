@@ -12,12 +12,13 @@ main {
   svg {
     flex: 1 1;
 
-    .instrument {
-      mix-blend-mode: color-burn;
-    }
-
     .porcupine {
       fill: darkgray;
+      mix-blend-mode: color-dodge;
+    }
+
+    .flower {
+      fill: #444;
       mix-blend-mode: color-dodge;
     }
   }
