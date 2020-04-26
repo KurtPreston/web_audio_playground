@@ -42,20 +42,28 @@ export class App extends React.Component<{}, GameState> {
 
     // Get from mic
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
-      audio: true
+      audio: {
+        echoCancellation: false
+      }
     })
     const micSource = audioContext.createMediaStreamSource(stream);
-
-    const source = micSource;
-
-    // Source is the Audio
+    console.log(micSource);
+    // const source = micSource;
 
     // Analyzer powers visualizations
-    this.analyser = audioContext.createAnalyser();
-    this.analyser.fftSize = 2048;
-    source.connect(this.analyser);
+    const splitter = audioContext.createChannelSplitter(2);
+    const lAnalyser = audioContext.createAnalyser();
+    const rAnalyser = audioContext.createAnalyser();
+    // micSource.connect(lAnalyser);
+    micSource.connect(splitter);
+    splitter.connect(lAnalyser, 0, 0);
+    splitter.connect(rAnalyser, 1, 0);
 
-    // Start the audio
+    this.analyser = rAnalyser;
+    this.analyser.fftSize = 2048;
+
+    // Play mic audio
+    micSource.connect(audioContext.destination);
   }
 
 
