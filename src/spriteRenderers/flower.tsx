@@ -38,30 +38,38 @@ export function flowerRenderer(position: SpritePosition, audio?: AudioData): Rea
     // visualizer = <path d={frequencyMeter} style={{stroke: 'white'}}/>;
 
     const frequencyGroups = chunk(pathCoords, pathCoords.length / numFlowers);
-    const flowerRings = frequencyGroups.map((group, idx) => {
+    const flowerRings = frequencyGroups.map((group, groupIdx) => {
+      const circularCoords = group.map(({x, y}, idx) => {
+        const r = scale({
+          input: y,
+          inputMin: 0,
+          inputMax: 255,
+          outputMin: 0,
+          outputMax: size
+        });
+        const angle = scale({
+          input: x,
+          inputMin: 0,
+          inputMax: group.length - 1,
+          outputMin: 0,
+          outputMax: 2 * Math.PI
+        });
+        const circularX = Math.cos(angle) * r + position.x;
+        const circularY = Math.sin(angle) * r + position.y;
+        return {
+          x: circularX,
+          y: circularY
+        };
+      });
+
+      const last = circularCoords[circularCoords.length - 1];
       const circularFrequencyMeter = [
-        `M${position.x},${position.y}`,
-        ...group.map(({x, y}) => {
-          const r = scale({
-            input: y,
-            inputMin: 0,
-            inputMax: 255,
-            outputMin: 0,
-            outputMax: size
-          });
-          const angle = scale({
-            input: x,
-            inputMin: 0,
-            inputMax: group.length - 1,
-            outputMin: 0,
-            outputMax: 2 * Math.PI
-          });
-          const circularX = Math.cos(angle) * r + position.x;
-          const circularY = Math.sin(angle) * r + position.y;
-          return `L${circularX},${circularY}`;
+        `M${last.x},${last.y}`,
+        ...circularCoords.map(({x, y}) => {
+          return `L${x},${y}`;
         })
       ].join(' ')
-      return <path key={idx} className='flower' d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
+      return <path key={groupIdx} className='flower' d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
     });
 
     return <g>{flowerRings}</g>;
