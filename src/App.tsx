@@ -196,9 +196,11 @@ export class App extends React.Component<{}, GameState> {
       const wave = new Uint8Array(bufferLength);
       analyser.getByteFrequencyData(frequencies);
       analyser.getByteTimeDomainData(wave);
+      const amplitude = Math.max(...wave as any);
       this.audioData = {
         frequencies,
-        wave
+        wave,
+        amplitude
       };
     }
 

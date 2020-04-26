@@ -12,7 +12,7 @@ export function circleRendererFactory(style: React.CSSProperties): SpriteRendere
     let size = minSize;
 
     if(audio) {
-      const amplitude = Math.max(...audio.wave as any);
+      const amplitude = audio.amplitude;
       size = scale({
         input: amplitude,
         inputMin: 128,

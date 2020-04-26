@@ -17,10 +17,10 @@ export function flowerRenderer(position: SpritePosition, audio?: AudioData): Rea
   let size = minSize;
   if(audio) {
     // 0 - 255
-    const amplitude = Math.max(...audio.wave as any);
+    const amplitude = audio.amplitude;
     size = scale({
       input: amplitude,
-      inputMin: 0,
+      inputMin: 128,
       inputMax: 255,
       outputMin: minSize,
       outputMax: maxSize
