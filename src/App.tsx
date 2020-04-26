@@ -7,14 +7,12 @@ import { flowerRenderer } from './spriteRenderers/flower';
 import { circleRendererFactory } from './spriteRenderers/circle';
 import { randomWalkFactory, JitterType } from './frameTickers/randomWalk';
 import { randomColor } from './util/color';
-import { freqToMidiNote } from './util/midi';
-import { getNoteName } from './util/Note';
+import { audioAnalysis } from './util/audioAnalysis';
 
 @autobind
 export class App extends React.Component<{}, GameState> {
   private gameLoop: NodeJS.Timeout | undefined;
   private mainRef: HTMLElement | undefined;
-  private sampleRate: number | undefined;
   private analyser: AnalyserNode | undefined;
   private audioData: AudioData | undefined;
 
@@ -34,7 +32,6 @@ export class App extends React.Component<{}, GameState> {
 
     // Get audio
     const audioContext = new AudioContext();
-    this.sampleRate = audioContext.sampleRate;
     // const url = '/moodIndigoRemix.mp3';
     // const response = await fetch(url);
     // const arrayBuffer = await response.arrayBuffer();
@@ -195,30 +192,7 @@ export class App extends React.Component<{}, GameState> {
     const {sprites, world} = this.state;
 
     if(analyser) {
-      const bufferLength = analyser.frequencyBinCount;
-      const frequencies = new Uint8Array(bufferLength);
-      const wave = new Uint8Array(bufferLength);
-      analyser.getByteFrequencyData(frequencies);
-      analyser.getByteTimeDomainData(wave);
-      const amplitude = Math.max(...wave as any);
-      const peakFreqIdx = frequencies.reduce((maxIdx, currentValue, idx, array): number => {
-        const prevMax = array[maxIdx];
-        if(currentValue > prevMax) {
-          return idx;
-        } else {
-          return maxIdx;
-        }
-      });
-      const peakFreq = peakFreqIdx * (this.sampleRate as number) / analyser.fftSize;
-      const midiNote = freqToMidiNote(peakFreq);
-      const noteName = getNoteName(midiNote);
-      console.log(`Freq: ${peakFreq}Hz, MIDI: ${midiNote}, ${noteName}`);
-      this.audioData = {
-        frequencies,
-        wave,
-        amplitude,
-        peakFreq
-      };
+      this.audioData = audioAnalysis(analyser);
     }
 
     this.setState({
