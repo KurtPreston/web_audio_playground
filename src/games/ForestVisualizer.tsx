@@ -5,7 +5,7 @@ import {circleRendererFactory} from '../spriteRenderers/circle';
 import {randomColor} from '../util/color';
 import {randomWalkFactory, JitterType} from '../frameTickers/randomWalk';
 import {flowerRenderer} from '../spriteRenderers/flower';
-import {AudioAnalyser} from '../util/audioAnalysis';
+import {AudioAnalyser} from '../util/AudioAnalyser';
 import {autobind} from 'core-decorators';
 import {noteGridRenderer} from '../spriteRenderers/noteGrid';
 
