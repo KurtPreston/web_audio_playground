@@ -1,12 +1,13 @@
 import React from 'react';
-import {Dimensions, Sprite, IWanderer} from '../types';
-import {times, random, sample, map} from 'lodash';
+import {Dimensions, Sprite, IWanderer, INoteGrid} from '../types';
+import {times, random, sample, map, identity} from 'lodash';
 import {circleRendererFactory} from '../spriteRenderers/circle';
 import {randomColor} from '../util/color';
 import {randomWalkFactory, JitterType} from '../frameTickers/randomWalk';
 import {flowerRenderer} from '../spriteRenderers/flower';
 import {AudioAnalyser} from '../util/audioAnalysis';
 import {autobind} from 'core-decorators';
+import {noteGridRenderer} from '../spriteRenderers/noteGrid';
 
 export interface ForestVisualizerProps {
   dimensions: Dimensions;
@@ -29,6 +30,24 @@ export class ForestVisualizer extends React.Component<
   constructor(props: ForestVisualizerProps) {
     super(props);
     const {height, width} = props.dimensions;
+
+    const flower: Sprite<IWanderer> = {
+      state: {
+        // In center, facing up
+        x: width / 2,
+        y: height / 2,
+        angle: Math.PI / 2
+      },
+      renderer: flowerRenderer,
+      tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'})
+    };
+
+    const noteGrid: Sprite<INoteGrid> = {
+      state: {},
+      renderer: noteGridRenderer,
+      tick: identity
+    };
+
     const circles: Sprite<IWanderer>[] = times(
       20,
       (): Sprite<IWanderer> => {
@@ -52,20 +71,9 @@ export class ForestVisualizer extends React.Component<
       }
     );
 
-    const flower: Sprite<IWanderer> = {
-      state: {
-        // In center, facing up
-        x: width / 2,
-        y: height / 2,
-        angle: Math.PI / 2
-      },
-      renderer: flowerRenderer,
-      tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'})
-    };
-
     this.state = {
       paused: false,
-      sprites: [flower, ...circles]
+      sprites: [flower, noteGrid, ...circles]
     };
 
     this.audioAnalyser = new AudioAnalyser(props.audioAnalyser);
