@@ -6,10 +6,12 @@ import { Note, getNoteName, getNoteFrequencyRange } from '../util/Note';
 
 export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> => {
   const {width, height} = dimensions;
-  const notes: Note[] = range(36, 96);
+  const lowOctave = 3;
+  const highOctave = 7;
+  const notes: Note[] = range(lowOctave * 12, (highOctave + 2) * 12);
 
   const colWidth = width / 12;
-  const rowHeight = height / 4;
+  const rowHeight = height / (highOctave - lowOctave + 1);
 
   const boxes = notes.map((note: Note, idx: number) => {
     const col = idx % 12;
@@ -33,7 +35,7 @@ export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, au
           {noteName}
         </text>
         <text x={x} y={y} width={colWidth} height={rowHeight}>
-          ({Math.round(lowFreq)}—{Math.round(highFreq)})
+          {Math.round(lowFreq)}—{Math.round(highFreq)}
         </text>
         <rect key={note} x={x} y={y} width={colWidth} height={rowHeight} style={style}/>
       </g>
