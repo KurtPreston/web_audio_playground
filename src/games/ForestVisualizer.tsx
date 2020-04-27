@@ -11,7 +11,7 @@ import {noteGridRenderer} from '../spriteRenderers/noteGrid';
 
 export interface ForestVisualizerProps {
   dimensions: Dimensions;
-  audioAnalyser: AnalyserNode;
+  audioSource: AudioNode;
 }
 
 export interface ForestVisualizerState {
@@ -76,7 +76,7 @@ export class ForestVisualizer extends React.Component<
       sprites: [flower, noteGrid, ...circles]
     };
 
-    this.audioAnalyser = new AudioAnalyser(props.audioAnalyser);
+    this.audioAnalyser = new AudioAnalyser(props.audioSource);
   }
 
   public componentDidMount() {

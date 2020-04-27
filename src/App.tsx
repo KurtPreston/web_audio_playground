@@ -6,7 +6,7 @@ import {ForestVisualizer} from './games/ForestVisualizer';
 
 export interface AppState {
   dimensions: Dimensions;
-  audioAnalyser: AnalyserNode;
+  audioSource: AudioNode;
 }
 
 @autobind
@@ -26,7 +26,7 @@ export class App extends React.Component<{}, AppState> {
   }
 
   private renderGame() {
-    if (this.state && this.state.dimensions && this.state.audioAnalyser) {
+    if (this.state && this.state.dimensions && this.state.audioSource) {
       return <ForestVisualizer {...this.state} />;
     } else {
       return (
@@ -78,7 +78,7 @@ export class App extends React.Component<{}, AppState> {
         echoCancellation: false
       }
     });
-    const micSource = audioContext.createMediaStreamSource(stream);
+    const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
 
     // Split audio into L/R channels
     // const splitter = audioContext.createChannelSplitter(2);
@@ -88,12 +88,8 @@ export class App extends React.Component<{}, AppState> {
     // splitter.connect(lAnalyser, 0, 0);
     // splitter.connect(rAnalyser, 1, 0);
 
-    const audioAnalyser = audioContext.createAnalyser();
-    audioAnalyser.fftSize = 16384;
-    micSource.connect(audioAnalyser);
-
     this.setState({
-      audioAnalyser
+      audioSource
     });
 
     // Play mic audio

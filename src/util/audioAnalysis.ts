@@ -6,19 +6,25 @@ import {scale} from './scale';
 // Modifies AudioData rather than returning a new one
 
 export class AudioAnalyser implements AudioData {
+  private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
   private readonly _wave: Uint8Array;
   private readonly hzPerIdx: number;
 
   private valuesThisFrame: Partial<AudioData> = {};
 
-  constructor(private readonly analyser: AnalyserNode) {
+  constructor(audioSource: AudioNode) {
+    const audioContext: BaseAudioContext = audioSource.context;
+    const analyser = audioContext.createAnalyser();
+    audioSource.connect(analyser);
+    analyser.fftSize = 16384;
+    this.analyser = analyser;
     const bufferLength = analyser.frequencyBinCount;
 
     // Allocate the memory for the array just once
     this._frequencies = new Uint8Array(bufferLength);
     this._wave = new Uint8Array(bufferLength);
-    this.hzPerIdx = analyser.context.sampleRate / (this.analyser.fftSize * 2);
+    this.hzPerIdx = audioContext.sampleRate / (analyser.fftSize * 2);
   }
 
   public reset() {
