@@ -1,30 +1,76 @@
 import { AudioData } from "../types";
 import { freqToMidiNote } from "./midi";
-import { getNoteName } from "./Note";
+import { getNoteInfo, NoteInfo } from "./Note";
+import { scale } from "./scale";
 
-export function audioAnalysis(analyser: AnalyserNode): AudioData {
-  const bufferLength = analyser.frequencyBinCount;
-  const frequencies = new Uint8Array(bufferLength);
-  const wave = new Uint8Array(bufferLength);
-  analyser.getByteFrequencyData(frequencies);
-  analyser.getByteTimeDomainData(wave);
-  const amplitude = Math.max(...wave as any);
-  const peakFreqIdx = frequencies.reduce((maxIdx, currentValue, idx, array): number => {
-    const prevMax = array[maxIdx];
-    if(currentValue > prevMax) {
-      return idx;
-    } else {
-      return maxIdx;
+// Modifies AudioData rather than returning a new one
+
+export class AudioAnalyser implements AudioData {
+  private readonly _frequencies: Uint8Array;
+  private readonly _wave: Uint8Array;
+
+  private valuesThisFrame: Partial<AudioData> = {};
+
+  constructor(private readonly analyser: AnalyserNode) {
+    const bufferLength = analyser.frequencyBinCount;
+
+    // Allocate the memory for the array just once
+    this._frequencies = new Uint8Array(bufferLength);
+    this._wave = new Uint8Array(bufferLength);
+  }
+
+  public reset() {
+    this.valuesThisFrame = {};
+  }
+
+  public get frequencies(): Uint8Array {
+    if(!this.valuesThisFrame.frequencies) {
+      this.analyser.getByteFrequencyData(this._frequencies);
+      this.valuesThisFrame.frequencies = this._frequencies;
     }
-  });
-  const peakFreq = peakFreqIdx * analyser.context.sampleRate / analyser.fftSize;
-  const midiNote = freqToMidiNote(peakFreq);
-  const noteName = getNoteName(midiNote);
-  console.log(`Freq: ${peakFreq}Hz, MIDI: ${midiNote}, ${noteName}`);
-  return {
-    frequencies,
-    wave,
-    amplitude,
-    peakFreq
-  };
+
+    return this.valuesThisFrame.frequencies;
+  }
+
+  public get wave(): Uint8Array {
+    if(!this.valuesThisFrame.wave) {
+      this.analyser.getByteTimeDomainData(this._wave);
+      this.valuesThisFrame.wave = this._wave;
+    }
+
+    return this.valuesThisFrame.wave;
+  }
+
+  public get amplitude(): number {
+    if(!this.valuesThisFrame.amplitude) {
+      const maxAmplitude = Math.max(...this.wave as any);
+      this.valuesThisFrame.amplitude = scale({
+        input: maxAmplitude,
+        inputMin: 128,
+        inputMax: 255,
+        outputMin: 0,
+        outputMax: 1
+      });
+    }
+
+    return this.valuesThisFrame.amplitude;
+  }
+
+  public get note(): NoteInfo {
+    if(!this.valuesThisFrame.note) {
+      const peakFreqIdx = this.frequencies.reduce((maxIdx, currentValue, idx, array): number => {
+        const prevMax = array[maxIdx];
+        if(currentValue > prevMax) {
+          return idx;
+        } else {
+          return maxIdx;
+        }
+      });
+      const peakFreq = peakFreqIdx * this.analyser.context.sampleRate / this.analyser.fftSize;
+      const midiNote = freqToMidiNote(peakFreq);
+      this.valuesThisFrame.note = getNoteInfo(midiNote);
+    }
+
+    return this.valuesThisFrame.note;
+  }
 }

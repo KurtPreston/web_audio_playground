@@ -8,8 +8,18 @@ export interface ScaleProps {
 
 export function scale(props: ScaleProps): number {
   const {input, inputMin, inputMax, outputMin, outputMax} = props;
+  if(input > inputMax) {
+    debugger;
+    return outputMax;
+  }
+  if(input < inputMin) {
+    debugger;
+    return outputMin;
+  }
+
   const inputRange = inputMax - inputMin;
   const outputRange = outputMax - outputMin;
   const amount = (input - inputMin) / inputRange;
-  return outputMin + amount * outputRange;
+  const scaledValue = outputMin + amount * outputRange;
+  return scaledValue;
 }

@@ -1,4 +1,4 @@
-import { SpriteTicker, SpritePosition, World } from '../types';
+import { SpriteTicker, SpritePosition, Dimensions } from '../types';
 
 export type JitterType = 'leanLeft' | 'leanRight' | 'random';
 
@@ -20,10 +20,10 @@ export function randomWalkFactory(props: RandomWalkProps): SpriteTicker {
 
   const randomWalk: SpriteTicker = (
     position: SpritePosition,
-    world: World
+    dimensions: Dimensions
   ): SpritePosition => {
     const { x, y, angle } = position;
-    const {height, width} = world;
+    const {height, width} = dimensions;
 
     // Calculate new angle
     let newAngle = jitterer(angle, jitter) // apply jitterer

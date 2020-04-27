@@ -1,4 +1,5 @@
 import React from 'react';
+import { Note, NoteInfo } from '../util/Note';
 
 export interface SpritePosition {
   x: number;
@@ -6,8 +7,8 @@ export interface SpritePosition {
   angle: number;
 }
 
-export type SpriteRenderer = (position: SpritePosition, audio?: AudioData) => React.ReactElement<SVGElement>;
-export type SpriteTicker = (position: SpritePosition, world: World) => SpritePosition;
+export type SpriteRenderer = (position: SpritePosition, audio: AudioData) => React.ReactElement<SVGElement>;
+export type SpriteTicker = (position: SpritePosition, dimensions: Dimensions) => SpritePosition;
 
 export interface Sprite {
   position: SpritePosition;
@@ -15,20 +16,14 @@ export interface Sprite {
   tick: SpriteTicker;
 }
 
-export interface World {
+export interface Dimensions {
   width: number;
   height: number;
-}
-
-export interface GameState {
-  paused: boolean;
-  world: World;
-  sprites: Sprite[];
 }
 
 export interface AudioData {
   frequencies: Uint8Array;
   wave: Uint8Array;
-  amplitude: number;
-  peakFreq: number;
+  amplitude: number; // 0 - 1
+  note: NoteInfo;
 }

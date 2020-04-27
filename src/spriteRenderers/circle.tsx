@@ -6,21 +6,17 @@ const minSize = 15;
 const maxSize = 60;
 
 export function circleRendererFactory(style: React.CSSProperties): SpriteRenderer {
-  return (position: SpritePosition, audio?: AudioData): React.ReactElement<SVGElement> => {
+  return (position: SpritePosition, audio: AudioData): React.ReactElement<SVGElement> => {
     const {x, y} = position;
 
-    let size = minSize;
-
-    if(audio) {
-      const amplitude = audio.amplitude;
-      size = scale({
-        input: amplitude,
-        inputMin: 128,
-        inputMax: 255,
-        outputMin: minSize,
-        outputMax: maxSize
-      });
-    }
+    const amplitude = audio.amplitude;
+    const size = scale({
+      input: amplitude,
+      inputMin: 0,
+      inputMax: 1,
+      outputMin: minSize,
+      outputMax: maxSize
+    });
 
     return (
       <circle className='instrument' cx={x} cy={y} r={size} style={style} />
