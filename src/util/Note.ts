@@ -43,7 +43,7 @@ export function getNoteNames(note: Note): string[] {
 export function getNoteInfo(note: Note, accidental: NoteAccidental = '#'): NoteInfo {
   return {
     letter: noteLetter(note, accidental),
-    octave: octave(note),
+    octave: getOctave(note),
     accidental: noteAccidental(note, accidental)
   };
 }
@@ -65,6 +65,6 @@ export function noteAccidental(note: Note, accidental: NoteAccidental = '#'): No
     : accidental;
 }
 
-export function octave(note: Note): number {
+export function getOctave(note: Note): number {
   return Math.floor(note / 12) - 1;
 }

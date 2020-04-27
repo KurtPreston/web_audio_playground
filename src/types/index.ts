@@ -1,13 +1,16 @@
 import React from 'react';
-import { Note, NoteInfo } from '../util/Note';
+import {NoteInfo} from '../util/Note';
 
 export interface SpritePosition {
   x: number;
-  y: number; 
+  y: number;
   angle: number;
 }
 
-export type SpriteRenderer = (position: SpritePosition, audio: AudioData) => React.ReactElement<SVGElement>;
+export type SpriteRenderer = (
+  position: SpritePosition,
+  audio: AudioData
+) => React.ReactElement<SVGElement>;
 export type SpriteTicker = (position: SpritePosition, dimensions: Dimensions) => SpritePosition;
 
 export interface Sprite {

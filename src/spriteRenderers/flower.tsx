@@ -1,13 +1,16 @@
 import React from 'react';
-import { SpritePosition, AudioData } from '../types';
-import { scale } from '../util/scale';
-import { chunk } from 'lodash';
+import {SpritePosition, AudioData} from '../types';
+import {scale} from '../util/scale';
+import {chunk} from 'lodash';
 
 const minSize = 100;
 const maxSize = 1000;
 const numFlowers = 6;
 
-export function flowerRenderer(position: SpritePosition, audio: AudioData): React.ReactElement<SVGElement> {
+export function flowerRenderer(
+  position: SpritePosition,
+  audio: AudioData
+): React.ReactElement<SVGElement> {
   const amplitude = audio.amplitude;
   const size = scale({
     input: amplitude,
@@ -18,7 +21,7 @@ export function flowerRenderer(position: SpritePosition, audio: AudioData): Reac
     logarithmic: true
   });
 
-  const pathCoords: {x: number, y: number}[] = new Array(audio.frequencies.length);
+  const pathCoords: {x: number; y: number}[] = new Array(audio.frequencies.length);
   audio.frequencies.forEach((value: number, idx: number) => {
     pathCoords[idx] = {
       x: idx,
@@ -60,8 +63,15 @@ export function flowerRenderer(position: SpritePosition, audio: AudioData): Reac
       ...circularCoords.map(({x, y}) => {
         return `L${x},${y}`;
       })
-    ].join(' ')
-    return <path key={groupIdx} className='flower' d={circularFrequencyMeter} style={{stroke: 'white'}}/>;
+    ].join(' ');
+    return (
+      <path
+        key={groupIdx}
+        className='flower'
+        d={circularFrequencyMeter}
+        style={{stroke: 'white'}}
+      />
+    );
   });
 
   return <g>{flowerRings}</g>;

@@ -10,11 +10,11 @@ export interface ScaleProps {
 export function scale(props: ScaleProps): number {
   const {input, inputMin, inputMax, outputMin, outputMax, logarithmic} = props;
   if(input > inputMax) {
-    debugger;
+    console.warn('scale() received out-of-bounds input', props);
     return outputMax;
   }
   if(input < inputMin) {
-    debugger;
+    console.warn('scale() received out-of-bounds input', props);
     return outputMin;
   }
 

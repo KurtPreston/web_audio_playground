@@ -1,7 +1,7 @@
-import { AudioData } from "../types";
-import { freqToMidiNote } from "./midi";
-import { getNoteInfo, NoteInfo } from "./Note";
-import { scale } from "./scale";
+import {AudioData} from '../types';
+import {freqToMidiNote} from './midi';
+import {getNoteInfo, NoteInfo} from './Note';
+import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
 
@@ -24,7 +24,7 @@ export class AudioAnalyser implements AudioData {
   }
 
   public get frequencies(): Uint8Array {
-    if(!this.valuesThisFrame.frequencies) {
+    if (!this.valuesThisFrame.frequencies) {
       this.analyser.getByteFrequencyData(this._frequencies);
       this.valuesThisFrame.frequencies = this._frequencies;
     }
@@ -33,7 +33,7 @@ export class AudioAnalyser implements AudioData {
   }
 
   public get wave(): Uint8Array {
-    if(!this.valuesThisFrame.wave) {
+    if (!this.valuesThisFrame.wave) {
       this.analyser.getByteTimeDomainData(this._wave);
       this.valuesThisFrame.wave = this._wave;
     }
@@ -42,8 +42,8 @@ export class AudioAnalyser implements AudioData {
   }
 
   public get amplitude(): number {
-    if(!this.valuesThisFrame.amplitude) {
-      const maxAmplitude = Math.max(...this.wave as any);
+    if (!this.valuesThisFrame.amplitude) {
+      const maxAmplitude = Math.max(...(this.wave as any));
       this.valuesThisFrame.amplitude = scale({
         input: maxAmplitude,
         inputMin: 128,
@@ -57,16 +57,16 @@ export class AudioAnalyser implements AudioData {
   }
 
   public get note(): NoteInfo {
-    if(!this.valuesThisFrame.note) {
+    if (!this.valuesThisFrame.note) {
       const peakFreqIdx = this.frequencies.reduce((maxIdx, currentValue, idx, array): number => {
         const prevMax = array[maxIdx];
-        if(currentValue > prevMax) {
+        if (currentValue > prevMax) {
           return idx;
         } else {
           return maxIdx;
         }
       });
-      const peakFreq = peakFreqIdx * this.analyser.context.sampleRate / this.analyser.fftSize;
+      const peakFreq = (peakFreqIdx * this.analyser.context.sampleRate) / this.analyser.fftSize;
       const midiNote = freqToMidiNote(peakFreq);
       this.valuesThisFrame.note = getNoteInfo(midiNote);
     }

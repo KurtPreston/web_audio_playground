@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import './App.scss';
-import { Dimensions } from './types';
-import { ForestVisualizer } from './games/ForestVisualizer';
+import {Dimensions} from './types';
+import {ForestVisualizer} from './games/ForestVisualizer';
 
 export interface AppState {
   dimensions: Dimensions;
@@ -20,34 +20,34 @@ export class App extends React.Component<{}, AppState> {
   public render() {
     return (
       <div className='App'>
-        <main ref={this.mainRefFn}>
-          {this.renderGame()}
-        </main>
+        <main ref={this.mainRefFn}>{this.renderGame()}</main>
       </div>
     );
   }
 
   private renderGame() {
-    if(this.state && this.state.dimensions && this.state.audioAnalyser) {
-      return <ForestVisualizer {...this.state}/>;
+    if (this.state && this.state.dimensions && this.state.audioAnalyser) {
+      return <ForestVisualizer {...this.state} />;
     } else {
       return (
         <button className='start-btn' onClick={this.initializeAudio}>
-          Enable microphone<br/>and click to start
+          Enable microphone
+          <br />
+          and click to start
         </button>
       );
     }
   }
 
   private setDimensions() {
-    if(this.mainRef) {
+    if (this.mainRef) {
       const {clientWidth, clientHeight} = this.mainRef;
       this.setState({
         dimensions: {
           width: clientWidth,
           height: clientHeight
         }
-      })
+      });
     }
   }
 
@@ -77,7 +77,7 @@ export class App extends React.Component<{}, AppState> {
       audio: {
         echoCancellation: false
       }
-    })
+    });
     const micSource = audioContext.createMediaStreamSource(stream);
 
     // Split audio into L/R channels
@@ -99,8 +99,6 @@ export class App extends React.Component<{}, AppState> {
     // Play mic audio
     // micSource.connect(audioContext.destination);
   }
-
-
 }
 
 export default App;

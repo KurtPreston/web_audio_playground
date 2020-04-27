@@ -1,6 +1,6 @@
 import React from 'react';
-import { SpritePosition, SpriteRenderer, AudioData } from "../types";
-import { scale } from '../util/scale';
+import {SpritePosition, SpriteRenderer, AudioData} from '../types';
+import {scale} from '../util/scale';
 
 const minSize = 15;
 const maxSize = 60;
@@ -19,8 +19,6 @@ export function circleRendererFactory(style: React.CSSProperties): SpriteRendere
       logarithmic: true
     });
 
-    return (
-      <circle className='instrument' cx={x} cy={y} r={size} style={style} />
-    );
-  }
+    return <circle className='instrument' cx={x} cy={y} r={size} style={style} />;
+  };
 }
