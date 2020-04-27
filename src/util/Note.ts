@@ -1,3 +1,5 @@
+import {midiNoteToFreq} from './midi';
+
 export type Note = number;
 
 export type NoteLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
@@ -10,19 +12,19 @@ export interface NoteInfo {
 }
 
 const noteAscii = [
-  65,   // A
+  65, // A
   65.5, // A#/Bb
-  66,   // B
-  67,   // C
+  66, // B
+  67, // C
   67.5, // C#/Db
-  68,   // D
+  68, // D
   68.5, // D#/Eb
-  69,   // E
-  70,   // F
+  69, // E
+  70, // F
   70.5, // F#/Gb
-  71,   // G
+  71, // G
   71.5 // G#/Ab
-]
+];
 
 // Value 21 127
 export function getNoteName(note: Note): string {
@@ -32,7 +34,7 @@ export function getNoteName(note: Note): string {
 
 export function getNoteNames(note: Note): string[] {
   const {letter, octave, accidental} = getNoteInfo(note, '#');
-  if(accidental) {
+  if (accidental) {
     const flat = getNoteInfo(note, 'b');
     return [`${letter}♯${octave}`, `${flat.letter}♭${flat.octave}`];
   } else {
@@ -50,9 +52,10 @@ export function getNoteInfo(note: Note, accidental: NoteAccidental = '#'): NoteI
 
 export function noteLetter(note: Note, accidental: NoteAccidental = '#'): string {
   const fractionalAsciiValue = noteAscii[(note + 3) % 12];
-  const asciiCode = accidental === '#'
-    ? Math.floor(fractionalAsciiValue)
-    : fractionalAsciiValue === 71.5
+  const asciiCode =
+    accidental === '#'
+      ? Math.floor(fractionalAsciiValue)
+      : fractionalAsciiValue === 71.5
       ? 65
       : Math.ceil(fractionalAsciiValue);
   return String.fromCharCode(asciiCode);
@@ -60,11 +63,13 @@ export function noteLetter(note: Note, accidental: NoteAccidental = '#'): string
 
 export function noteAccidental(note: Note, accidental: NoteAccidental = '#'): NoteAccidental {
   const fractionalAsciiValue = noteAscii[(note + 3) % 12];
-  return (fractionalAsciiValue % 1 === 0)
-    ? null
-    : accidental;
+  return fractionalAsciiValue % 1 === 0 ? null : accidental;
 }
 
 export function getOctave(note: Note): number {
   return Math.floor(note / 12) - 1;
+}
+
+export function getNoteFrequencyRange(note: Note): [number, number] {
+  return [midiNoteToFreq(note - 0.5), midiNoteToFreq(note + 0.5)];
 }

@@ -1,6 +1,6 @@
 import {AudioData} from '../types';
 import {freqToMidiNote} from './midi';
-import {getNoteInfo, NoteInfo} from './Note';
+import {getNoteInfo, NoteInfo, getNoteFrequencyRange} from './Note';
 import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
@@ -72,5 +72,30 @@ export class AudioAnalyser implements AudioData {
     }
 
     return this.valuesThisFrame.note;
+  }
+
+  public amplitudeAtNote(note: number): number {
+    const [lowFreq, highFreq] = getNoteFrequencyRange(note);
+    const value = this.frequencyRangeMax(lowFreq, highFreq);
+    return scale({
+      input: value,
+      inputMin: 0,
+      inputMax: 255,
+      outputMin: 0,
+      outputMax: 1
+    });
+  }
+
+  private frequencyRangeMax(lowFreq: number, highFreq: number): number {
+    const lowIdx = Math.round(lowFreq / this.analyser.context.sampleRate * this.analyser.fftSize * 2);
+    const highIdx = Math.round(highFreq / this.analyser.context.sampleRate * this.analyser.fftSize * 2);
+    const {frequencies} = this;
+    let max = frequencies[lowIdx];
+    for(let idx = lowIdx + 1; idx < highIdx; idx++) {
+      if(frequencies[idx] > max) {
+        max = frequencies[idx];
+      }
+    }
+    return max;
   }
 }

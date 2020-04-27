@@ -119,7 +119,7 @@ export class ForestVisualizer extends React.Component<
 
   private renderSprite(sprite: Sprite<any>, idx: number): React.ReactElement<SVGElement> {
     const {state, renderer} = sprite;
-    return <React.Fragment key={idx}>{renderer(state, this.audioAnalyser)}</React.Fragment>;
+    return <React.Fragment key={idx}>{renderer(state, this.audioAnalyser, this.props.dimensions)}</React.Fragment>;
   }
 
   // State + control
