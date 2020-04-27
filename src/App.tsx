@@ -15,14 +15,49 @@ export class App extends React.Component<{}, AppState> {
 
   public async componentDidMount() {
     window.addEventListener('resize', this.setDimensions);
-    window.addEventListener('mouseover', this.initializeAudio);
+  }
 
-    this.initializeAudio();
+  public render() {
+    return (
+      <div className='App'>
+        <main ref={this.mainRefFn}>
+          {this.renderGame()}
+        </main>
+      </div>
+    );
+  }
+
+  private renderGame() {
+    if(this.state && this.state.dimensions && this.state.audioAnalyser) {
+      return <ForestVisualizer {...this.state}/>;
+    } else {
+      return (
+        <button className='start-btn' onClick={this.initializeAudio}>
+          Enable microphone<br/>and click to start
+        </button>
+      );
+    }
+  }
+
+  private setDimensions() {
+    if(this.mainRef) {
+      const {clientWidth, clientHeight} = this.mainRef;
+      this.setState({
+        dimensions: {
+          width: clientWidth,
+          height: clientHeight
+        }
+      })
+    }
+  }
+
+  private mainRefFn(ref: HTMLElement) {
+    this.mainRef = ref;
+    this.setDimensions();
   }
 
   private async initializeAudio() {
     // Clear callback
-    window.removeEventListener('mouseover', this.initializeAudio);
 
     // Get audio
     const audioContext = new AudioContext();
@@ -65,40 +100,6 @@ export class App extends React.Component<{}, AppState> {
     // micSource.connect(audioContext.destination);
   }
 
-  public render() {
-    return (
-      <div className='App'>
-        <main ref={this.mainRefFn}>
-          {this.renderGame()}
-        </main>
-      </div>
-    );
-  }
-
-  private renderGame() {
-    if(this.state && this.state.dimensions && this.state.audioAnalyser) {
-      return <ForestVisualizer {...this.state}/>;
-    } else {
-      console.log(this.state);
-    }
-  }
-
-  private setDimensions() {
-    if(this.mainRef) {
-      const {clientWidth, clientHeight} = this.mainRef;
-      this.setState({
-        dimensions: {
-          width: clientWidth,
-          height: clientHeight
-        }
-      })
-    }
-  }
-
-  private mainRefFn(ref: HTMLElement) {
-    this.mainRef = ref;
-    this.setDimensions();
-  }
 
 }
 
