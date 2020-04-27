@@ -1,4 +1,4 @@
-import {SpriteTicker, SpritePosition, Dimensions} from '../types';
+import {SpriteTicker, Dimensions, IWanderer} from '../types';
 
 export type JitterType = 'leanLeft' | 'leanRight' | 'random';
 
@@ -14,15 +14,15 @@ const jitterers: {[jitterType in JitterType]: (angle: number, jitter: number) =>
   random: (angle, jitter) => angle + Math.random() * jitter
 };
 
-export function randomWalkFactory(props: RandomWalkProps): SpriteTicker {
+export function randomWalkFactory(props: RandomWalkProps): SpriteTicker<IWanderer> {
   const {velocity, jitter, jitterType} = props;
   const jitterer = jitterers[jitterType];
 
-  const randomWalk: SpriteTicker = (
-    position: SpritePosition,
+  const randomWalk: SpriteTicker<IWanderer> = (
+    state: IWanderer,
     dimensions: Dimensions
-  ): SpritePosition => {
-    const {x, y, angle} = position;
+  ): IWanderer => {
+    const {x, y, angle} = state;
     const {height, width} = dimensions;
 
     // Calculate new angle

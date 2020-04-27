@@ -1,5 +1,5 @@
 import React from 'react';
-import {SpritePosition, AudioData} from '../types';
+import {AudioData, IWanderer} from '../types';
 import {scale} from '../util/scale';
 import {chunk} from 'lodash';
 
@@ -8,7 +8,7 @@ const maxSize = 1000;
 const numFlowers = 6;
 
 export function flowerRenderer(
-  position: SpritePosition,
+  state: IWanderer,
   audio: AudioData
 ): React.ReactElement<SVGElement> {
   const amplitude = audio.amplitude;
@@ -49,8 +49,8 @@ export function flowerRenderer(
         outputMin: 0,
         outputMax: 2 * Math.PI
       });
-      const circularX = Math.cos(angle) * r + position.x;
-      const circularY = Math.sin(angle) * r + position.y;
+      const circularX = Math.cos(angle) * r + state.x;
+      const circularY = Math.sin(angle) * r + state.y;
       return {
         x: circularX,
         y: circularY

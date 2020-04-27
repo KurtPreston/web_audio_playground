@@ -1,22 +1,22 @@
 import React from 'react';
 import {NoteInfo} from '../util/Note';
 
-export interface SpritePosition {
+export interface IWanderer {
   x: number;
   y: number;
   angle: number;
 }
 
-export type SpriteRenderer = (
-  position: SpritePosition,
+export type SpriteRenderer<TState> = (
+  state: TState,
   audio: AudioData
 ) => React.ReactElement<SVGElement>;
-export type SpriteTicker = (position: SpritePosition, dimensions: Dimensions) => SpritePosition;
+export type SpriteTicker<TState> = (position: TState, dimensions: Dimensions) => TState;
 
-export interface Sprite {
-  position: SpritePosition;
-  renderer: SpriteRenderer;
-  tick: SpriteTicker;
+export interface Sprite<TState> {
+  state: TState;
+  renderer: SpriteRenderer<TState>;
+  tick: SpriteTicker<TState>;
 }
 
 export interface Dimensions {

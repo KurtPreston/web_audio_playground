@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Sprite} from '../types';
+import {Dimensions, Sprite, IWanderer} from '../types';
 import {times, random, sample, map} from 'lodash';
 import {circleRendererFactory} from '../spriteRenderers/circle';
 import {randomColor} from '../util/color';
@@ -15,7 +15,7 @@ export interface ForestVisualizerProps {
 
 export interface ForestVisualizerState {
   paused: boolean;
-  sprites: Sprite[];
+  sprites: Sprite<any>[];
 }
 
 @autobind
@@ -29,11 +29,11 @@ export class ForestVisualizer extends React.Component<
   constructor(props: ForestVisualizerProps) {
     super(props);
     const {height, width} = props.dimensions;
-    const circles: Sprite[] = times(
+    const circles: Sprite<IWanderer>[] = times(
       20,
-      (): Sprite => {
+      (): Sprite<IWanderer> => {
         return {
-          position: {
+          state: {
             // On left, facing right
             x: 0,
             y: height / 2,
@@ -52,8 +52,8 @@ export class ForestVisualizer extends React.Component<
       }
     );
 
-    const flower: Sprite = {
-      position: {
+    const flower: Sprite<IWanderer> = {
+      state: {
         // In center, facing up
         x: width / 2,
         y: height / 2,
@@ -109,9 +109,9 @@ export class ForestVisualizer extends React.Component<
     }
   }
 
-  private renderSprite(sprite: Sprite, idx: number): React.ReactElement<SVGElement> {
-    const {position, renderer} = sprite;
-    return <React.Fragment key={idx}>{renderer(position, this.audioAnalyser)}</React.Fragment>;
+  private renderSprite(sprite: Sprite<any>, idx: number): React.ReactElement<SVGElement> {
+    const {state, renderer} = sprite;
+    return <React.Fragment key={idx}>{renderer(state, this.audioAnalyser)}</React.Fragment>;
   }
 
   // State + control
@@ -144,9 +144,9 @@ export class ForestVisualizer extends React.Component<
 
     this.setState({
       sprites: sprites.map(
-        (sprite: Sprite): Sprite => ({
+        (sprite: Sprite<any>): Sprite<any> => ({
           ...sprite,
-          position: sprite.tick(sprite.position, dimensions)
+          state: sprite.tick(sprite.state, dimensions)
         })
       )
     });
