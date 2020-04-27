@@ -14,7 +14,8 @@ export function flowerRenderer(position: SpritePosition, audio: AudioData): Reac
     inputMin: 0,
     inputMax: 1,
     outputMin: minSize,
-    outputMax: maxSize
+    outputMax: maxSize,
+    logarithmic: true
   });
 
   const pathCoords: {x: number, y: number}[] = new Array(audio.frequencies.length);

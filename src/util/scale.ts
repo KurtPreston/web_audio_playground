@@ -4,10 +4,11 @@ export interface ScaleProps {
   inputMax: number;
   outputMin: number;
   outputMax: number;
+  logarithmic?: boolean;
 }
 
 export function scale(props: ScaleProps): number {
-  const {input, inputMin, inputMax, outputMin, outputMax} = props;
+  const {input, inputMin, inputMax, outputMin, outputMax, logarithmic} = props;
   if(input > inputMax) {
     debugger;
     return outputMax;
@@ -19,7 +20,10 @@ export function scale(props: ScaleProps): number {
 
   const inputRange = inputMax - inputMin;
   const outputRange = outputMax - outputMin;
-  const amount = (input - inputMin) / inputRange;
-  const scaledValue = outputMin + amount * outputRange;
-  return scaledValue;
+  const amount = (input - inputMin) / inputRange; // 0 - 1
+  if(logarithmic) {
+    return outputMin + Math.log10(amount * 9 + 1) * outputRange;
+  } else {
+    return outputMin + amount * outputRange;
+  }
 }

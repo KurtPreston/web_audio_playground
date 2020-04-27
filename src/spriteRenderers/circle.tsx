@@ -15,7 +15,8 @@ export function circleRendererFactory(style: React.CSSProperties): SpriteRendere
       inputMin: 0,
       inputMax: 1,
       outputMin: minSize,
-      outputMax: maxSize
+      outputMax: maxSize,
+      logarithmic: true
     });
 
     return (
