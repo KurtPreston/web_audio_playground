@@ -31,7 +31,7 @@ export class App extends React.Component<{}, AppState> {
     } else {
       return (
         <button className='start-btn' onClick={this.initializeAudio}>
-          Enable microphone
+          Enable micro&shy;phone
           <br />
           and click to start
         </button>
