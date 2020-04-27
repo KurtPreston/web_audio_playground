@@ -89,7 +89,7 @@ export class App extends React.Component<{}, AppState> {
     // splitter.connect(rAnalyser, 1, 0);
 
     const audioAnalyser = audioContext.createAnalyser();
-    audioAnalyser.fftSize = 2048;
+    audioAnalyser.fftSize = 16384;
     micSource.connect(audioAnalyser);
 
     this.setState({

@@ -8,6 +8,7 @@ import {scale} from './scale';
 export class AudioAnalyser implements AudioData {
   private readonly _frequencies: Uint8Array;
   private readonly _wave: Uint8Array;
+  private readonly hzPerIdx: number;
 
   private valuesThisFrame: Partial<AudioData> = {};
 
@@ -17,6 +18,7 @@ export class AudioAnalyser implements AudioData {
     // Allocate the memory for the array just once
     this._frequencies = new Uint8Array(bufferLength);
     this._wave = new Uint8Array(bufferLength);
+    this.hzPerIdx = analyser.context.sampleRate / (this.analyser.fftSize * 2);
   }
 
   public reset() {
@@ -66,7 +68,7 @@ export class AudioAnalyser implements AudioData {
           return maxIdx;
         }
       });
-      const peakFreq = (peakFreqIdx * this.analyser.context.sampleRate) / this.analyser.fftSize;
+      const peakFreq = peakFreqIdx * this.hzPerIdx;
       const midiNote = freqToMidiNote(peakFreq);
       this.valuesThisFrame.note = getNoteInfo(midiNote);
     }
@@ -87,15 +89,20 @@ export class AudioAnalyser implements AudioData {
   }
 
   private frequencyRangeMax(lowFreq: number, highFreq: number): number {
-    const lowIdx = Math.round(lowFreq / this.analyser.context.sampleRate * this.analyser.fftSize * 2);
-    const highIdx = Math.round(highFreq / this.analyser.context.sampleRate * this.analyser.fftSize * 2);
+    const lowIdx = Math.round(lowFreq / this.hzPerIdx);
+    const highIdx = Math.round(highFreq / this.hzPerIdx);
     const {frequencies} = this;
     let max = frequencies[lowIdx];
+    let total = frequencies[lowIdx];
     for(let idx = lowIdx + 1; idx < highIdx; idx++) {
-      if(frequencies[idx] > max) {
+      const value = frequencies[idx];
+      total += value;
+      if(value > max) {
         max = frequencies[idx];
       }
     }
+
+    const mean = total / (highIdx - lowIdx + 1);
     return max;
   }
 }
