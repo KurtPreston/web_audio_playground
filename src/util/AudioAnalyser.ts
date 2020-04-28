@@ -5,6 +5,8 @@ import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
 
+export type FftSize = 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 | 32768;
+
 export class AudioAnalyser implements AudioData {
   private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
@@ -17,7 +19,8 @@ export class AudioAnalyser implements AudioData {
     const audioContext: BaseAudioContext = audioSource.context;
     const analyser = audioContext.createAnalyser();
     audioSource.connect(analyser);
-    analyser.fftSize = 16384;
+    const fftSize: FftSize = 16384;
+    analyser.fftSize = fftSize;
     this.analyser = analyser;
     const bufferLength = analyser.frequencyBinCount;
 
