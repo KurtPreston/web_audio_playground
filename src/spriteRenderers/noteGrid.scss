@@ -1,5 +1,25 @@
 .note-grid {
+  .note-grid-cell {
+    rect {
+      fill: white;
+    }
+
+    &.active {
+      text {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      rect {
+        fill: lightblue;
+        stroke: blue;
+        stroke-width: 2px;
+      }
+    }
+  }
+
   text {
     fill: white;
+    text-anchor: middle;
   }
 }

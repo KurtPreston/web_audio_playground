@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import React from 'react';
 import {SpriteRenderer, AudioData, INoteGrid, Dimensions} from '../types';
 import { range } from 'lodash';
@@ -23,27 +24,31 @@ export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, au
     const noteAmplitude = audio.amplitudeAtNote(note);
     const isNote = audio.notes.find(({midi}: NoteInfo) => midi === note);
 
-    const style: React.CSSProperties = {
-      fill: isNote
-        ? 'lightblue'
-        : 'white',
-      opacity: isNote
-        ? 1
-        : noteAmplitude
-    };
+    const style: React.CSSProperties = isNote
+      ? {} : {
+        opacity: noteAmplitude
+      };
 
     const noteName = getNoteName(note);
     const [lowFreq, highFreq] = getNoteFrequencyRange(note);
 
+    const cx = x + colWidth / 2;
+    const cy = y + rowHeight / 2;
+
+    const className = classnames({
+      'note-grid-cell': true,
+      active: isNote
+    });
+
     return (
-      <g key={note}>
-        <text x={x} y={y - 20} width={colWidth} height={rowHeight}>
+      <g key={note} className={className}>
+        <rect key={note} x={x} y={y} width={colWidth} height={rowHeight} style={style}/>
+        <text x={cx} y={cy-10}>
           {noteName}
         </text>
-        <text x={x} y={y} width={colWidth} height={rowHeight}>
+        <text x={cx} y={cy+10}>
           {Math.round(lowFreq)}—{Math.round(highFreq)}
         </text>
-        <rect key={note} x={x} y={y} width={colWidth} height={rowHeight} style={style}/>
       </g>
     );
   });

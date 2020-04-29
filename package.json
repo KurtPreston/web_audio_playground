@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "classnames": "^2.2.6",
     "core-decorators": "^0.20.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.14.0",
@@ -15,6 +16,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/classnames": "^2.2.10",
     "@types/core-decorators": "^0.20.0",
     "@types/dom-mediacapture-record": "^1.0.4",
     "@types/jest": "^24.0.0",
