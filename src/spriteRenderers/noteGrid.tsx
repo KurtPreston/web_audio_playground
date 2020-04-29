@@ -1,7 +1,7 @@
 import React from 'react';
 import {SpriteRenderer, AudioData, INoteGrid, Dimensions} from '../types';
 import { range } from 'lodash';
-import { Note, getNoteName, getNoteFrequencyRange } from '../util/Note';
+import { Note, getNoteName, getNoteFrequencyRange, NoteInfo } from '../util/Note';
 // import { randomColor } from '../util/color';
 import './noteGrid.scss';
 
@@ -21,7 +21,7 @@ export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, au
     const y = rowHeight * row;
 
     const noteAmplitude = audio.amplitudeAtNote(note);
-    const isNote = audio.note.midi === note;
+    const isNote = audio.notes.find(({midi}: NoteInfo) => midi === note);
 
     const style: React.CSSProperties = {
       fill: isNote

@@ -37,5 +37,5 @@ export interface AudioData {
   frequencies: Uint8Array;
   wave: Uint8Array;
   amplitude: number; // 0 - 1
-  note: NoteInfo;
+  notes: NoteInfo[];
 }

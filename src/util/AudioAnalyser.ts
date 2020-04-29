@@ -67,8 +67,8 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.amplitude;
   }
 
-  public get note(): NoteInfo {
-    if (!this.valuesThisFrame.note) {
+  public get notes(): NoteInfo[] {
+    if (!this.valuesThisFrame.notes) {
       const peakFreqIdx = this.frequencies.reduce((maxIdx, currentValue, idx, array): number => {
         const prevMax = array[maxIdx];
         if (currentValue > prevMax) {
@@ -79,10 +79,10 @@ export class AudioAnalyser implements AudioData {
       });
       const peakFreq = peakFreqIdx * this.hzPerIdx;
       const midiNote = freqToMidiNote(peakFreq);
-      this.valuesThisFrame.note = getNoteInfo(midiNote);
+      this.valuesThisFrame.notes = [getNoteInfo(midiNote)];
     }
 
-    return this.valuesThisFrame.note;
+    return this.valuesThisFrame.notes;
   }
 
   public amplitudeAtNote(note: number): number {
