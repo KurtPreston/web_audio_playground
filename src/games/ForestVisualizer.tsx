@@ -1,6 +1,6 @@
 import React from 'react';
 import {Dimensions, Sprite, IWanderer, INoteGrid} from '../types';
-import {times, random, sample, map, identity} from 'lodash';
+import {times, random, sample, map, identity, mapValues} from 'lodash';
 import {circleRendererFactory} from '../spriteRenderers/circle';
 import {randomColor} from '../util/color';
 import {randomWalkFactory, JitterType} from '../frameTickers/randomWalk';
@@ -16,7 +16,20 @@ export interface ForestVisualizerProps {
 
 export interface ForestVisualizerState {
   paused: boolean;
-  sprites: Sprite<any>[];
+  options: Options;
+  sprites: ActiveSprites;
+}
+
+type ActiveSprites = {
+  flower: Sprite<IWanderer>[];
+  circles: Sprite<IWanderer>[];
+  noteGrid: Sprite<INoteGrid>[];
+}
+
+interface Options {
+  flower: boolean;
+  circles: number;
+  noteGrid: boolean;
 }
 
 @autobind
@@ -29,61 +42,84 @@ export class ForestVisualizer extends React.Component<
 
   constructor(props: ForestVisualizerProps) {
     super(props);
-    const {height, width} = props.dimensions;
-
-    const flower: Sprite<IWanderer> = {
-      state: {
-        // In center, facing up
-        x: width / 2,
-        y: height / 2,
-        angle: Math.PI / 2
-      },
-      renderer: flowerRenderer,
-      tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'})
-    };
-
-    const noteGrid: Sprite<INoteGrid> = {
-      state: {},
-      renderer: noteGridRenderer,
-      tick: identity
-    };
-
-    const circles: Sprite<IWanderer>[] = times(
-      20,
-      (): Sprite<IWanderer> => {
-        return {
-          state: {
-            // On left, facing right
-            x: 0,
-            y: height / 2,
-            angle: 0
-          },
-          renderer: circleRendererFactory({
-            fill: randomColor(),
-            mixBlendMode: 'color-dodge'
-          }),
-          tick: randomWalkFactory({
-            velocity: random(3, 7),
-            jitter: random(0.01, 0.08),
-            jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType
-          })
-        };
-      }
-    );
-
+    this.audioAnalyser = new AudioAnalyser(props.audioSource);
     this.state = {
       paused: false,
-      sprites: [
-        // flower,
-        noteGrid,
-        // ...circles
-      ]
+      options: {
+        flower: true,
+        circles: 20,
+        noteGrid: true
+      },
+      sprites: {
+        flower: [],
+        circles: [],
+        noteGrid: []
+      }
+    }
+  }
+
+  private updateSprites() {
+    const {sprites, options} = this.state;
+    const {height, width} = this.props.dimensions;
+
+    const newSprites: ActiveSprites = {
+      flower: [],
+      circles: [],
+      noteGrid: []
     };
 
-    this.audioAnalyser = new AudioAnalyser(props.audioSource);
+    if(options.flower) {
+      newSprites.flower = sprites.flower.length
+        ? sprites.flower
+        : [{
+          state: {
+            // In center, facing up
+            x: width / 2,
+            y: height / 2,
+            angle: Math.PI / 2
+          },
+          renderer: flowerRenderer,
+          tick: randomWalkFactory({velocity: 5, jitter: 0.03, jitterType: 'random'})
+        }]
+    }
+
+    if(options.noteGrid) {
+      newSprites.noteGrid = sprites.noteGrid.length
+        ? sprites.noteGrid
+        : [{
+          state: {},
+          renderer: noteGridRenderer,
+          tick: identity
+        }]
+    }
+
+    newSprites.circles = times(options.circles, (circleNum: number): Sprite<IWanderer> => {
+      return (sprites.circles || [])[circleNum] || {
+        state: {
+          // On left, facing right
+          x: 0,
+          y: height / 2,
+          angle: 0
+        },
+        renderer: circleRendererFactory({
+          fill: randomColor(),
+          mixBlendMode: 'color-dodge'
+        }),
+        tick: randomWalkFactory({
+          velocity: random(3, 7),
+          jitter: random(0.01, 0.08),
+          jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType
+        })
+      }
+    });
+
+    this.setState({
+      sprites: newSprites
+    });
   }
 
   public componentDidMount() {
+    this.updateSprites();
     this.runGame();
   }
 
@@ -107,7 +143,9 @@ export class ForestVisualizer extends React.Component<
 
     return (
       <svg height={height} width={width}>
-        {map(sprites, this.renderSprite)}
+        {map(sprites, (s: Sprite<any>[], type: string) => (
+          s.map((sprite: Sprite<any>, idx: number) => this.renderSprite(sprite, type, idx))
+        ))}
       </svg>
     );
   }
@@ -121,9 +159,18 @@ export class ForestVisualizer extends React.Component<
     }
   }
 
-  private renderSprite(sprite: Sprite<any>, idx: number): React.ReactElement<SVGElement> {
+  private renderSprite(sprite: Sprite<any>, type: string, idx: number): React.ReactElement<SVGElement> {
     const {state, renderer} = sprite;
-    return <React.Fragment key={idx}>{renderer(state, this.audioAnalyser, this.props.dimensions)}</React.Fragment>;
+    const key = `${type}${idx}`;
+
+    if(!renderer) {
+      debugger;
+    }
+    return (
+      <React.Fragment key={key}>
+        {renderer(state, this.audioAnalyser, this.props.dimensions)}
+      </React.Fragment>
+    );
   }
 
   // State + control
@@ -155,12 +202,12 @@ export class ForestVisualizer extends React.Component<
     this.audioAnalyser.reset();
 
     this.setState({
-      sprites: sprites.map(
-        (sprite: Sprite<any>): Sprite<any> => ({
+      sprites: mapValues(sprites, (sprites: Sprite<any>[]) => (
+        sprites.map((sprite: Sprite<any>): Sprite<any> => ({
           ...sprite,
           state: sprite.tick(sprite.state, dimensions)
         })
-      )
+      ))) as any
     });
   }
 }
