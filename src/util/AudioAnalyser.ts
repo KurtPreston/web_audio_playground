@@ -1,7 +1,8 @@
 import {AudioData} from '../types';
-import {freqToMidiNote} from './midi';
-import {getNoteInfo, NoteInfo, getNoteFrequencyRange} from './Note';
+import {freqToMidiNote, midiNoteToFreq} from './midi';
+import {getNoteInfo, NoteInfo, getNoteFrequencyRange, Note} from './Note';
 import {scale} from './scale';
+import { times } from 'lodash';
 
 // Modifies AudioData rather than returning a new one
 
@@ -67,19 +68,36 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.amplitude;
   }
 
+  private avgAmplitudeInFreqRange(lowFreq: number, highFreq: number) {
+    const lowIdx = Math.round(lowFreq / this.hzPerIdx);
+    const highIdx = Math.round(highFreq / this.hzPerIdx);
+    const freqBuckets: Uint8Array = this.frequencies.slice(lowIdx, highIdx + 1);
+    let total = 0;
+    freqBuckets.forEach((amplitude) => {
+      total += amplitude;
+    });
+
+    const avg: number = total / (highIdx - lowIdx + 1);
+    return avg;
+  }
+
   public get notes(): NoteInfo[] {
     if (!this.valuesThisFrame.notes) {
-      const peakFreqIdx = this.frequencies.reduce((maxIdx, currentValue, idx, array): number => {
-        const prevMax = array[maxIdx];
-        if (currentValue > prevMax) {
-          return idx;
-        } else {
-          return maxIdx;
+      const activeNotes: Note[] = [];
+      times(128, (note: Note) => {
+        const [lowFreq, highFreq] = getNoteFrequencyRange(note);
+        const avg = this.avgAmplitudeInFreqRange(lowFreq, highFreq);
+        const octaveAvg = this.avgAmplitudeInFreqRange(
+          midiNoteToFreq(note - 6),
+          midiNoteToFreq(note + 6)
+        );
+
+        if(avg > octaveAvg * 6 && avg > 30) {
+          activeNotes.push(note);
         }
       });
-      const peakFreq = peakFreqIdx * this.hzPerIdx;
-      const midiNote = freqToMidiNote(peakFreq);
-      this.valuesThisFrame.notes = [getNoteInfo(midiNote)];
+
+      this.valuesThisFrame.notes = activeNotes.map((note) => getNoteInfo(note));
     }
 
     return this.valuesThisFrame.notes;

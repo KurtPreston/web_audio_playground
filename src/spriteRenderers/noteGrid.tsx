@@ -7,7 +7,7 @@ import './noteGrid.scss';
 
 export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> => {
   const {width, height} = dimensions;
-  const lowOctave = 3;
+  const lowOctave = 2;
   const highOctave = 7;
   const notes: Note[] = range(lowOctave * 12, (highOctave + 2) * 12);
 
