@@ -73,7 +73,11 @@ export class ForestVisualizer extends React.Component<
 
     this.state = {
       paused: false,
-      sprites: [flower, noteGrid, ...circles]
+      sprites: [
+        // flower,
+        noteGrid,
+        // ...circles
+      ]
     };
 
     this.audioAnalyser = new AudioAnalyser(props.audioSource);

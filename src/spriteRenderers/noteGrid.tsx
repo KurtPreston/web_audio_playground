@@ -3,6 +3,7 @@ import {SpriteRenderer, AudioData, INoteGrid, Dimensions} from '../types';
 import { range } from 'lodash';
 import { Note, getNoteName, getNoteFrequencyRange } from '../util/Note';
 // import { randomColor } from '../util/color';
+import './noteGrid.scss';
 
 export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> => {
   const {width, height} = dimensions;
@@ -20,10 +21,15 @@ export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, au
     const y = rowHeight * row;
 
     const noteAmplitude = audio.amplitudeAtNote(note);
+    const isNote = audio.note.midi === note;
 
     const style: React.CSSProperties = {
-      fill: 'white',
-      opacity: noteAmplitude
+      fill: isNote
+        ? 'lightblue'
+        : 'white',
+      opacity: isNote
+        ? 1
+        : noteAmplitude
     };
 
     const noteName = getNoteName(note);
@@ -43,7 +49,7 @@ export const noteGridRenderer: SpriteRenderer<INoteGrid> = (state: INoteGrid, au
   });
 
   return (
-    <g>
+    <g className='note-grid'>
       {boxes}
     </g>
   );

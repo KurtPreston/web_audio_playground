@@ -9,6 +9,7 @@ export interface NoteInfo {
   letter: string;
   accidental: 'b' | '#' | null;
   octave: number;
+  midi: Note;
 }
 
 const noteAscii = [
@@ -46,7 +47,8 @@ export function getNoteInfo(note: Note, accidental: NoteAccidental = '#'): NoteI
   return {
     letter: noteLetter(note, accidental),
     octave: getOctave(note),
-    accidental: noteAccidental(note, accidental)
+    accidental: noteAccidental(note, accidental),
+    midi: note
   };
 }
 
