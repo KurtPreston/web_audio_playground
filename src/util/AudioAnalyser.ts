@@ -55,10 +55,10 @@ export class AudioAnalyser implements AudioData {
 
   public get amplitude(): number {
     if (!this.valuesThisFrame.amplitude) {
-      const maxAmplitude = Math.max(...(this.wave as any));
+      const maxAmplitude = Math.max(...(this.frequencies as any));
       this.valuesThisFrame.amplitude = scale({
         input: maxAmplitude,
-        inputMin: 128,
+        inputMin: 0,
         inputMax: 255,
         outputMin: 0,
         outputMax: 1
