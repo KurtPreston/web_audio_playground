@@ -1,6 +1,6 @@
 import React from 'react';
 import {Dimensions, Sprite, IWanderer, INoteGrid} from '../types';
-import {times, random, sample, map, identity, mapValues} from 'lodash';
+import {times, random, sample, map, identity, mapValues, isEqual} from 'lodash';
 import {circleRendererFactory} from '../spriteRenderers/circle';
 import {randomColor} from '../util/color';
 import {randomWalkFactory, JitterType} from '../frameTickers/randomWalk';
@@ -8,6 +8,7 @@ import {flowerRenderer} from '../spriteRenderers/flower';
 import {AudioAnalyser} from '../util/AudioAnalyser';
 import {autobind} from 'core-decorators';
 import {noteGridRenderer} from '../spriteRenderers/noteGrid';
+import { isBoolean } from 'util';
 
 export interface ForestVisualizerProps {
   dimensions: Dimensions;
@@ -55,6 +56,12 @@ export class ForestVisualizer extends React.Component<
         circles: [],
         noteGrid: []
       }
+    }
+  }
+
+  public componentDidUpdate(prevProps: ForestVisualizerProps, prevState: ForestVisualizerState) {
+    if(!isEqual(this.state.options, prevState.options)) {
+      this.updateSprites();
     }
   }
 
@@ -127,9 +134,52 @@ export class ForestVisualizer extends React.Component<
     return (
       <>
         {this.renderSvg()}
-        <div className='controls'>{this.renderPauseBtn()}</div>
+        <div className='controls'>
+          {this.renderPauseBtn()}
+          {this.toggleSprite('flower')}
+          {this.toggleSprite('circles')}
+          {this.toggleSprite('noteGrid')}
+         </div>
       </>
     );
+  }
+
+  private toggleSprite(spriteType: keyof Options) {
+    const value = this.state.options[spriteType];
+    const setValue = (newValue: typeof value) => {
+      this.setState({
+        options: {
+          ...this.state.options,
+          [spriteType]: newValue
+        }
+      })
+    };
+    if(isBoolean(value)) {
+      return (
+        <label>
+          {spriteType}
+          <input
+            type='checkbox'
+            checked={value}
+            onChange={() => setValue(!value)}
+          />
+        </label>
+      )
+    } else if (isFinite(value)) {
+      return (
+        <label>
+          {spriteType}
+          <input
+            type='number'
+            value={value}
+            min={0}
+            max={99}
+            size={2}
+            onChange={(e) => setValue(parseInt(e.target.value))}
+          />
+        </label>
+      )
+    }
   }
 
   // Render
