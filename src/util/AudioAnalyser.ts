@@ -1,8 +1,8 @@
 import {AudioData} from '../types';
-import {freqToMidiNote, midiNoteToFreq} from './midi';
+import {midiNoteToFreq} from './midi';
 import {getNoteInfo, NoteInfo, getNoteFrequencyRange, Note} from './Note';
 import {scale} from './scale';
-import { times } from 'lodash';
+import {times} from 'lodash';
 
 // Modifies AudioData rather than returning a new one
 

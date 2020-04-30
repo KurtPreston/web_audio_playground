@@ -2,10 +2,9 @@ import React from 'react';
 import {NoteInfo, Note} from '../util/Note';
 
 // Sprite typings
-export interface Sprite<TState> {
-  state: TState;
-  renderer: SpriteRenderer<TState>;
-  tick: SpriteTicker<TState>;
+export interface Sprite {
+  render: (audio: AudioData, dimensions: Dimensions) => React.ReactElement<SVGElement> 
+  tick: (dimensions: Dimensions) => void;
 }
 
 export type SpriteRenderer<TState> = (
@@ -14,7 +13,7 @@ export type SpriteRenderer<TState> = (
   dimensions: Dimensions
 ) => React.ReactElement<SVGElement>;
 
-export type SpriteTicker<TState> = (position: TState, dimensions: Dimensions) => TState;
+export type SpriteTicker<TState> = (state: TState, dimensions: Dimensions) => TState;
 
 // Sprite states
 export interface IWanderer {
