@@ -1,12 +1,13 @@
 import classnames from 'classnames';
-import {AudioData, Dimensions, Sprite} from '../types';
+import {AudioData, Dimensions} from '../types';
 import React from 'react';
 import {range} from 'lodash';
-import { Note, NoteInfo, getNoteName, getNoteFrequencyRange } from '../util/Note';
+import {Note, NoteInfo, getNoteName, getNoteFrequencyRange} from '../util/Note';
 
 import './NoteGrid.scss';
+import {Sprite} from './Sprite';
 
-export class NoteGrid implements Sprite {
+export class NoteGrid extends Sprite {
   public tick() {}
 
   public render(audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> {
@@ -57,7 +58,7 @@ export class NoteGrid implements Sprite {
     });
 
     return (
-      <g className='note-grid'>
+      <g key={this.id} className='note-grid'>
         {boxes}
       </g>
     );

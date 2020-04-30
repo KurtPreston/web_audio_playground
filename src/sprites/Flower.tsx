@@ -1,10 +1,11 @@
-import {IWanderer, SpriteTicker, AudioData, Dimensions, Sprite} from '../types';
+import {IWanderer, SpriteTicker, AudioData, Dimensions} from '../types';
 import {scale} from '../util/scale';
 import React from 'react';
 import {chunk} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
+import {Sprite} from './Sprite';
 
-export class Flower implements Sprite {
+export class Flower extends Sprite {
   private state: IWanderer;
   private readonly minSize = 100;
   private readonly maxSize = 1000;
@@ -16,6 +17,7 @@ export class Flower implements Sprite {
   });
 
   constructor(dimensions: Dimensions) {
+    super();
     const {width, height} = dimensions;
 
     this.state = {
@@ -90,7 +92,7 @@ export class Flower implements Sprite {
       );
     });
 
-    return <g>{flowerRings}</g>;
+    return <g key={this.id}>{flowerRings}</g>;
   }
 
   public tick(dimensions: Dimensions) {

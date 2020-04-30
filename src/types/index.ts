@@ -1,17 +1,4 @@
-import React from 'react';
 import {NoteInfo, Note} from '../util/Note';
-
-// Sprite typings
-export interface Sprite {
-  render: (audio: AudioData, dimensions: Dimensions) => React.ReactElement<SVGElement> 
-  tick: (dimensions: Dimensions) => void;
-}
-
-export type SpriteRenderer<TState> = (
-  state: TState,
-  audio: AudioData,
-  dimensions: Dimensions
-) => React.ReactElement<SVGElement>;
 
 export type SpriteTicker<TState> = (state: TState, dimensions: Dimensions) => TState;
 

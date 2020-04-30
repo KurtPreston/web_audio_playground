@@ -1,11 +1,12 @@
-import {IWanderer, SpriteTicker, AudioData, Dimensions, Sprite} from '../types';
+import {IWanderer, SpriteTicker, AudioData, Dimensions} from '../types';
 import {scale} from '../util/scale';
 import React from 'react';
 import {randomColor} from '../util/color';
 import {sample, random} from 'lodash';
 import {randomWalkFactory, JitterType} from '../frameTickers/randomWalk';
+import { Sprite } from './Sprite';
 
-export class Circle implements Sprite {
+export class Circle extends Sprite {
   private state: IWanderer;
   private readonly minSize = 15;
   private readonly maxSize = 60;
@@ -20,6 +21,7 @@ export class Circle implements Sprite {
   });
 
   constructor(dimensions: Dimensions) {
+    super();
     const {height} = dimensions;
 
     this.state = {
@@ -43,7 +45,9 @@ export class Circle implements Sprite {
       logarithmic: true
     });
 
-    return <circle className='instrument' cx={x} cy={y} r={size} style={this.style} />;
+    return (
+      <circle key={this.id} className='instrument' cx={x} cy={y} r={size} style={this.style} />
+    );
   }
 
   public tick(dimensions: Dimensions) {
