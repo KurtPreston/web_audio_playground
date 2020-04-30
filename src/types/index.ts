@@ -23,5 +23,6 @@ export interface AudioData {
   frequencies: Uint8Array;
   wave: Uint8Array;
   amplitude: number; // 0 - 1
+  hzPerIdx: number;
   notes: NoteInfo[];
 }

@@ -5,6 +5,8 @@ import {scale} from '../util/scale';
 import {times} from 'lodash';
 
 import './Spectrogram.scss';
+import { getNoteName, Note } from '../util/Note';
+import { midiNoteToFreq } from '../util/midi';
 
 export class Spectrogram extends Sprite {
   public tick() {}
@@ -37,6 +39,30 @@ export class Spectrogram extends Sprite {
       return <line key={idx} x1={x} y1={height} x2={x} y2={y} />;
     });
 
-    return <g className='spectrogram' key={this.id}>{lines}</g>;
+    const notes = times(128, (note: Note) => {
+      const name = getNoteName(note);
+      const freq = midiNoteToFreq(note);
+      const x = scale({
+        input: freq,
+        inputMin: 0,
+        inputMax: audio.hzPerIdx * frequencies.length,
+        outputMin: 0,
+        outputMax: width,
+        logarithmic: true
+      });
+
+      return (
+        <text x={x} y={height - 10}>
+          {name}
+        </text>
+      )
+    });
+
+    return (
+      <g className='spectrogram' key={this.id}>
+        {lines}
+        {notes}
+      </g>
+    );
   }
 }

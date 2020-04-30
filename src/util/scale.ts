@@ -22,7 +22,7 @@ export function scale(props: ScaleProps): number {
   const outputRange = outputMax - outputMin;
   const amount = (input - inputMin) / inputRange; // 0 - 1
   if(logarithmic) {
-    return outputMin + Math.log10(amount * 9 + 1) * outputRange;
+    return outputMin + Math.log2(amount + 1) * outputRange;
   } else {
     return outputMin + amount * outputRange;
   }

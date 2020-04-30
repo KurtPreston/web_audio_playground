@@ -12,7 +12,7 @@ export class AudioAnalyser implements AudioData {
   private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
   private readonly _wave: Uint8Array;
-  private readonly hzPerIdx: number;
+  public readonly hzPerIdx: number;
 
   private valuesThisFrame: Partial<AudioData> = {};
 
@@ -130,6 +130,6 @@ export class AudioAnalyser implements AudioData {
     }
 
     const mean = total / (highIdx - lowIdx + 1);
-    return max;
+    return mean;
   }
 }
