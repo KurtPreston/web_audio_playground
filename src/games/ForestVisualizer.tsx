@@ -7,6 +7,7 @@ import {Circle} from '../sprites/Circle';
 import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {Sprite} from '../sprites/Sprite';
+import {Spectrogram} from '../sprites/Sprectrogram';
 
 export interface ForestVisualizerProps {
   dimensions: Dimensions;
@@ -23,12 +24,14 @@ type ActiveSprites = {
   flower: Sprite[];
   circles: Sprite[];
   noteGrid: Sprite[];
-}
+  spectrogram: Sprite[];
+};
 
 interface Options {
   flower: boolean;
   circles: number;
   noteGrid: boolean;
+  spectrogram: boolean;
 }
 
 @autobind
@@ -46,19 +49,21 @@ export class ForestVisualizer extends React.Component<
       paused: false,
       options: {
         flower: false,
-        circles: 20,
-        noteGrid: true
+        circles: 0,
+        noteGrid: false,
+        spectrogram: true
       },
       sprites: {
         flower: [],
         circles: [],
-        noteGrid: []
+        noteGrid: [],
+        spectrogram: []
       }
-    }
+    };
   }
 
   public componentDidUpdate(prevProps: ForestVisualizerProps, prevState: ForestVisualizerState) {
-    if(!isEqual(this.state.options, prevState.options)) {
+    if (!isEqual(this.state.options, prevState.options)) {
       this.updateSprites();
     }
   }
@@ -70,24 +75,30 @@ export class ForestVisualizer extends React.Component<
     const newSprites: ActiveSprites = {
       flower: [],
       circles: [],
-      noteGrid: []
+      noteGrid: [],
+      spectrogram: []
     };
 
-    if(options.flower) {
-      newSprites.flower = sprites.flower.length
-        ? sprites.flower
-        : [new Flower(dimensions)]
+    if (options.flower) {
+      newSprites.flower = sprites.flower.length ? sprites.flower : [new Flower(dimensions)];
     }
 
-    if(options.noteGrid) {
-      newSprites.noteGrid = sprites.noteGrid.length
-        ? sprites.noteGrid
-        : [new NoteGrid()]
+    if (options.noteGrid) {
+      newSprites.noteGrid = sprites.noteGrid.length ? sprites.noteGrid : [new NoteGrid()];
     }
 
-    newSprites.circles = times(options.circles, (circleNum: number): Sprite => {
-      return (sprites.circles || [])[circleNum] || new Circle(dimensions);
-    });
+    if (options.spectrogram) {
+      newSprites.spectrogram = sprites.spectrogram.length
+        ? sprites.spectrogram
+        : [new Spectrogram()];
+    }
+
+    newSprites.circles = times(
+      options.circles,
+      (circleNum: number): Sprite => {
+        return (sprites.circles || [])[circleNum] || new Circle(dimensions);
+      }
+    );
 
     this.setState({
       sprites: newSprites
@@ -108,7 +119,8 @@ export class ForestVisualizer extends React.Component<
           {this.toggleSprite('flower')}
           {this.toggleSprite('circles')}
           {this.toggleSprite('noteGrid')}
-         </div>
+          {this.toggleSprite('spectrogram')}
+        </div>
       </>
     );
   }
@@ -121,19 +133,15 @@ export class ForestVisualizer extends React.Component<
           ...this.state.options,
           [spriteType]: newValue
         }
-      })
+      });
     };
-    if(isBoolean(value)) {
+    if (isBoolean(value)) {
       return (
         <label>
           {spriteType}
-          <input
-            type='checkbox'
-            checked={value}
-            onChange={() => setValue(!value)}
-          />
+          <input type='checkbox' checked={value} onChange={() => setValue(!value)} />
         </label>
-      )
+      );
     } else if (isFinite(value)) {
       return (
         <label>
@@ -147,7 +155,7 @@ export class ForestVisualizer extends React.Component<
             onChange={(e) => setValue(parseInt(e.target.value))}
           />
         </label>
-      )
+      );
     }
   }
 
@@ -163,11 +171,9 @@ export class ForestVisualizer extends React.Component<
 
     return (
       <svg height={height} width={width}>
-        {map(sprites, (s: Sprite[], type: string) => (
-          s.map((sprite: Sprite, idx: number) => (
-            sprite.render(this.audioAnalyser, dimensions)
-          ))
-        ))}
+        {map(sprites, (s: Sprite[], type: string) =>
+          s.map((sprite: Sprite, idx: number) => sprite.render(this.audioAnalyser, dimensions))
+        )}
       </svg>
     );
   }

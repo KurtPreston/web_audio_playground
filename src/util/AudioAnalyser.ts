@@ -20,7 +20,7 @@ export class AudioAnalyser implements AudioData {
     const audioContext: BaseAudioContext = audioSource.context;
     const analyser = audioContext.createAnalyser();
     audioSource.connect(analyser);
-    const fftSize: FftSize = 16384;
+    const fftSize: FftSize = 1024;
     analyser.fftSize = fftSize;
     this.analyser = analyser;
     const bufferLength = analyser.frequencyBinCount;
