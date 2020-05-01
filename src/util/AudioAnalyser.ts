@@ -28,7 +28,7 @@ export class AudioAnalyser implements AudioData {
     // Allocate the memory for the array just once
     this._frequencies = new Uint8Array(bufferLength);
     this._wave = new Uint8Array(bufferLength);
-    this.hzPerIdx = audioContext.sampleRate / (analyser.fftSize * 2);
+    this.hzPerIdx = audioContext.sampleRate / (analyser.frequencyBinCount * 2);
   }
 
   public reset() {
