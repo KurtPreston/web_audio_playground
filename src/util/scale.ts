@@ -11,6 +11,7 @@ export function scale(props: ScaleProps): number {
   const {input, inputMin, inputMax, outputMin, outputMax, logarithmic} = props;
   if(input > inputMax) {
     console.warn('scale() received out-of-bounds input', props);
+    debugger;
     return outputMax;
   }
   if(input < inputMin) {
@@ -19,11 +20,12 @@ export function scale(props: ScaleProps): number {
   }
 
   const inputRange = inputMax - inputMin;
+
+  // Amount is scale 0 - 1
+  const amount = logarithmic
+    ? Math.log2((input - inputMin) / inputRange + 1)
+    : (input - inputMin) / inputRange;
+
   const outputRange = outputMax - outputMin;
-  const amount = (input - inputMin) / inputRange; // 0 - 1
-  if(logarithmic) {
-    return outputMin + Math.log2(amount + 1) * outputRange;
-  } else {
-    return outputMin + amount * outputRange;
-  }
+  return outputMin + amount * outputRange;
 }
