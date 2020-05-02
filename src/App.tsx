@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import './App.scss';
-import {Dimensions} from './types';
 import {ForestVisualizer} from './games/ForestVisualizer';
+import {Dimensions} from './types';
 
 export interface AppState {
   requireClickToStart: boolean;
@@ -16,13 +16,21 @@ export class App extends React.Component<{}, AppState> {
 
   public async componentDidMount() {
     window.addEventListener('resize', this.setDimensions);
-    if(navigator.mediaDevices) {
-      this.initializeAudio();
-    } else {
+
+    await this.initializeAudio();
+
+    const audioSource = this.state?.audioSource;
+    const audioState = audioSource?.context.state;
+
+    if (!audioSource || audioState === 'suspended') {
       this.setState({
         requireClickToStart: true
       });
     }
+  }
+
+  public componentWillUnmount() {
+    debugger;
   }
 
   public render() {
@@ -34,9 +42,7 @@ export class App extends React.Component<{}, AppState> {
   }
 
   private renderGame() {
-    if (this.state && this.state.dimensions && this.state.audioSource) {
-      return <ForestVisualizer {...this.state} />;
-    } else if (this.state && this.state.requireClickToStart) {
+    if (this.state?.requireClickToStart) {
       return (
         <button className='start-btn' onClick={this.initializeAudio}>
           Enable micro&shy;phone
@@ -44,6 +50,8 @@ export class App extends React.Component<{}, AppState> {
           and click to start
         </button>
       );
+    } else if (this.state?.dimensions && this.state?.audioSource?.context.state === 'running') {
+      return <ForestVisualizer {...this.state} />;
     } else {
       // Waiting for audio to load
       return null;
@@ -68,7 +76,23 @@ export class App extends React.Component<{}, AppState> {
   }
 
   private async initializeAudio() {
-    // Clear callback
+    // If audio was suspended from lack of user gesture, resume
+    // if(this.state?.audioSource?.context.state === 'suspended') {
+    //   const context: AudioContext = this.state.audioSource.context as AudioContext;
+    //   console.log('Resuming');
+    //   context.resume();
+    //   this.setState({
+    //     requireClickToStart: false
+    //   });
+    //   return;
+    // }
+
+    if (!navigator.mediaDevices) {
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
 
     // Get audio
     const audioContext = new AudioContext();
@@ -89,7 +113,6 @@ export class App extends React.Component<{}, AppState> {
     });
     const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
 
-
     // Split audio into L/R channels
     // const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
     //   audio: {
@@ -104,7 +127,8 @@ export class App extends React.Component<{}, AppState> {
     // splitter.connect(rAnalyser, 1, 0);
 
     this.setState({
-      audioSource
+      audioSource,
+      requireClickToStart: false
     });
 
     // Play mic audio
