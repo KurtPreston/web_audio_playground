@@ -2,8 +2,8 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
-import {Fireball} from './games/Fireball';
 import {ForestVisualizer} from './games/ForestVisualizer';
+import {Hadouken} from './games/Hadouken';
 import {Dimensions} from './types';
 
 export interface AppState {
@@ -63,7 +63,7 @@ export class App extends React.Component<{}, AppState> {
                 <Link to='/demo'>Demo</Link>
               </li>
               <li>
-                <Link to='/fireball'>Fireball</Link>
+                <Link to='/hadouken'>Hadouken</Link>
               </li>
             </ul>
           </nav>
@@ -74,8 +74,8 @@ export class App extends React.Component<{}, AppState> {
             <Route path='/demo'>
               <ForestVisualizer {...this.state} />
             </Route>
-            <Route path='/fireball'>
-              <Fireball {...this.state} />
+            <Route path='/hadouken'>
+              <Hadouken {...this.state} />
             </Route>
           </Switch>
         </div>

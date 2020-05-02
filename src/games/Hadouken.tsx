@@ -5,21 +5,21 @@ import {Sprite} from '../sprites/Sprite';
 import {Dimensions, WorldState} from '../types';
 import {AudioAnalyser} from '../util/AudioAnalyser';
 
-export interface FireballProps {
+export interface HadoukenProps {
   dimensions: Dimensions;
   audioSource: AudioNode;
 }
 
-export interface FireballState {}
+export interface HadoukenState {}
 
 @autobind
-export class Fireball extends React.Component<FireballProps, FireballState> {
+export class Hadouken extends React.Component<HadoukenProps, HadoukenState> {
   private readonly player: Ryu;
   private readonly sprites: Sprite[];
   private readonly audioAnalyser: AudioAnalyser;
   private gameLoop: NodeJS.Timeout | undefined;
 
-  constructor(props: FireballProps) {
+  constructor(props: HadoukenProps) {
     super(props);
     this.audioAnalyser = new AudioAnalyser(props.audioSource);
     this.player = new Ryu(props);
