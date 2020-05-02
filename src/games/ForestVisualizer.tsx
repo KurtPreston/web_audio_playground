@@ -1,21 +1,14 @@
 import {autobind} from 'core-decorators';
-import {each, isBoolean, isEqual, map, times, without} from 'lodash';
+import {flatten, isBoolean, isEqual, times, values, without} from 'lodash';
 import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions, WorldState} from '../types';
-import {AudioAnalyser} from '../util/AudioAnalyser';
-
-export interface ForestVisualizerProps {
-  dimensions: Dimensions;
-  audioSource: AudioNode;
-}
+import {Game, GameProps} from './Game';
 
 export interface ForestVisualizerState {
-  paused: boolean;
   options: Options;
   sprites: ActiveSprites;
 }
@@ -35,37 +28,30 @@ interface Options {
 }
 
 @autobind
-export class ForestVisualizer extends React.Component<
-  ForestVisualizerProps,
-  ForestVisualizerState
-> {
-  private gameLoop: NodeJS.Timeout | undefined;
-  private audioAnalyser: AudioAnalyser;
+export class ForestVisualizer extends Game<ForestVisualizerState> {
+  public state: ForestVisualizerState = {
+    options: {
+      flower: false,
+      circles: 0,
+      noteGrid: false,
+      spectrogram: true
+    },
+    sprites: {
+      flower: [],
+      circles: [],
+      noteGrid: [],
+      spectrogram: []
+    }
+  };
 
-  constructor(props: ForestVisualizerProps) {
-    super(props);
-    this.audioAnalyser = new AudioAnalyser(props.audioSource);
-    this.state = {
-      paused: false,
-      options: {
-        flower: false,
-        circles: 0,
-        noteGrid: false,
-        spectrogram: true
-      },
-      sprites: {
-        flower: [],
-        circles: [],
-        noteGrid: [],
-        spectrogram: []
-      }
-    };
-  }
-
-  public componentDidUpdate(prevProps: ForestVisualizerProps, prevState: ForestVisualizerState) {
+  public componentDidUpdate(prevProps: GameProps, prevState: ForestVisualizerState) {
     if (!isEqual(this.state.options, prevState.options)) {
       this.updateSprites();
     }
+  }
+
+  protected sprites(): Sprite[] {
+    return flatten(values(this.state.sprites));
   }
 
   private updateSprites() {
@@ -132,21 +118,17 @@ export class ForestVisualizer extends React.Component<
 
   public componentDidMount() {
     this.updateSprites();
-    this.runGame();
+    super.componentDidMount();
   }
 
-  public render() {
+  public menu() {
     return (
-      <>
-        {this.renderSvg()}
-        <div className='controls'>
-          {this.renderPauseBtn()}
-          {this.toggleSprite('flower')}
-          {this.toggleSprite('circles')}
-          {this.toggleSprite('noteGrid')}
-          {this.toggleSprite('spectrogram')}
-        </div>
-      </>
+      <div>
+        {this.toggleSprite('flower')}
+        {this.toggleSprite('circles')}
+        {this.toggleSprite('noteGrid')}
+        {this.toggleSprite('spectrogram')}
+      </div>
     );
   }
 
@@ -182,78 +164,5 @@ export class ForestVisualizer extends React.Component<
         </label>
       );
     }
-  }
-
-  // Render
-  private renderSvg() {
-    if (!this.state) {
-      return null;
-    }
-
-    const {sprites} = this.state;
-    const {dimensions} = this.props;
-    const {width, height} = dimensions;
-
-    const world: WorldState = this.world();
-
-    return (
-      <svg height={height} width={width}>
-        {map(sprites, (s: Sprite[], type: string) =>
-          s.map((sprite: Sprite, idx: number) => sprite.render(world))
-        )}
-      </svg>
-    );
-  }
-
-  private world(): WorldState {
-    return {
-      dimensions: this.props.dimensions,
-      audio: this.audioAnalyser
-    };
-  }
-
-  private renderPauseBtn() {
-    const paused = this.state && this.state.paused;
-    if (paused) {
-      return <button onClick={this.runGame}>Start</button>;
-    } else {
-      return <button onClick={this.pauseGame}>Pause</button>;
-    }
-  }
-
-  // State + control
-  private runGame() {
-    this.setState(
-      {
-        paused: false
-      },
-      () => {
-        this.gameLoop = setInterval(this.tick, 25);
-      }
-    );
-  }
-
-  private pauseGame() {
-    if (this.gameLoop) {
-      clearInterval(this.gameLoop);
-      this.gameLoop = undefined;
-    }
-    this.setState({
-      paused: true
-    });
-  }
-
-  private tick() {
-    const {sprites} = this.state;
-
-    this.audioAnalyser.reset();
-
-    const world: WorldState = this.world();
-
-    each(sprites, (spriteInstances: Sprite[]) => {
-      spriteInstances.forEach((sprite) => sprite.tick(world));
-    });
-
-    this.forceUpdate();
   }
 }
