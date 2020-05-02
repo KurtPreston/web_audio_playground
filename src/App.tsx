@@ -57,17 +57,6 @@ export class App extends React.Component<{}, AppState> {
     return (
       <Router>
         <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to='/demo'>Demo</Link>
-              </li>
-              <li>
-                <Link to='/hadouken'>Hadouken</Link>
-              </li>
-            </ul>
-          </nav>
-
           {/* A <Switch> looks through its children <Route>s and
           renders the first one that matches the current URL. */}
           <Switch>
@@ -77,9 +66,25 @@ export class App extends React.Component<{}, AppState> {
             <Route path='/hadouken'>
               <Hadouken {...this.state} />
             </Route>
+            <Route path='/'>{this.nav()}</Route>
           </Switch>
         </div>
       </Router>
+    );
+  }
+
+  private nav() {
+    return (
+      <nav>
+        <ul>
+          <li>
+            <Link to='/demo'>Demo</Link>
+          </li>
+          <li>
+            <Link to='/hadouken'>Hadouken</Link>
+          </li>
+        </ul>
+      </nav>
     );
   }
 
