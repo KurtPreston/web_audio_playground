@@ -1,4 +1,5 @@
 import React from 'react';
+import tinycolor from 'tinycolor2';
 import {Dimensions, WorldState} from '../types';
 import {scale} from '../util/scale';
 import {FireballSpriteParams} from './Fireball';
@@ -19,10 +20,18 @@ interface RyuState {
 }
 
 export class Ryu extends Sprite {
-  private readonly rippleRatio: number = 0.9;
-  private readonly chargeMinLaunchSize: number = 40;
+  // Display params
+  private readonly rippleRatio: number = 1.5;
+
+  // Charing params
+  private readonly chargeMinLaunchSize: number = 50;
   private readonly chargeMinSize: number = 5;
-  private readonly chargeMaxSize: number = 200;
+  private readonly chargeMaxSize: number = 150;
+  private readonly shrinkRate = 2;
+  private readonly growthRate = 2.5;
+  private readonly amplitudeThreshold = 0.1;
+
+  // State
   private readonly launchFireball: (params: FireballSpriteParams) => void;
   private state: RyuState;
 
@@ -62,10 +71,7 @@ export class Ryu extends Sprite {
   }
 
   public tick(world: WorldState) {
-    const shrinkRate = 3;
-    const growthRate = 5;
-    const amplitudeThreshold = 0.1;
-    const soundAmplitude = world.audio.amplitude - amplitudeThreshold;
+    const soundAmplitude = world.audio.amplitude - this.amplitudeThreshold;
 
     const amplitudeDelta = soundAmplitude - this.state.lastAmplitude;
 
@@ -76,14 +82,14 @@ export class Ryu extends Sprite {
             inputMin: 0,
             inputMax: 1,
             outputMin: 0,
-            outputMax: growthRate,
+            outputMax: this.growthRate,
             expectOutOfBounds: true
           })
         : scale({
             input: amplitudeDelta,
-            inputMin: -1 * amplitudeThreshold,
+            inputMin: -1 * this.amplitudeThreshold,
             inputMax: 0,
-            outputMin: -1 * shrinkRate,
+            outputMin: -1 * this.shrinkRate,
             outputMax: 0,
             expectOutOfBounds: true
           });
@@ -101,7 +107,7 @@ export class Ryu extends Sprite {
           inputMin: this.chargeMinSize,
           inputMax: this.chargeMaxSize,
           outputMin: 7,
-          outputMax: 35
+          outputMax: 50
         }),
         minSize: chargeSize - rippleSize,
         maxSize: chargeSize + rippleSize,
@@ -126,8 +132,34 @@ export class Ryu extends Sprite {
   }
 
   private fireballStyle(chargeSize: number): React.CSSProperties {
-    return {
-      fill: chargeSize >= this.chargeMinLaunchSize ? 'red' : 'black'
-    };
+    if (chargeSize < this.chargeMinLaunchSize) {
+      const blend = scale({
+        input: chargeSize,
+        inputMin: this.chargeMinSize,
+        inputMax: this.chargeMinLaunchSize,
+        outputMin: 0,
+        outputMax: 100,
+        expectOutOfBounds: true
+      });
+      return {
+        fill: tinycolor.mix('#000', '#00a', blend).toHexString(),
+        stroke: 'white',
+        strokeWidth: '1px'
+      };
+    } else {
+      const blend = scale({
+        input: chargeSize,
+        inputMin: this.chargeMinLaunchSize,
+        inputMax: this.chargeMaxSize,
+        outputMin: 0,
+        outputMax: 100,
+        expectOutOfBounds: true
+      });
+      return {
+        fill: tinycolor.mix('#00f', '#f00', blend).toHexString(),
+        stroke: tinycolor.mix('#f00', '#000', blend).toHexString(),
+        strokeWidth: blend / 10
+      };
+    }
   }
 }
