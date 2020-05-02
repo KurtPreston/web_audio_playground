@@ -12,9 +12,9 @@ export class NoteGrid extends Sprite {
 
   public render(audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> {
     const {width, height} = dimensions;
-    const lowOctave = 2;
-    const highOctave = 7;
-    const notes: Note[] = range(lowOctave * 12, (highOctave + 2) * 12);
+    const lowOctave = 3;
+    const highOctave = 8;
+    const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 3) * 12);
 
     const colWidth = width / 12;
     const rowHeight = height / (highOctave - lowOctave + 1);
