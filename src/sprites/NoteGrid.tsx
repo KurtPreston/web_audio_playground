@@ -6,6 +6,7 @@ import {getNoteFrequencyRange, getNoteName, Note, NoteInfo} from '../util/Note';
 
 import './NoteGrid.scss';
 import {Sprite} from './Sprite';
+import { midiNoteToFreq } from '../util/midi';
 
 export class NoteGrid extends Sprite {
   public tick() {}
@@ -35,7 +36,7 @@ export class NoteGrid extends Sprite {
           };
 
       const noteName = getNoteName(note);
-      const [lowFreq, highFreq] = getNoteFrequencyRange(note);
+      const freq = Math.round(midiNoteToFreq(note));
 
       const cx = x + colWidth / 2;
       const cy = y + rowHeight / 2;
@@ -52,7 +53,7 @@ export class NoteGrid extends Sprite {
             {noteName}
           </text>
           <text x={cx} y={cy + 10}>
-            {Math.round(lowFreq)}—{Math.round(highFreq)}
+            {freq}
           </text>
         </g>
       );
