@@ -12,7 +12,7 @@ export interface RandomWalkProps {
 const jitterers: {[jitterType in JitterType]: (angle: number, jitter: number) => number} = {
   leanLeft: (angle, jitter) => angle - Math.random() * jitter,
   leanRight: (angle, jitter) => angle + Math.random() * jitter,
-  random: (angle, jitter) => angle + Math.random() * jitter
+  random: (angle, jitter) => angle + (Math.random() - 0.5) * jitter
 };
 
 export function randomWalkFactory(props: RandomWalkProps): SpriteTicker<IWanderer> {

@@ -100,7 +100,7 @@ export class ForestVisualizer extends React.Component<
           (sprites.circles || [])[circleNum] ||
           new Circle({
             dimensions,
-            bounceOffEdge: false,
+            bounceOffEdge: true,
             destroy: this.destroySprite('circles')
           })
         );
