@@ -14,15 +14,17 @@ interface RyuState {
   x: number;
   y: number;
   chargeSize: number | null;
+  maxChargeSize: number;
   lastAmplitude: number;
 }
 
 export class Ryu extends Sprite {
+  private readonly rippleRatio: number = 0.9;
+  private readonly chargeMinLaunchSize: number = 40;
   private readonly chargeMinSize: number = 5;
   private readonly chargeMaxSize: number = 200;
   private readonly launchFireball: (params: FireballSpriteParams) => void;
   private state: RyuState;
-  private maxChargeSize: number = 0;
 
   constructor(params: RyuProps) {
     super();
@@ -32,6 +34,7 @@ export class Ryu extends Sprite {
       x: params.dimensions.width / 2,
       y: params.dimensions.height - 50,
       chargeSize: null,
+      maxChargeSize: 0,
       lastAmplitude: 0
     };
   }
@@ -40,7 +43,7 @@ export class Ryu extends Sprite {
     const {x, y, chargeSize} = this.state;
 
     if (chargeSize) {
-      const rippleSize = 0.9 * chargeSize;
+      const rippleSize = this.rippleRatio * chargeSize;
       return circularPath({
         cx: x,
         cy: y,
@@ -83,20 +86,22 @@ export class Ryu extends Sprite {
           });
 
     const unboundedCargeSize = this.state.chargeSize ? this.state.chargeSize + growth : growth;
-    const chargeSize = Math.max(
-      Math.min(unboundedCargeSize, this.chargeMaxSize),
-      this.chargeMinSize
-    );
+    let chargeSize = Math.max(Math.min(unboundedCargeSize, this.chargeMaxSize), this.chargeMinSize);
 
-    if (chargeSize > this.maxChargeSize) {
-      this.maxChargeSize = chargeSize;
-    }
+    let maxChargeSize = Math.max(this.state.maxChargeSize, chargeSize);
 
-    if (chargeSize < 0.8 * this.maxChargeSize) {
+    if (chargeSize < 0.99 * maxChargeSize && chargeSize > this.chargeMinLaunchSize) {
+      const rippleSize = this.rippleRatio * chargeSize;
       this.launchFireball({
-        velocity: 10,
-        minSize: this.chargeMinSize,
-        maxSize: this.chargeMaxSize,
+        velocity: scale({
+          input: chargeSize,
+          inputMin: this.chargeMinSize,
+          inputMax: this.chargeMaxSize,
+          outputMin: 7,
+          outputMax: 35
+        }),
+        minSize: chargeSize - rippleSize,
+        maxSize: chargeSize + rippleSize,
         wave: world.audio.uintWave,
         state: {
           x: this.state.x,
@@ -104,13 +109,14 @@ export class Ryu extends Sprite {
           angle: (3 * Math.PI) / 2 // Facing up
         }
       });
-      this.maxChargeSize = 0;
-      this.state.chargeSize = 0;
+      maxChargeSize = 0;
+      chargeSize = 0;
     }
 
     this.state = {
       ...this.state,
       lastAmplitude: soundAmplitude,
+      maxChargeSize,
       chargeSize
     };
   }
