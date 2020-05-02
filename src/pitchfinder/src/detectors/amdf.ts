@@ -16,9 +16,9 @@ const DEFAULT_AMDF_PARAMS: AMDFParams = {
   sensitivity: 0.1,
 };
 
-export function AMDF(partialConfig: Partial<AMDFParams> = {}): Detector {
+export function AMDF(params: Partial<AMDFParams> = {}): Detector {
   const config: AMDFParams = {
-    ...partialConfig,
+    ...params,
     ...DEFAULT_AMDF_PARAMS
   };
   const sampleRate = config.sampleRate;

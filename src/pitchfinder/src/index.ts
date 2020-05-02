@@ -1,11 +1,4 @@
-// const AMDF = require("./detectors/amdf");
-// const YIN = require("./detectors/yin");
-// const DynamicWavelet = require("./detectors/dynamic_wavelet");
-// const Macleod = require("./detectors/macleod");
-// const ACF2PLUS = require("./detectors/acf2plus");
-
-// const frequencies = require("./tools/frequencies");
-
+import {YIN} from './detectors/yin';
 import {AMDF} from './detectors/amdf';
 import {acf2plus} from './detectors/acf2plus';
 
@@ -20,5 +13,6 @@ import {acf2plus} from './detectors/acf2plus';
 
 export const Pitchfinder = {
   acf2plus,
-  AMDF
+  AMDF,
+  YIN
 };

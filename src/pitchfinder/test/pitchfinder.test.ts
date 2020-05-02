@@ -33,7 +33,7 @@ describe('Pitchfinder', () => {
   const detectors: {[name: string]: Detector} = {
     AMDF: Pitchfinder.AMDF(),
     // DynamicWavelet: Pitchfinder.DynamicWavelet(),
-    // YIN: Pitchfinder.YIN(),
+    YIN: Pitchfinder.YIN(),
     // Macleod: Pitchfinder.Macleod(),
     ACF2PLUS: Pitchfinder.acf2plus()
   };
