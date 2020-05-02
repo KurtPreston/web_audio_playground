@@ -8,8 +8,12 @@ const DEFAULT_PARAMS: ACF2Params = {
   sampleRate: 44100
 };
 
-export function acf2plus(config: ACF2Params = DEFAULT_PARAMS): Detector {
-  const sampleRate = config.sampleRate || DEFAULT_SAMPLE_RATE;
+export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): Detector {
+  const config = {
+    ...DEFAULT_PARAMS,
+    ...params
+  };
+  const {sampleRate} = config;
 
   // Implements the ACF2+ algorithm
   return function ACF2PLUSDetector(float32AudioBuffer: Float32Array): number {

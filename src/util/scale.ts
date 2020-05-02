@@ -16,6 +16,7 @@ export function scale(props: ScaleProps): number {
   }
   if(input < inputMin) {
     console.warn('scale() received out-of-bounds input', props);
+    debugger;
     return outputMin;
   }
 

@@ -118,7 +118,7 @@ export function Macleod(params: Partial<MacleodConfig> = {}): Detector {
    * Finds the x value corresponding with the peak of a parabola.
    * Interpolates between three consecutive points centered on tau.
    */
-  const parabolicInterpolation = function(tau) {
+  const parabolicInterpolation = function(tau: number) {
     const nsdfa = nsdf[tau - 1],
       nsdfb = nsdf[tau],
       nsdfc = nsdf[tau + 1],
@@ -150,13 +150,13 @@ export function Macleod(params: Partial<MacleodConfig> = {}): Detector {
     }
 
     // can happen if output[0] is NAN
-    if (pos == 0) {
+    if (pos === 0) {
       pos = 1;
     }
 
     while (pos < nsdf.length - 1) {
       if (nsdf[pos] > nsdf[pos - 1] && nsdf[pos] >= nsdf[pos + 1]) {
-        if (curMaxPos == 0) {
+        if (curMaxPos === 0) {
           // the first max (between zero crossings)
           curMaxPos = pos;
         } else if (nsdf[pos] > nsdf[curMaxPos]) {

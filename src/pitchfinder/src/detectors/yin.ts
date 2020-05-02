@@ -39,8 +39,8 @@ const DEFAULT_YIN_PARAMS = {
 
 export function YIN(params: Partial<YinParams> = {}): Detector {
   const config: YinParams = {
-    ...params,
-    ...DEFAULT_YIN_PARAMS
+    ...DEFAULT_YIN_PARAMS,
+    ...params
   };
   const {threshold, sampleRate, probabilityThreshold} = config;
 
@@ -106,7 +106,7 @@ export function YIN(params: Partial<YinParams> = {}): Detector {
     }
 
     // if no pitch found, return null.
-    if (tau == yinBufferLength || yinBuffer[tau] >= threshold) {
+    if (tau === yinBufferLength || yinBuffer[tau] >= threshold) {
       return null;
     }
 

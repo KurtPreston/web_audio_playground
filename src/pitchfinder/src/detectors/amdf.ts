@@ -18,8 +18,8 @@ const DEFAULT_AMDF_PARAMS: AMDFParams = {
 
 export function AMDF(params: Partial<AMDFParams> = {}): Detector {
   const config: AMDFParams = {
-    ...params,
-    ...DEFAULT_AMDF_PARAMS
+    ...DEFAULT_AMDF_PARAMS,
+    ...params
   };
   const sampleRate = config.sampleRate;
   const minFrequency = config.minFrequency;

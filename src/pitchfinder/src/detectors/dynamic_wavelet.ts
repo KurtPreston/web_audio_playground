@@ -15,8 +15,8 @@ const DEFAULT_DYNAMIC_WAVELET_CONFIG: DynamicWaveletConfig = {
 
 export function DynamicWavelet(params: Partial<DynamicWaveletConfig> = {}): Detector {
   const config: DynamicWaveletConfig = {
-    ...params,
-    ...DEFAULT_DYNAMIC_WAVELET_CONFIG
+    ...DEFAULT_DYNAMIC_WAVELET_CONFIG,
+    ...params
   };
   const {sampleRate} = config;
 

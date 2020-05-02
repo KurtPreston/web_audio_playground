@@ -58,7 +58,7 @@ export class Spectrogram extends Sprite {
       });
 
       return (
-        <text x={x} y={height - 10}>
+        <text key={note} x={x} y={height - 10}>
           {name}
         </text>
       )

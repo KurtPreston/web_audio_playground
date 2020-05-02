@@ -3,5 +3,5 @@ export function midiNoteToFreq(midiNote: number): number {
 }
 
 export function freqToMidiNote(freq: number): number {
-  return 12 * Math.log2(freq / 440) + 69;
+  return Math.round(12 * Math.log2(freq / 440) + 69);
 }

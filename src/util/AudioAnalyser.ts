@@ -1,8 +1,9 @@
 import {AudioData} from '../types';
-import {midiNoteToFreq} from './midi';
-import {getNoteInfo, NoteInfo, getNoteFrequencyRange, Note} from './Note';
+import {freqToMidiNote} from './midi';
+import {getNoteInfo, NoteInfo, getNoteFrequencyRange} from './Note';
 import {scale} from './scale';
-import {times} from 'lodash';
+import { Pitchfinder } from '../pitchfinder/src';
+import { Detector } from '../pitchfinder/src/detectors/types';
 
 // Modifies AudioData rather than returning a new one
 
@@ -11,8 +12,9 @@ export type FftSize = 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16
 export class AudioAnalyser implements AudioData {
   private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
-  private readonly _wave: Uint8Array;
+  private readonly _wave: Float32Array;
   public readonly hzPerIdx: number;
+  private readonly pitchDetector: Detector;
 
   private valuesThisFrame: Partial<AudioData> = {};
 
@@ -25,9 +27,13 @@ export class AudioAnalyser implements AudioData {
     this.analyser = analyser;
     const bufferLength = analyser.frequencyBinCount;
 
+    this.pitchDetector = Pitchfinder.DynamicWavelet({
+      sampleRate: audioSource.context.sampleRate
+    });
+
     // Allocate the memory for the array just once
     this._frequencies = new Uint8Array(bufferLength);
-    this._wave = new Uint8Array(bufferLength);
+    this._wave = new Float32Array(bufferLength);
     this.hzPerIdx = audioContext.sampleRate / (analyser.frequencyBinCount * 2);
   }
 
@@ -44,9 +50,9 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.frequencies;
   }
 
-  public get wave(): Uint8Array {
+  public get wave(): Float32Array {
     if (!this.valuesThisFrame.wave) {
-      this.analyser.getByteTimeDomainData(this._wave);
+      this.analyser.getFloatTimeDomainData(this._wave);
       this.valuesThisFrame.wave = this._wave;
     }
 
@@ -83,21 +89,13 @@ export class AudioAnalyser implements AudioData {
 
   public get notes(): NoteInfo[] {
     if (!this.valuesThisFrame.notes) {
-      const activeNotes: Note[] = [];
-      times(128, (note: Note) => {
-        const [lowFreq, highFreq] = getNoteFrequencyRange(note);
-        const avg = this.avgAmplitudeInFreqRange(lowFreq, highFreq);
-        const octaveAvg = this.avgAmplitudeInFreqRange(
-          midiNoteToFreq(note - 6),
-          midiNoteToFreq(note + 6)
-        );
-
-        if(avg > octaveAvg * 6 && avg > 30) {
-          activeNotes.push(note);
-        }
-      });
-
-      this.valuesThisFrame.notes = activeNotes.map((note) => getNoteInfo(note));
+      const freq = this.pitchDetector(this.wave);
+      if(freq) {
+        const note = freqToMidiNote(freq);
+        this.valuesThisFrame.notes = [note].map((note) => getNoteInfo(note));
+      } else {
+        this.valuesThisFrame.notes = [];
+      }
     }
 
     return this.valuesThisFrame.notes;
