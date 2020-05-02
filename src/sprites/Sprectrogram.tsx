@@ -6,25 +6,29 @@ import {times} from 'lodash';
 
 import './Spectrogram.scss';
 import { getNoteName, Note } from '../util/Note';
-import { midiNoteToFreq } from '../util/midi';
+import { freqToMidiNote } from '../util/midi';
 
 export class Spectrogram extends Sprite {
   public tick() {}
 
   public render(audio: AudioData, dimensions: Dimensions) {
     const {width, height} = dimensions;
-    const {frequencies} = audio;
+    const {hzPerIdx, frequencies} = audio;
+
+    const maxFreq = (frequencies.length - 1) * hzPerIdx;
+    const maxNote = Math.floor(freqToMidiNote(maxFreq));
 
     const lines = times(frequencies.length, (idx: number) => {
       const amplitude = frequencies[idx];
 
+      const freq = (idx + 0.5) * hzPerIdx;
+      const midiNote = freqToMidiNote(freq);
       const x = scale({
-        input: idx,
+        input: midiNote,
         inputMin: 0,
-        inputMax: frequencies.length,
+        inputMax: maxNote,
         outputMin: 0,
-        outputMax: width,
-        logarithmic: true
+        outputMax: width
       });
 
       const y = scale({
@@ -39,16 +43,18 @@ export class Spectrogram extends Sprite {
       return <line key={idx} x1={x} y1={height} x2={x} y2={y} />;
     });
 
-    const notes = times(128, (note: Note) => {
+    const notes = times(maxNote, (note: Note) => {
+      if(!(note % 12 === 0)) {
+        return null;
+      }
+
       const name = getNoteName(note);
-      const freq = midiNoteToFreq(note);
       const x = scale({
-        input: freq,
+        input: note,
         inputMin: 0,
-        inputMax: audio.hzPerIdx * frequencies.length,
+        inputMax: maxNote,
         outputMin: 0,
-        outputMax: width,
-        logarithmic: true
+        outputMax: width
       });
 
       return (

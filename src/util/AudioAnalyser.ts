@@ -129,7 +129,8 @@ export class AudioAnalyser implements AudioData {
       }
     }
 
-    const mean = total / (highIdx - lowIdx + 1);
-    return mean;
+    // const mean = total / (highIdx - lowIdx + 1);
+    // return mean;
+    return max;
   }
 }
