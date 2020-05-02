@@ -17,14 +17,14 @@ interface CircleState extends IWanderer {
 }
 
 export class Circle extends Sprite {
-  private state: IWanderer;
+  private state: CircleState;
   private readonly minSize = 15;
   private readonly maxSize = 60;
   private readonly style: React.CSSProperties = {
     fill: randomColor(),
     mixBlendMode: 'color-dodge'
   };
-  private readonly ticker: SpriteTicker<IWanderer>;
+  private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
   private readonly destroy: () => boolean;
 
@@ -33,7 +33,7 @@ export class Circle extends Sprite {
     const {dimensions, bounceOffEdge} = params;
     const {height} = dimensions;
 
-    this.ticker = randomWalkFactory({
+    this.walkTicker = randomWalkFactory({
       velocity: random(3, 7),
       jitter: random(0.01, 0.08),
       jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType,
@@ -46,23 +46,13 @@ export class Circle extends Sprite {
       // On left, facing right
       x: 0,
       y: height / 2,
-      angle: 0
+      angle: 0,
+      size: this.minSize
     };
   }
 
   public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {audio} = world;
-    const {x, y} = this.state;
-
-    const amplitude = audio.amplitude;
-    const size = scale({
-      input: amplitude,
-      inputMin: 0,
-      inputMax: 1,
-      outputMin: this.minSize,
-      outputMax: this.maxSize,
-      logarithmic: true
-    });
+    const {x, y, size} = this.state;
 
     return (
       <circle key={this.id} className='instrument' cx={x} cy={y} r={size} style={this.style} />
@@ -70,12 +60,27 @@ export class Circle extends Sprite {
   }
 
   public tick(world: WorldState) {
-    const {dimensions} = world;
-    this.state = this.ticker(this.state, world);
+    const {dimensions, audio} = world;
+    const size = scale({
+      input: audio.amplitude,
+      inputMin: 0,
+      inputMax: 1,
+      outputMin: this.minSize,
+      outputMax: this.maxSize,
+      logarithmic: true
+    });
+    this.state = {
+      ...this.walkTicker(this.state, world),
+      size
+    };
 
     if (!this.bounceOffEdge) {
       const {x, y} = this.state;
-      if (x < 0 || x > dimensions.width || y < 0 || y > dimensions.height) {
+      const offLeftSide = x < -1 * size;
+      const offRightSide = x > dimensions.width + size;
+      const offTop = y < -1 * size;
+      const offBottom = y > dimensions.height + size;
+      if (offLeftSide || offRightSide || offTop || offBottom) {
         this.destroy();
       }
     }
