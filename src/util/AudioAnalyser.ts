@@ -32,16 +32,15 @@ export class AudioAnalyser implements AudioData {
     const fftSize: FftSize = 1024;
     analyser.fftSize = fftSize;
     this.analyser = analyser;
-    const bufferLength = analyser.frequencyBinCount;
 
     this.pitchDetector = Pitchfinder.DynamicWavelet({
       sampleRate: audioSource.context.sampleRate
     });
 
     // Allocate the memory for the array just once
-    this._frequencies = new Uint8Array(bufferLength);
-    this._uint8Wave = new Uint8Array(bufferLength);
-    this._float32Wave = new Float32Array(bufferLength);
+    this._frequencies = new Uint8Array(analyser.frequencyBinCount);
+    this._uint8Wave = new Uint8Array(analyser.fftSize);
+    this._float32Wave = new Float32Array(analyser.fftSize);
     this.hzPerIdx = audioContext.sampleRate / (analyser.frequencyBinCount * 2);
   }
 
