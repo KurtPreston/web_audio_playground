@@ -40,6 +40,23 @@ export class App extends React.Component<{}, AppState> {
   }
 
   private renderGame() {
+    if (this.state?.requireClickToStart) {
+      return (
+        <button className='start-btn' onClick={this.initializeAudio}>
+          Enable micro&shy;phone
+          <br />
+          and click to start
+        </button>
+      );
+    } else if (this.state?.dimensions && this.state?.audioSource?.context.state === 'running') {
+      return this.renderRouter();
+    } else {
+      // Waiting for audio to load
+      return null;
+    }
+  }
+
+  private renderRouter() {
     return (
       <Router>
         <div>
