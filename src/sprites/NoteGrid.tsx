@@ -2,11 +2,11 @@ import classnames from 'classnames';
 import {range} from 'lodash';
 import React from 'react';
 import {AudioData, Dimensions} from '../types';
-import {getNoteName, Note, NoteInfo} from '../util/Note';
 
+import {midiNoteToFreq} from '../util/midi';
+import {getNoteName, Note, NoteInfo} from '../util/Note';
 import './NoteGrid.scss';
 import {Sprite} from './Sprite';
-import { midiNoteToFreq } from '../util/midi';
 
 export class NoteGrid extends Sprite {
   public tick() {}
