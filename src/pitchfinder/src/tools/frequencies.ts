@@ -46,7 +46,7 @@ export const DEFAULT_FREQUENCIES_PARAMS: FrequenciesParams = {
   sampleRate: 44100
 };
 
-export function frequencies(detector: Detector, float32AudioBuffer: Float32Array, options: Partial<FrequenciesParams> = {}) {
+export function frequencies(detector: Detector | Detector[], float32AudioBuffer: Float32Array, options: Partial<FrequenciesParams> = {}) {
   const config = {
     ...DEFAULT_FREQUENCIES_PARAMS,
     ...options
