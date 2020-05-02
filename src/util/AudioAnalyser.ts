@@ -1,8 +1,9 @@
+import {compact, mean} from 'lodash';
 import {Pitchfinder} from '../pitchfinder/src';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types';
 import {freqToMidiNote} from './midi';
-import {getNoteFrequencyRange, getNoteInfo, NoteInfo, Note} from './Note';
+import {getNoteFrequencyRange, getNoteInfo, Note, NoteInfo} from './Note';
 import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
@@ -21,7 +22,7 @@ export class AudioAnalyser implements AudioData {
 
   // State
   private valuesThisFrame: Partial<AudioData> = {};
-  private lastDetectedNotes: Note[][] = new Array(NOTE_FRAMES_TO_AVG);
+  private lastDetectedNotes: (Note | null)[] = new Array<Note | null>(NOTE_FRAMES_TO_AVG);
 
   constructor(audioSource: AudioNode) {
     const audioContext: BaseAudioContext = audioSource.context;
@@ -79,16 +80,19 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.amplitude;
   }
 
-
   public get notes(): NoteInfo[] {
     if (!this.valuesThisFrame.notes) {
       const freq = this.pitchDetector(this.wave);
-      if (freq) {
-        const note = freqToMidiNote(freq);
-        this.valuesThisFrame.notes = [note].map((note) => getNoteInfo(note));
-      } else {
-        this.valuesThisFrame.notes = [];
-      }
+      const note: Note | null = freq ? freqToMidiNote(freq) : null;
+
+      this.lastDetectedNotes.shift();
+      this.lastDetectedNotes.push(note);
+
+      const detectedNotes: Note[] = compact(this.lastDetectedNotes);
+      const avgNote = mean(this.lastDetectedNotes);
+      this.valuesThisFrame.notes = isFinite(avgNote)
+        ? [getNoteInfo(Math.round(mean(detectedNotes)))]
+        : [];
     }
 
     return this.valuesThisFrame.notes;
