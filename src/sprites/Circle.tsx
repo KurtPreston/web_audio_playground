@@ -1,6 +1,6 @@
-import {random, sample} from 'lodash';
+import {random} from 'lodash';
 import React from 'react';
-import {JitterType, randomWalkFactory} from '../frameTickers/randomWalk';
+import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {randomColor} from '../util/color';
 import {scale} from '../util/scale';
@@ -35,8 +35,8 @@ export class Circle extends Sprite {
 
     this.walkTicker = randomWalkFactory({
       velocity: random(3, 7),
-      jitter: random(0.01, 0.08),
-      jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType,
+      jitter: random(0.01, 0.12),
+      lean: random(-0.03, 0.03, true),
       bounceOffEdge
     });
     this.bounceOffEdge = bounceOffEdge;

@@ -30,7 +30,7 @@ export class Fireball extends Sprite {
     this.ticker = randomWalkFactory({
       velocity,
       jitter: random(0.01, 0.08),
-      jitterType: 'random',
+      lean: 0,
       bounceOffEdge: false
     });
 

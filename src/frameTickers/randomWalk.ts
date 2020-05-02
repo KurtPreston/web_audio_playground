@@ -1,23 +1,14 @@
 import {IWanderer, SpriteTicker, WorldState} from '../types';
-
-export type JitterType = 'leanLeft' | 'leanRight' | 'random';
-
 export interface RandomWalkProps {
   velocity: number;
   jitter: number;
-  jitterType: JitterType;
+  lean: number;
   bounceOffEdge: boolean;
 }
 
-const jitterers: {[jitterType in JitterType]: (angle: number, jitter: number) => number} = {
-  leanLeft: (angle, jitter) => angle - Math.random() * jitter,
-  leanRight: (angle, jitter) => angle + Math.random() * jitter,
-  random: (angle, jitter) => angle + (Math.random() - 0.5) * jitter
-};
-
 export function randomWalkFactory(props: RandomWalkProps): SpriteTicker<IWanderer> {
-  const {bounceOffEdge, velocity, jitter, jitterType} = props;
-  const jitterer = jitterers[jitterType];
+  const {bounceOffEdge, jitter, lean, velocity} = props;
+  const jitterer = (angle: number) => angle + lean + (Math.random() - 0.5) * jitter;
 
   const randomWalk: SpriteTicker<IWanderer> = (
     spriteState: IWanderer,
@@ -27,7 +18,7 @@ export function randomWalkFactory(props: RandomWalkProps): SpriteTicker<IWandere
     const {height, width} = worldState.dimensions;
 
     // Calculate new angle
-    let newAngle = jitterer(angle, jitter); // apply jitterer
+    let newAngle = jitterer(angle); // apply jitterer
     newAngle = (2 * Math.PI + newAngle) % (2 * Math.PI); // keep in range 0-2π
 
     if (bounceOffEdge) {

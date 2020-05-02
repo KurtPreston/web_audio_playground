@@ -1,4 +1,4 @@
-import {chunk} from 'lodash';
+import {chunk, random} from 'lodash';
 import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
@@ -15,7 +15,7 @@ export class Flower extends Sprite {
   private readonly ticker: SpriteTicker<IWanderer> = randomWalkFactory({
     velocity: 5,
     jitter: 0.03,
-    jitterType: 'random',
+    lean: random(-1, 1, true),
     bounceOffEdge: true
   });
 
