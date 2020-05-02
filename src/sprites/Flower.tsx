@@ -1,7 +1,7 @@
 import {chunk} from 'lodash';
 import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
-import {AudioData, Dimensions, IWanderer, SpriteTicker} from '../types';
+import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
 
@@ -29,7 +29,8 @@ export class Flower extends Sprite {
     };
   }
 
-  public render(audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> {
+  public render(world: WorldState): React.ReactElement<SVGElement> {
+    const {audio} = world;
     const amplitude = audio.amplitude;
     const size = scale({
       input: amplitude,
@@ -96,7 +97,7 @@ export class Flower extends Sprite {
     return <g key={this.id}>{flowerRings}</g>;
   }
 
-  public tick(dimensions: Dimensions) {
-    this.state = this.ticker(this.state, dimensions);
+  public tick(world: WorldState) {
+    this.state = this.ticker(this.state, world);
   }
 }

@@ -1,6 +1,11 @@
 import {Note, NoteInfo} from '../util/Note';
 
-export type SpriteTicker<TState> = (state: TState, dimensions: Dimensions) => TState;
+export interface WorldState {
+  dimensions: Dimensions;
+  audio: AudioData;
+}
+
+export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;
 
 // Sprite states
 export interface IWanderer {

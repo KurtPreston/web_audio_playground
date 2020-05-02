@@ -6,7 +6,7 @@ import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions} from '../types';
+import {Dimensions, WorldState} from '../types';
 import {AudioAnalyser} from '../util/AudioAnalyser';
 
 export interface ForestVisualizerProps {
@@ -194,13 +194,22 @@ export class ForestVisualizer extends React.Component<
     const {dimensions} = this.props;
     const {width, height} = dimensions;
 
+    const world: WorldState = this.world();
+
     return (
       <svg height={height} width={width}>
         {map(sprites, (s: Sprite[], type: string) =>
-          s.map((sprite: Sprite, idx: number) => sprite.render(this.audioAnalyser, dimensions))
+          s.map((sprite: Sprite, idx: number) => sprite.render(world))
         )}
       </svg>
     );
+  }
+
+  private world(): WorldState {
+    return {
+      dimensions: this.props.dimensions,
+      audio: this.audioAnalyser
+    };
   }
 
   private renderPauseBtn() {
@@ -235,13 +244,14 @@ export class ForestVisualizer extends React.Component<
   }
 
   private tick() {
-    const {dimensions} = this.props;
     const {sprites} = this.state;
 
     this.audioAnalyser.reset();
 
+    const world: WorldState = this.world();
+
     each(sprites, (spriteInstances: Sprite[]) => {
-      spriteInstances.forEach((sprite) => sprite.tick(dimensions));
+      spriteInstances.forEach((sprite) => sprite.tick(world));
     });
 
     this.forceUpdate();

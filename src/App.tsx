@@ -29,10 +29,6 @@ export class App extends React.Component<{}, AppState> {
     }
   }
 
-  public componentWillUnmount() {
-    debugger;
-  }
-
   public render() {
     return (
       <div className='App'>

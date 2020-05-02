@@ -1,9 +1,9 @@
 import {times} from 'lodash';
 import React from 'react';
-import {AudioData, Dimensions} from '../types';
 import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
 
+import {WorldState} from '../types';
 import {freqToMidiNote} from '../util/midi';
 import {getNoteName, Note} from '../util/Note';
 import './Spectrogram.scss';
@@ -11,7 +11,8 @@ import './Spectrogram.scss';
 export class Spectrogram extends Sprite {
   public tick() {}
 
-  public render(audio: AudioData, dimensions: Dimensions) {
+  public render(world: WorldState) {
+    const {audio, dimensions} = world;
     const {width, height} = dimensions;
     const {hzPerIdx, frequencies} = audio;
 

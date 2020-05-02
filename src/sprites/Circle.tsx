@@ -1,7 +1,7 @@
 import {random, sample} from 'lodash';
 import React from 'react';
 import {JitterType, randomWalkFactory} from '../frameTickers/randomWalk';
-import {AudioData, Dimensions, IWanderer, SpriteTicker} from '../types';
+import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {randomColor} from '../util/color';
 import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
@@ -10,6 +10,10 @@ export interface CircleParams {
   dimensions: Dimensions;
   bounceOffEdge: boolean;
   destroy: (sprite: Sprite) => boolean;
+}
+
+interface CircleState extends IWanderer {
+  size: number;
 }
 
 export class Circle extends Sprite {
@@ -46,7 +50,8 @@ export class Circle extends Sprite {
     };
   }
 
-  public render(audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> {
+  public render(world: WorldState): React.ReactElement<SVGElement> {
+    const {audio} = world;
     const {x, y} = this.state;
 
     const amplitude = audio.amplitude;
@@ -64,8 +69,9 @@ export class Circle extends Sprite {
     );
   }
 
-  public tick(dimensions: Dimensions) {
-    this.state = this.ticker(this.state, dimensions);
+  public tick(world: WorldState) {
+    const {dimensions} = world;
+    this.state = this.ticker(this.state, world);
 
     if (!this.bounceOffEdge) {
       const {x, y} = this.state;

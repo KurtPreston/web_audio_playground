@@ -1,9 +1,8 @@
-import {AudioData, Dimensions} from '../types';
+import {WorldState} from '../types';
 
 let spriteId = 1;
-
 export abstract class Sprite {
   public readonly id = `${this.constructor.name}-${spriteId++}`;
-  public abstract render(audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement>;
-  public abstract tick(dimensions: Dimensions): void;
+  public abstract render(world: WorldState): React.ReactElement<SVGElement>;
+  public abstract tick(world: WorldState): void;
 }

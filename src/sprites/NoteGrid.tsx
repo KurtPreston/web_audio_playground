@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import {range} from 'lodash';
 import React from 'react';
-import {AudioData, Dimensions} from '../types';
+import {WorldState} from '../types';
 
 import {midiNoteToFreq} from '../util/midi';
 import {getNoteName, Note, NoteInfo} from '../util/Note';
@@ -11,7 +11,8 @@ import {Sprite} from './Sprite';
 export class NoteGrid extends Sprite {
   public tick() {}
 
-  public render(audio: AudioData, dimensions: Dimensions): React.ReactElement<SVGElement> {
+  public render(world: WorldState): React.ReactElement<SVGElement> {
+    const {audio, dimensions} = world;
     const {width, height} = dimensions;
     const lowOctave = 3;
     const highOctave = 8;
