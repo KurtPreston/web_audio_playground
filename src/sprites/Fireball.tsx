@@ -10,8 +10,13 @@ export interface FireballSpriteParams {
   wave: Uint8Array;
   minSize: number;
   maxSize: number;
-  state: IWanderer;
+  spinMomentum: number;
+  state: FireballState;
   style?: React.CSSProperties;
+}
+
+export interface FireballState extends IWanderer {
+  spinAngle: number;
 }
 
 export interface FireballParams extends FireballSpriteParams {
@@ -47,6 +52,7 @@ export class Fireball extends Sprite {
       minSize,
       maxSize,
       key: this.id,
+      angle: state.spinAngle,
       style
     });
   }
@@ -54,7 +60,10 @@ export class Fireball extends Sprite {
   public tick(world: WorldState) {
     const {dimensions} = world;
     const size = this.params.maxSize;
-    this.params.state = this.ticker(this.params.state, world);
+    this.params.state = {
+      ...this.ticker(this.params.state, world),
+      spinAngle: this.params.state.spinAngle + this.params.spinMomentum
+    };
 
     const {x, y} = this.params.state;
     const offLeftSide = x < -1 * size;

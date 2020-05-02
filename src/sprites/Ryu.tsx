@@ -17,6 +17,7 @@ interface RyuState {
   chargeSize: number | null;
   maxChargeWaveForm: Uint8Array;
   maxChargeSize: number;
+  maxAmplitude: number;
   lastAmplitude: number;
 }
 
@@ -48,7 +49,8 @@ export class Ryu extends Sprite {
       chargeSize: null,
       maxChargeWaveForm: new Uint8Array(audio.uintWave.length),
       maxChargeSize: 0,
-      lastAmplitude: 0
+      lastAmplitude: 0,
+      maxAmplitude: 0
     };
   }
 
@@ -102,13 +104,18 @@ export class Ryu extends Sprite {
     let chargeSize = Math.max(Math.min(unboundedCargeSize, this.chargeMaxSize), this.chargeMinSize);
 
     let maxChargeSize = this.state.maxChargeSize;
+    let maxAmplitude = this.state.maxAmplitude;
     let maxChargeWaveForm = this.state.maxChargeWaveForm;
     if (chargeSize > maxChargeSize) {
       maxChargeSize = chargeSize;
-      maxChargeWaveForm = world.audio.uintWave.slice(0);
+      maxAmplitude = soundAmplitude;
+
+      if (soundAmplitude > this.state.maxAmplitude) {
+        maxChargeWaveForm = world.audio.uintWave.slice(0);
+      }
     }
 
-    if (chargeSize < 0.99 * maxChargeSize && chargeSize > this.chargeMinLaunchSize) {
+    if (soundAmplitude < 0.98 * maxAmplitude && chargeSize > this.chargeMinLaunchSize) {
       const rippleSize = this.rippleRatio * chargeSize;
       this.launchFireball({
         velocity: scale({
@@ -124,8 +131,10 @@ export class Ryu extends Sprite {
         state: {
           x: this.state.x,
           y: this.state.y,
-          angle: (3 * Math.PI) / 2 // Facing up
+          angle: (3 * Math.PI) / 2, // Facing up
+          spinAngle: 0
         },
+        spinMomentum: 5,
         style: this.fireballStyle(chargeSize)
       });
       maxChargeSize = 0;
@@ -135,6 +144,7 @@ export class Ryu extends Sprite {
     this.state = {
       ...this.state,
       lastAmplitude: soundAmplitude,
+      maxAmplitude,
       maxChargeSize,
       maxChargeWaveForm,
       chargeSize

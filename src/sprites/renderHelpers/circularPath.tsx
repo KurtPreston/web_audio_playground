@@ -8,12 +8,14 @@ interface CircularPathParams {
   minSize: number;
   maxSize: number;
   key: string | number;
+  angle?: number;
   className?: string;
   style?: React.CSSProperties;
 }
 
 export function circularPath(params: CircularPathParams): React.ReactElement<SVGPathElement> {
   const {className, cx, cy, key, minSize, maxSize, style, wave} = params;
+  const angle = params.angle || 0;
 
   const coords: {x: number; y: number}[] = new Array(wave.length);
 
@@ -25,15 +27,15 @@ export function circularPath(params: CircularPathParams): React.ReactElement<SVG
       outputMin: minSize,
       outputMax: maxSize
     });
-    const angle = scale({
+    const pointAngle = scale({
       input: idx,
       inputMin: 0,
       inputMax: wave.length - 1,
-      outputMin: 0,
-      outputMax: 2 * Math.PI
+      outputMin: angle,
+      outputMax: 2 * Math.PI + angle
     });
-    const circularX = Math.cos(angle) * r + cx;
-    const circularY = Math.sin(angle) * r + cy;
+    const circularX = Math.cos(pointAngle) * r + cx;
+    const circularY = Math.sin(pointAngle) * r + cy;
     coords[idx] = {
       x: circularX,
       y: circularY
