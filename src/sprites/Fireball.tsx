@@ -11,6 +11,7 @@ export interface FireballSpriteParams {
   minSize: number;
   maxSize: number;
   state: IWanderer;
+  style?: React.CSSProperties;
 }
 
 export interface FireballParams extends FireballSpriteParams {
@@ -37,7 +38,7 @@ export class Fireball extends Sprite {
   }
 
   public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {wave, state, minSize, maxSize} = this.params;
+    const {wave, state, minSize, maxSize, style} = this.params;
 
     return circularPath({
       wave,
@@ -45,7 +46,8 @@ export class Fireball extends Sprite {
       cy: state.y,
       minSize,
       maxSize,
-      key: this.id
+      key: this.id,
+      style
     });
   }
 

@@ -9,10 +9,11 @@ interface CircularPathParams {
   maxSize: number;
   key: string | number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function circularPath(params: CircularPathParams): React.ReactElement<SVGPathElement> {
-  const {className, cx, cy, key, minSize, maxSize, wave} = params;
+  const {className, cx, cy, key, minSize, maxSize, style, wave} = params;
 
   const coords: {x: number; y: number}[] = new Array(wave.length);
 
@@ -46,7 +47,5 @@ export function circularPath(params: CircularPathParams): React.ReactElement<SVG
       return `L${x},${y}`;
     })
   ].join(' ');
-  return (
-    <path key={key} className={className} d={circularFrequencyMeter} style={{stroke: 'white'}} />
-  );
+  return <path key={key} className={className} d={circularFrequencyMeter} style={style} />;
 }

@@ -44,6 +44,8 @@ export class Ryu extends Sprite {
 
     if (chargeSize) {
       const rippleSize = this.rippleRatio * chargeSize;
+      const style = this.fireballStyle(chargeSize);
+
       return circularPath({
         cx: x,
         cy: y,
@@ -51,6 +53,7 @@ export class Ryu extends Sprite {
         minSize: chargeSize - rippleSize,
         maxSize: chargeSize + rippleSize,
         className: 'ryu-chart',
+        style,
         key: 'player'
       });
     } else {
@@ -107,7 +110,8 @@ export class Ryu extends Sprite {
           x: this.state.x,
           y: this.state.y,
           angle: (3 * Math.PI) / 2 // Facing up
-        }
+        },
+        style: this.fireballStyle(chargeSize)
       });
       maxChargeSize = 0;
       chargeSize = 0;
@@ -118,6 +122,12 @@ export class Ryu extends Sprite {
       lastAmplitude: soundAmplitude,
       maxChargeSize,
       chargeSize
+    };
+  }
+
+  private fireballStyle(chargeSize: number): React.CSSProperties {
+    return {
+      fill: chargeSize >= this.chargeMinLaunchSize ? 'red' : 'black'
     };
   }
 }
