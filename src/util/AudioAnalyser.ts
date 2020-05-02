@@ -1,9 +1,9 @@
+import {Pitchfinder} from '../pitchfinder/src';
+import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types';
 import {freqToMidiNote} from './midi';
-import {getNoteInfo, NoteInfo, getNoteFrequencyRange} from './Note';
+import {getNoteFrequencyRange, getNoteInfo, NoteInfo} from './Note';
 import {scale} from './scale';
-import { Pitchfinder } from '../pitchfinder/src';
-import { PitchDetector } from '../pitchfinder/src/detectors/types';
 
 // Modifies AudioData rather than returning a new one
 
@@ -90,7 +90,7 @@ export class AudioAnalyser implements AudioData {
   public get notes(): NoteInfo[] {
     if (!this.valuesThisFrame.notes) {
       const freq = this.pitchDetector(this.wave);
-      if(freq) {
+      if (freq) {
         const note = freqToMidiNote(freq);
         this.valuesThisFrame.notes = [note].map((note) => getNoteInfo(note));
       } else {
@@ -119,10 +119,10 @@ export class AudioAnalyser implements AudioData {
     const {frequencies} = this;
     let max = frequencies[lowIdx];
     let total = frequencies[lowIdx];
-    for(let idx = lowIdx + 1; idx < highIdx; idx++) {
+    for (let idx = lowIdx + 1; idx < highIdx; idx++) {
       const value = frequencies[idx];
       total += value;
-      if(value > max) {
+      if (value > max) {
         max = frequencies[idx];
       }
     }

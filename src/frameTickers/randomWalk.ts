@@ -1,4 +1,4 @@
-import {SpriteTicker, Dimensions, IWanderer} from '../types';
+import {Dimensions, IWanderer, SpriteTicker} from '../types';
 
 export type JitterType = 'leanLeft' | 'leanRight' | 'random';
 

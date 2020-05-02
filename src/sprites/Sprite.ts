@@ -1,4 +1,4 @@
-import {Dimensions, AudioData} from '../types';
+import {AudioData, Dimensions} from '../types';
 
 let spriteId = 1;
 

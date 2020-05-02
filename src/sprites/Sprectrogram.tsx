@@ -1,12 +1,12 @@
+import {times} from 'lodash';
 import React from 'react';
 import {AudioData, Dimensions} from '../types';
-import {Sprite} from './Sprite';
 import {scale} from '../util/scale';
-import {times} from 'lodash';
+import {Sprite} from './Sprite';
 
+import {freqToMidiNote} from '../util/midi';
+import {getNoteName, Note} from '../util/Note';
 import './Spectrogram.scss';
-import { getNoteName, Note } from '../util/Note';
-import { freqToMidiNote } from '../util/midi';
 
 export class Spectrogram extends Sprite {
   public tick() {}
@@ -44,7 +44,7 @@ export class Spectrogram extends Sprite {
     });
 
     const notes = times(maxNote, (note: Note) => {
-      if(!(note % 12 === 0)) {
+      if (!(note % 12 === 0)) {
         return null;
       }
 
@@ -61,7 +61,7 @@ export class Spectrogram extends Sprite {
         <text key={note} x={x} y={height - 10}>
           {name}
         </text>
-      )
+      );
     });
 
     return (

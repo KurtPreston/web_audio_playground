@@ -1,10 +1,10 @@
-import {IWanderer, SpriteTicker, AudioData, Dimensions} from '../types';
-import {scale} from '../util/scale';
+import {random, sample} from 'lodash';
 import React from 'react';
+import {JitterType, randomWalkFactory} from '../frameTickers/randomWalk';
+import {AudioData, Dimensions, IWanderer, SpriteTicker} from '../types';
 import {randomColor} from '../util/color';
-import {sample, random} from 'lodash';
-import {randomWalkFactory, JitterType} from '../frameTickers/randomWalk';
-import { Sprite } from './Sprite';
+import {scale} from '../util/scale';
+import {Sprite} from './Sprite';
 
 export class Circle extends Sprite {
   private state: IWanderer;

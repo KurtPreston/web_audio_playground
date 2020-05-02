@@ -1,4 +1,4 @@
-import {NoteInfo, Note} from '../util/Note';
+import {Note, NoteInfo} from '../util/Note';
 
 export type SpriteTicker<TState> = (state: TState, dimensions: Dimensions) => TState;
 
@@ -9,8 +9,7 @@ export interface IWanderer {
   angle: number;
 }
 
-export interface INoteGrid {
-}
+export interface INoteGrid {}
 
 // App types
 export interface Dimensions {

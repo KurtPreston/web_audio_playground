@@ -24,6 +24,8 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "prettier": "^2.0.5",
+    "prettier-tslint": "^0.4.2",
     "tslint": "^6.1.2",
     "tslint-eslint-rules": "^5.4.0",
     "tslint-react": "^5.0.0",
@@ -34,7 +36,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "tslint --project ."
+    "lint": "tslint --project .",
+    "prettify": "prettier-tslint fix src/**/*.ts*"
   },
   "eslintConfig": {
     "extends": "react-app"

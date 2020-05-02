@@ -1,8 +1,8 @@
-import {IWanderer, SpriteTicker, AudioData, Dimensions} from '../types';
-import {scale} from '../util/scale';
-import React from 'react';
 import {chunk} from 'lodash';
+import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
+import {AudioData, Dimensions, IWanderer, SpriteTicker} from '../types';
+import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
 
 export class Flower extends Sprite {

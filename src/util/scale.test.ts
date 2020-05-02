@@ -1,4 +1,4 @@
-import { scale } from './scale';
+import {scale} from './scale';
 
 describe('scale', () => {
   it('scales linearly by default', () => {
@@ -9,20 +9,26 @@ describe('scale', () => {
       outputMax: 100
     };
 
-    expect(scale({
-      input: 0,
-      ...bounds
-    })).toEqual(50);
+    expect(
+      scale({
+        input: 0,
+        ...bounds
+      })
+    ).toEqual(50);
 
-    expect(scale({
-      input: 5,
-      ...bounds
-    })).toEqual(75);
+    expect(
+      scale({
+        input: 5,
+        ...bounds
+      })
+    ).toEqual(75);
 
-    expect(scale({
-      input: 10,
-      ...bounds
-    })).toEqual(100);
+    expect(
+      scale({
+        input: 10,
+        ...bounds
+      })
+    ).toEqual(100);
   });
 
   it('can scale logarithmically', () => {
@@ -34,14 +40,18 @@ describe('scale', () => {
       logarithmic: true
     };
 
-    expect(scale({
-      input: 0,
-      ...bounds
-    })).toEqual(50);
+    expect(
+      scale({
+        input: 0,
+        ...bounds
+      })
+    ).toEqual(50);
 
-    expect(scale({
-      input: 10,
-      ...bounds
-    })).toEqual(100);
+    expect(
+      scale({
+        input: 10,
+        ...bounds
+      })
+    ).toEqual(100);
   });
-})
+});

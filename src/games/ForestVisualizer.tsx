@@ -1,13 +1,13 @@
-import React from 'react';
-import {Dimensions} from '../types';
-import {isBoolean, times, map, isEqual, each} from 'lodash';
-import {AudioAnalyser} from '../util/AudioAnalyser';
 import {autobind} from 'core-decorators';
+import {each, isBoolean, isEqual, map, times} from 'lodash';
+import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
-import {Sprite} from '../sprites/Sprite';
 import {Spectrogram} from '../sprites/Sprectrogram';
+import {Sprite} from '../sprites/Sprite';
+import {Dimensions} from '../types';
+import {AudioAnalyser} from '../util/AudioAnalyser';
 
 export interface ForestVisualizerProps {
   dimensions: Dimensions;
