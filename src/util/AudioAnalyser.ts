@@ -2,21 +2,26 @@ import {Pitchfinder} from '../pitchfinder/src';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types';
 import {freqToMidiNote} from './midi';
-import {getNoteFrequencyRange, getNoteInfo, NoteInfo} from './Note';
+import {getNoteFrequencyRange, getNoteInfo, NoteInfo, Note} from './Note';
 import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
 
 export type FftSize = 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 | 32768;
 
+export const NOTE_FRAMES_TO_AVG = 10;
+
 export class AudioAnalyser implements AudioData {
+  // References
   private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
   private readonly _wave: Float32Array;
   public readonly hzPerIdx: number;
   private readonly pitchDetector: PitchDetector;
 
+  // State
   private valuesThisFrame: Partial<AudioData> = {};
+  private lastDetectedNotes: Note[][] = new Array(NOTE_FRAMES_TO_AVG);
 
   constructor(audioSource: AudioNode) {
     const audioContext: BaseAudioContext = audioSource.context;
@@ -74,18 +79,6 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.amplitude;
   }
 
-  private avgAmplitudeInFreqRange(lowFreq: number, highFreq: number) {
-    const lowIdx = Math.round(lowFreq / this.hzPerIdx);
-    const highIdx = Math.round(highFreq / this.hzPerIdx);
-    const freqBuckets: Uint8Array = this.frequencies.slice(lowIdx, highIdx + 1);
-    let total = 0;
-    freqBuckets.forEach((amplitude) => {
-      total += amplitude;
-    });
-
-    const avg: number = total / (highIdx - lowIdx + 1);
-    return avg;
-  }
 
   public get notes(): NoteInfo[] {
     if (!this.valuesThisFrame.notes) {
@@ -118,17 +111,27 @@ export class AudioAnalyser implements AudioData {
     const highIdx = Math.round(highFreq / this.hzPerIdx);
     const {frequencies} = this;
     let max = frequencies[lowIdx];
-    let total = frequencies[lowIdx];
     for (let idx = lowIdx + 1; idx < highIdx; idx++) {
       const value = frequencies[idx];
-      total += value;
       if (value > max) {
         max = frequencies[idx];
       }
     }
 
-    // const mean = total / (highIdx - lowIdx + 1);
-    // return mean;
     return max;
+  }
+
+  public frequencyRangeAvg(lowFreq: number, highFreq: number) {
+    const lowIdx = Math.round(lowFreq / this.hzPerIdx);
+    const highIdx = Math.round(highFreq / this.hzPerIdx);
+    const {frequencies} = this;
+    let total = frequencies[lowIdx];
+    for (let idx = lowIdx + 1; idx < highIdx; idx++) {
+      const value = frequencies[idx];
+      total += value;
+    }
+
+    const mean = total / (highIdx - lowIdx + 1);
+    return mean;
   }
 }

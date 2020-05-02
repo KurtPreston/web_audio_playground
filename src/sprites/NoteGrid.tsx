@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import {range} from 'lodash';
 import React from 'react';
 import {AudioData, Dimensions} from '../types';
-import {getNoteFrequencyRange, getNoteName, Note, NoteInfo} from '../util/Note';
+import {getNoteName, Note, NoteInfo} from '../util/Note';
 
 import './NoteGrid.scss';
 import {Sprite} from './Sprite';
