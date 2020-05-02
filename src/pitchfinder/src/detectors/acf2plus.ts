@@ -1,16 +1,23 @@
-const DEFAULT_SAMPLE_RATE = 44100;
+import { Detector } from "./types";
 
-module.exports = function(config = {}) {
+interface ACF2Params {
+  sampleRate: number;
+}
+
+const DEFAULT_PARAMS: ACF2Params = {
+  sampleRate: 44100
+};
+
+export function acf2plus(config: ACF2Params = DEFAULT_PARAMS): Detector {
   const sampleRate = config.sampleRate || DEFAULT_SAMPLE_RATE;
 
   // Implements the ACF2+ algorithm
-  return function ACF2PLUSDetector(float32AudioBuffer) {
-    "use strict";
+  return function ACF2PLUSDetector(float32AudioBuffer: Float32Array): number {
 
     const maxShift = float32AudioBuffer.length;
 
     let rms = 0;
-    let thres, i, j, u, aux1, aux2, tmp;
+    let i, j, u, tmp;
 
     for (i = 0; i < maxShift; i++) {
       tmp = float32AudioBuffer[i];
@@ -25,7 +32,9 @@ module.exports = function(config = {}) {
 
     /* Trimming cuts the edges of the signal so that it starts and ends near zero. 
      This is used to neutralize an inherent instability of the ACF version I use.*/
-    (aux1 = 0), (aux2 = maxShift - 1), (thres = 0.2);
+    let aux1 = 0;
+    let aux2 = maxShift - 1;
+    let thres = 0.2;
     for (i = 0; i < maxShift / 2; i++)
       if (Math.abs(float32AudioBuffer[i]) < thres) {
         aux1 = i;

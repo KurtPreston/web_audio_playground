@@ -1,0 +1,1 @@
+export type Detector = (float32AudioBuffer: Float32Array) => number;
