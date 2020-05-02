@@ -15,7 +15,7 @@ export class NoteGrid extends Sprite {
     const {width, height} = dimensions;
     const lowOctave = 3;
     const highOctave = 8;
-    const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 3) * 12);
+    const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
 
     const colWidth = width / 12;
     const rowHeight = height / (highOctave - lowOctave + 1);
