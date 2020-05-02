@@ -1,6 +1,7 @@
 import React from 'react';
 import {Dimensions, WorldState} from '../types';
 import {scale} from '../util/scale';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface RyuProps {
@@ -16,7 +17,7 @@ interface RyuState {
 
 export class Ryu extends Sprite {
   private readonly chargeMinSize: number = 5;
-  private readonly chargeMaxSize: number = 150;
+  private readonly chargeMaxSize: number = 200;
   private state: RyuState;
 
   constructor(params: RyuProps) {
@@ -34,15 +35,24 @@ export class Ryu extends Sprite {
     const {x, y, chargeSize} = this.state;
 
     if (chargeSize) {
-      return <circle key={this.id} className='ryu-charge' cx={x} cy={y} r={chargeSize} />;
+      const rippleSize = 0.9 * chargeSize;
+      return circularPath({
+        cx: x,
+        cy: y,
+        wave: world.audio.uintWave,
+        minSize: chargeSize - rippleSize,
+        maxSize: chargeSize + rippleSize,
+        className: 'ryu-chart',
+        key: 'player'
+      });
     } else {
       return <g key={this.id} />;
     }
   }
 
   public tick(world: WorldState) {
-    const shrinkRate = 5;
-    const growthRate = 10;
+    const shrinkRate = 3;
+    const growthRate = 5;
     const amplitudeThreshold = 0.1;
     const soundAmplitude = world.audio.amplitude - amplitudeThreshold;
 
@@ -55,17 +65,23 @@ export class Ryu extends Sprite {
             inputMin: 0,
             inputMax: 1,
             outputMin: 0,
-            outputMax: growthRate
+            outputMax: growthRate,
+            expectOutOfBounds: true
           })
         : scale({
             input: amplitudeDelta,
             inputMin: -1 * amplitudeThreshold,
             inputMax: 0,
             outputMin: -1 * shrinkRate,
-            outputMax: 0
+            outputMax: 0,
+            expectOutOfBounds: true
           });
 
-    const chargeSize = this.state.chargeSize ? this.state.chargeSize + growth : growth;
+    const unboundedCargeSize = this.state.chargeSize ? this.state.chargeSize + growth : growth;
+    const chargeSize = Math.max(
+      Math.min(unboundedCargeSize, this.chargeMaxSize),
+      this.chargeMinSize
+    );
 
     this.state = {
       ...this.state,

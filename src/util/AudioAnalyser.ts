@@ -16,7 +16,8 @@ export class AudioAnalyser implements AudioData {
   // References
   private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
-  private readonly _wave: Float32Array;
+  private readonly _uint8Wave: Uint8Array;
+  private readonly _float32Wave: Float32Array;
   public readonly hzPerIdx: number;
   private readonly pitchDetector: PitchDetector;
 
@@ -39,7 +40,8 @@ export class AudioAnalyser implements AudioData {
 
     // Allocate the memory for the array just once
     this._frequencies = new Uint8Array(bufferLength);
-    this._wave = new Float32Array(bufferLength);
+    this._uint8Wave = new Uint8Array(bufferLength);
+    this._float32Wave = new Float32Array(bufferLength);
     this.hzPerIdx = audioContext.sampleRate / (analyser.frequencyBinCount * 2);
   }
 
@@ -56,13 +58,22 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.frequencies;
   }
 
-  public get wave(): Float32Array {
-    if (!this.valuesThisFrame.wave) {
-      this.analyser.getFloatTimeDomainData(this._wave);
-      this.valuesThisFrame.wave = this._wave;
+  public get floatWave(): Float32Array {
+    if (!this.valuesThisFrame.floatWave) {
+      this.analyser.getFloatTimeDomainData(this._float32Wave);
+      this.valuesThisFrame.floatWave = this._float32Wave;
     }
 
-    return this.valuesThisFrame.wave;
+    return this.valuesThisFrame.floatWave;
+  }
+
+  public get uintWave(): Uint8Array {
+    if (!this.valuesThisFrame.uintWave) {
+      this.analyser.getByteTimeDomainData(this._uint8Wave);
+      this.valuesThisFrame.uintWave = this._uint8Wave;
+    }
+
+    return this.valuesThisFrame.uintWave;
   }
 
   public get amplitude(): number {
@@ -82,7 +93,7 @@ export class AudioAnalyser implements AudioData {
 
   public get notes(): NoteInfo[] {
     if (!this.valuesThisFrame.notes) {
-      const freq = this.pitchDetector(this.wave);
+      const freq = this.pitchDetector(this.floatWave);
       const note: Note | null = freq ? freqToMidiNote(freq) : null;
 
       this.lastDetectedNotes.shift();

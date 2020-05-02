@@ -25,7 +25,8 @@ export interface Dimensions {
 export interface AudioData {
   amplitudeAtNote(note: Note): number;
   frequencies: Uint8Array;
-  wave: Float32Array;
+  uintWave: Uint8Array;
+  floatWave: Float32Array;
   amplitude: number; // 0 - 1
   hzPerIdx: number;
   notes: NoteInfo[];

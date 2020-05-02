@@ -5,18 +5,23 @@ export interface ScaleProps {
   outputMin: number;
   outputMax: number;
   logarithmic?: boolean;
+  expectOutOfBounds?: boolean;
 }
 
 export function scale(props: ScaleProps): number {
-  const {input, inputMin, inputMax, outputMin, outputMax, logarithmic} = props;
+  const {input, inputMin, inputMax, outputMin, outputMax, logarithmic, expectOutOfBounds} = props;
   if (input > inputMax) {
-    console.warn('scale() received out-of-bounds input', props);
-    debugger;
+    if (!expectOutOfBounds) {
+      console.warn('scale() received out-of-bounds input', props);
+      debugger;
+    }
     return outputMax;
   }
   if (input < inputMin) {
-    console.warn('scale() received out-of-bounds input', props);
-    debugger;
+    if (!expectOutOfBounds) {
+      console.warn('scale() received out-of-bounds input', props);
+      debugger;
+    }
     return outputMin;
   }
 
