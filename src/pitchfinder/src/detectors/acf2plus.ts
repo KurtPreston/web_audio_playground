@@ -1,4 +1,4 @@
-import { Detector } from "./types";
+import { PitchDetector } from "./types";
 
 interface ACF2Params {
   sampleRate: number;
@@ -8,7 +8,7 @@ const DEFAULT_PARAMS: ACF2Params = {
   sampleRate: 44100
 };
 
-export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): Detector {
+export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): PitchDetector {
   const config = {
     ...DEFAULT_PARAMS,
     ...params

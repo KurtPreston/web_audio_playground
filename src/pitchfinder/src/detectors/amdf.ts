@@ -1,4 +1,4 @@
-import { Detector } from "./types";
+import { PitchDetector } from "./types";
 
 interface AMDFParams {
   sampleRate: number;
@@ -16,7 +16,7 @@ const DEFAULT_AMDF_PARAMS: AMDFParams = {
   sensitivity: 0.1,
 };
 
-export function AMDF(params: Partial<AMDFParams> = {}): Detector {
+export function AMDF(params: Partial<AMDFParams> = {}): PitchDetector {
   const config: AMDFParams = {
     ...DEFAULT_AMDF_PARAMS,
     ...params

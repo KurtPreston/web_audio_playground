@@ -13,7 +13,7 @@
   along with aubio.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Detector } from "./types";
+import { PitchDetector } from "./types";
 
 /* This algorithm was developed by A. de Cheveigné and H. Kawahara and
  * published in:
@@ -37,7 +37,7 @@ const DEFAULT_YIN_PARAMS = {
   probabilityThreshold: 0.1
 };
 
-export function YIN(params: Partial<YinParams> = {}): Detector {
+export function YIN(params: Partial<YinParams> = {}): PitchDetector {
   const config: YinParams = {
     ...DEFAULT_YIN_PARAMS,
     ...params

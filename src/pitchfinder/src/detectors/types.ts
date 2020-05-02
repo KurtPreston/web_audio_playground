@@ -1,1 +1,1 @@
-export type Detector = (float32AudioBuffer: Float32Array) => number | null;
+export type PitchDetector = (float32AudioBuffer: Float32Array) => number | null;

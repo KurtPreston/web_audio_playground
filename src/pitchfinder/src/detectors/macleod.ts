@@ -1,4 +1,4 @@
-import { Detector } from "./types";
+import { PitchDetector } from "./types";
 
 interface MacleodConfig {
   /**
@@ -30,7 +30,7 @@ interface MacleodResult {
   freq: number;
 }
 
-export function Macleod(params: Partial<MacleodConfig> = {}): Detector {
+export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
   const config: MacleodConfig = {
     ...params,
     ...DEFAULT_MACLEOD_PARAMS

@@ -1,4 +1,4 @@
-import { Detector } from "./types";
+import { PitchDetector } from "./types";
 
 const MAX_FLWT_LEVELS = 6;
 const MAX_F = 3000;
@@ -13,7 +13,7 @@ const DEFAULT_DYNAMIC_WAVELET_CONFIG: DynamicWaveletConfig = {
   sampleRate: 44100
 };
 
-export function DynamicWavelet(params: Partial<DynamicWaveletConfig> = {}): Detector {
+export function DynamicWavelet(params: Partial<DynamicWaveletConfig> = {}): PitchDetector {
   const config: DynamicWaveletConfig = {
     ...DEFAULT_DYNAMIC_WAVELET_CONFIG,
     ...params

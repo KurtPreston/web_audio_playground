@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import WavDecoder from 'wav-decoder';
 import {Pitchfinder} from '../src';
-import {Detector} from '../src/detectors/types';
+import {PitchDetector} from '../src/detectors/types';
 
 interface WavDecoderData {
   sampleRate: number;
@@ -30,7 +30,7 @@ const decode = async (buffer: Buffer): Promise<Float32Array> => {
 };
 
 xdescribe('Pitchfinder', () => {
-  const detectors: {[name: string]: Detector} = {
+  const detectors: {[name: string]: PitchDetector} = {
     AMDF: Pitchfinder.AMDF(),
     DynamicWavelet: Pitchfinder.DynamicWavelet(),
     YIN: Pitchfinder.YIN(),
@@ -42,7 +42,7 @@ xdescribe('Pitchfinder', () => {
 
   describe('Detectors', () => {
     Object.keys(detectors).forEach((name) => {
-      const detector: Detector = detectors[name];
+      const detector: PitchDetector = detectors[name];
       describe(name, () => {
         pitchSamples.forEach((fileName: string) => {
           const [hz, type] = fileName.replace('.wav', '').split('_');
@@ -66,7 +66,7 @@ xdescribe('Pitchfinder', () => {
   });
 
   describe('AMDF minimum/maximum frequency parameters', () => {
-    const detector = (minFreq: number, maxFreq: number): Detector =>
+    const detector = (minFreq: number, maxFreq: number): PitchDetector =>
       Pitchfinder.AMDF({
         minFrequency: minFreq,
         maxFrequency: maxFreq

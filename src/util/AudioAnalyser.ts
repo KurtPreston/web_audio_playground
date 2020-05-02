@@ -3,7 +3,7 @@ import {freqToMidiNote} from './midi';
 import {getNoteInfo, NoteInfo, getNoteFrequencyRange} from './Note';
 import {scale} from './scale';
 import { Pitchfinder } from '../pitchfinder/src';
-import { Detector } from '../pitchfinder/src/detectors/types';
+import { PitchDetector } from '../pitchfinder/src/detectors/types';
 
 // Modifies AudioData rather than returning a new one
 
@@ -14,7 +14,7 @@ export class AudioAnalyser implements AudioData {
   private readonly _frequencies: Uint8Array;
   private readonly _wave: Float32Array;
   public readonly hzPerIdx: number;
-  private readonly pitchDetector: Detector;
+  private readonly pitchDetector: PitchDetector;
 
   private valuesThisFrame: Partial<AudioData> = {};
 

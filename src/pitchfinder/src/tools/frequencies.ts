@@ -1,6 +1,6 @@
-import { Detector } from "../detectors/types";
+import { PitchDetector } from "../detectors/types";
 
-function pitchConsensus(detectors: Detector[], chunk: Float32Array) {
+function pitchConsensus(detectors: PitchDetector[], chunk: Float32Array) {
   const pitches: number[] = detectors
     .map(fn => fn(chunk))
     .filter(Boolean)
@@ -46,7 +46,7 @@ export const DEFAULT_FREQUENCIES_PARAMS: FrequenciesParams = {
   sampleRate: 44100
 };
 
-export function frequencies(detector: Detector | Detector[], float32AudioBuffer: Float32Array, options: Partial<FrequenciesParams> = {}) {
+export function frequencies(detector: PitchDetector | PitchDetector[], float32AudioBuffer: Float32Array, options: Partial<FrequenciesParams> = {}) {
   const config = {
     ...DEFAULT_FREQUENCIES_PARAMS,
     ...options
