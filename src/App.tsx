@@ -1,6 +1,8 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
+import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
+import {Fireball} from './games/Fireball';
 import {ForestVisualizer} from './games/ForestVisualizer';
 import {Dimensions} from './types';
 
@@ -38,20 +40,33 @@ export class App extends React.Component<{}, AppState> {
   }
 
   private renderGame() {
-    if (this.state?.requireClickToStart) {
-      return (
-        <button className='start-btn' onClick={this.initializeAudio}>
-          Enable micro&shy;phone
-          <br />
-          and click to start
-        </button>
-      );
-    } else if (this.state?.dimensions && this.state?.audioSource?.context.state === 'running') {
-      return <ForestVisualizer {...this.state} />;
-    } else {
-      // Waiting for audio to load
-      return null;
-    }
+    return (
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to='/demo'>Demo</Link>
+              </li>
+              <li>
+                <Link to='/fireball'>Fireball</Link>
+              </li>
+            </ul>
+          </nav>
+
+          {/* A <Switch> looks through its children <Route>s and
+          renders the first one that matches the current URL. */}
+          <Switch>
+            <Route path='/demo'>
+              <ForestVisualizer {...this.state} />
+            </Route>
+            <Route path='/fireball'>
+              <Fireball {...this.state} />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    );
   }
 
   private setDimensions() {
