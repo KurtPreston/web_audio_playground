@@ -6,6 +6,12 @@ import {randomColor} from '../util/color';
 import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
 
+export interface CircleParams {
+  dimensions: Dimensions;
+  bounceOffEdge: boolean;
+  destroy: (sprite: Sprite) => boolean;
+}
+
 export class Circle extends Sprite {
   private state: IWanderer;
   private readonly minSize = 15;
@@ -14,15 +20,23 @@ export class Circle extends Sprite {
     fill: randomColor(),
     mixBlendMode: 'color-dodge'
   };
-  private readonly ticker: SpriteTicker<IWanderer> = randomWalkFactory({
-    velocity: random(3, 7),
-    jitter: random(0.01, 0.08),
-    jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType
-  });
+  private readonly ticker: SpriteTicker<IWanderer>;
+  private readonly bounceOffEdge: boolean;
+  private readonly destroy: () => boolean;
 
-  constructor(dimensions: Dimensions) {
+  constructor(params: CircleParams) {
     super();
+    const {dimensions, bounceOffEdge} = params;
     const {height} = dimensions;
+
+    this.ticker = randomWalkFactory({
+      velocity: random(3, 7),
+      jitter: random(0.01, 0.08),
+      jitterType: sample(['leanLeft', 'leanRight', 'random']) as JitterType,
+      bounceOffEdge
+    });
+    this.bounceOffEdge = bounceOffEdge;
+    this.destroy = () => params.destroy(this);
 
     this.state = {
       // On left, facing right
@@ -52,5 +66,12 @@ export class Circle extends Sprite {
 
   public tick(dimensions: Dimensions) {
     this.state = this.ticker(this.state, dimensions);
+
+    if (!this.bounceOffEdge) {
+      const {x, y} = this.state;
+      if (x < 0 || x > dimensions.width || y < 0 || y > dimensions.height) {
+        this.destroy();
+      }
+    }
   }
 }

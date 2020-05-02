@@ -13,7 +13,8 @@ export class Flower extends Sprite {
   private readonly ticker: SpriteTicker<IWanderer> = randomWalkFactory({
     velocity: 5,
     jitter: 0.03,
-    jitterType: 'random'
+    jitterType: 'random',
+    bounceOffEdge: true
   });
 
   constructor(dimensions: Dimensions) {

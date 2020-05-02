@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import {each, isBoolean, isEqual, map, times} from 'lodash';
+import {each, isBoolean, isEqual, map, times, without} from 'lodash';
 import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {Flower} from '../sprites/Flower';
@@ -96,13 +96,38 @@ export class ForestVisualizer extends React.Component<
     newSprites.circles = times(
       options.circles,
       (circleNum: number): Sprite => {
-        return (sprites.circles || [])[circleNum] || new Circle(dimensions);
+        return (
+          (sprites.circles || [])[circleNum] ||
+          new Circle({
+            dimensions,
+            bounceOffEdge: false,
+            destroy: this.destroySprite('circles')
+          })
+        );
       }
     );
 
     this.setState({
       sprites: newSprites
     });
+  }
+
+  private destroySprite(category: keyof ActiveSprites) {
+    return (sprite: Sprite): boolean => {
+      const {sprites} = this.state;
+      const spritesInCategory: Sprite[] = sprites[category];
+      if (spritesInCategory.includes(sprite)) {
+        this.setState({
+          sprites: {
+            ...sprites,
+            [category]: without(spritesInCategory, sprite)
+          }
+        });
+        return true;
+      } else {
+        return false;
+      }
+    };
   }
 
   public componentDidMount() {
