@@ -1,0 +1,66 @@
+import {random} from 'lodash';
+import React from 'react';
+import {randomWalkFactory} from '../frameTickers/randomWalk';
+import {IWanderer, SpriteTicker, WorldState} from '../types';
+import {circularPath} from './renderHelpers/circularPath';
+import {Sprite} from './Sprite';
+
+export interface FireballSpriteParams {
+  velocity: number;
+  wave: Uint8Array;
+  minSize: number;
+  maxSize: number;
+  state: IWanderer;
+}
+
+export interface FireballParams extends FireballSpriteParams {
+  destroy: (fireball: Fireball) => boolean;
+}
+
+export class Fireball extends Sprite {
+  private readonly ticker: SpriteTicker<IWanderer>;
+  private readonly destroy: () => boolean;
+
+  constructor(private readonly params: FireballParams) {
+    super();
+
+    const {velocity, destroy} = params;
+
+    this.ticker = randomWalkFactory({
+      velocity,
+      jitter: random(0.01, 0.08),
+      jitterType: 'random',
+      bounceOffEdge: false
+    });
+
+    this.destroy = () => destroy(this);
+  }
+
+  public render(world: WorldState): React.ReactElement<SVGElement> {
+    const {wave, state, minSize, maxSize} = this.params;
+
+    return circularPath({
+      wave,
+      cx: state.x,
+      cy: state.y,
+      minSize,
+      maxSize,
+      key: this.id
+    });
+  }
+
+  public tick(world: WorldState) {
+    const {dimensions} = world;
+    const size = this.params.maxSize;
+    this.params.state = this.ticker(this.params.state, world);
+
+    const {x, y} = this.params.state;
+    const offLeftSide = x < -1 * size;
+    const offRightSide = x > dimensions.width + size;
+    const offTop = y < -1 * size;
+    const offBottom = y > dimensions.height + size;
+    if (offLeftSide || offRightSide || offTop || offBottom) {
+      this.destroy();
+    }
+  }
+}

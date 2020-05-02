@@ -1,11 +1,13 @@
 import React from 'react';
 import {Dimensions, WorldState} from '../types';
 import {scale} from '../util/scale';
+import {FireballSpriteParams} from './Fireball';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface RyuProps {
   dimensions: Dimensions;
+  launchFireball: (params: FireballSpriteParams) => void;
 }
 
 interface RyuState {
@@ -18,11 +20,14 @@ interface RyuState {
 export class Ryu extends Sprite {
   private readonly chargeMinSize: number = 5;
   private readonly chargeMaxSize: number = 200;
+  private readonly launchFireball: (params: FireballSpriteParams) => void;
   private state: RyuState;
+  private maxChargeSize: number = 0;
 
   constructor(params: RyuProps) {
     super();
 
+    this.launchFireball = params.launchFireball;
     this.state = {
       x: params.dimensions.width / 2,
       y: params.dimensions.height - 50,
@@ -82,6 +87,26 @@ export class Ryu extends Sprite {
       Math.min(unboundedCargeSize, this.chargeMaxSize),
       this.chargeMinSize
     );
+
+    if (chargeSize > this.maxChargeSize) {
+      this.maxChargeSize = chargeSize;
+    }
+
+    if (chargeSize < 0.8 * this.maxChargeSize) {
+      this.launchFireball({
+        velocity: 10,
+        minSize: this.chargeMinSize,
+        maxSize: this.chargeMaxSize,
+        wave: world.audio.uintWave,
+        state: {
+          x: this.state.x,
+          y: this.state.y,
+          angle: (3 * Math.PI) / 2 // Facing up
+        }
+      });
+      this.maxChargeSize = 0;
+      this.state.chargeSize = 0;
+    }
 
     this.state = {
       ...this.state,
