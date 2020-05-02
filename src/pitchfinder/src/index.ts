@@ -6,6 +6,7 @@
 
 // const frequencies = require("./tools/frequencies");
 
+import {AMDF} from './detectors/amdf';
 import {acf2plus} from './detectors/acf2plus';
 
 // module.exports = {
@@ -18,5 +19,6 @@ import {acf2plus} from './detectors/acf2plus';
 // };
 
 export const Pitchfinder = {
-  acf2plus
+  acf2plus,
+  AMDF
 };

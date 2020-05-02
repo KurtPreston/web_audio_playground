@@ -1,12 +1,8 @@
-// const fs          = require("mz/fs");
-// const expect      = require("expect");
-// const Pitchfinder = require("../src");
-
 import path from 'path';
 import fs from 'fs';
 import WavDecoder from 'wav-decoder';
 import {Pitchfinder} from '../src';
-import { Detector } from '../src/detectors/types';
+import {Detector} from '../src/detectors/types';
 
 interface WavDecoderData {
   sampleRate: number;
@@ -35,7 +31,7 @@ const decode = async (buffer: Buffer): Promise<Float32Array> => {
 
 describe('Pitchfinder', () => {
   const detectors: {[name: string]: Detector} = {
-    // AMDF: Pitchfinder.AMDF(),
+    AMDF: Pitchfinder.AMDF(),
     // DynamicWavelet: Pitchfinder.DynamicWavelet(),
     // YIN: Pitchfinder.YIN(),
     // Macleod: Pitchfinder.Macleod(),
@@ -54,9 +50,11 @@ describe('Pitchfinder', () => {
           it(`Detects ${type} wave at ${hz} hz`, async () => {
             const buffer: Buffer = await readFileAsync('pitches', fileName);
             const audio: Float32Array = await decode(buffer);
-            const pitch: number = await detector(audio);
+            const pitch: number | null = await detector(audio);
 
-            if (pitch == null) throw new Error('No frequency detected');
+            if (pitch == null) {
+              throw new Error('No frequency detected');
+            }
             const diff = Math.abs(pitch - Number(hz));
             if (diff > 10) {
               throw new Error(`Too large an error - detected wave at ${hz} as ${pitch} hz`);
