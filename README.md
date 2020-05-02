@@ -2,6 +2,14 @@
 
 ## Notes
 
+### Super-Saiyan
+Character at bottom
+Evil floating thing at top, that goes back and forth between notes laid out on x-axis
+Player yells with Super-Saiyan charge up. The longer + louder, the larger their ball.
+When they release, the ball shoots towards the note board.
+Player tries to hit the villain by using volume to create more powerful balls
+
+### Wamdag Game
 Overhead view
 One player controls wamdag
 One person plays violin
