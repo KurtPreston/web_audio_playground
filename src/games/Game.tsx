@@ -73,7 +73,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     this.forceUpdate();
   }
 
-  private world(): WorldState {
+  protected world(): WorldState {
     return {
       dimensions: this.props.dimensions,
       audio: this.audioAnalyser

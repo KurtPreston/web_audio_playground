@@ -1,13 +1,13 @@
 import React from 'react';
 import tinycolor from 'tinycolor2';
-import {Dimensions, WorldState} from '../types';
+import {WorldState} from '../types';
 import {scale} from '../util/scale';
 import {FireballSpriteParams} from './Fireball';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface RyuProps {
-  dimensions: Dimensions;
+  world: WorldState;
   launchFireball: (params: FireballSpriteParams) => void;
 }
 
@@ -15,6 +15,7 @@ interface RyuState {
   x: number;
   y: number;
   chargeSize: number | null;
+  maxChargeWaveForm: Uint8Array;
   maxChargeSize: number;
   lastAmplitude: number;
 }
@@ -37,12 +38,15 @@ export class Ryu extends Sprite {
 
   constructor(params: RyuProps) {
     super();
+    const {world} = params;
+    const {dimensions, audio} = world;
 
     this.launchFireball = params.launchFireball;
     this.state = {
-      x: params.dimensions.width / 2,
-      y: params.dimensions.height - 50,
+      x: dimensions.width / 2,
+      y: dimensions.height - 50,
       chargeSize: null,
+      maxChargeWaveForm: new Uint8Array(audio.uintWave.length),
       maxChargeSize: 0,
       lastAmplitude: 0
     };
@@ -97,7 +101,12 @@ export class Ryu extends Sprite {
     const unboundedCargeSize = this.state.chargeSize ? this.state.chargeSize + growth : growth;
     let chargeSize = Math.max(Math.min(unboundedCargeSize, this.chargeMaxSize), this.chargeMinSize);
 
-    let maxChargeSize = Math.max(this.state.maxChargeSize, chargeSize);
+    let maxChargeSize = this.state.maxChargeSize;
+    let maxChargeWaveForm = this.state.maxChargeWaveForm;
+    if (chargeSize > maxChargeSize) {
+      maxChargeSize = chargeSize;
+      maxChargeWaveForm = world.audio.uintWave.slice(0);
+    }
 
     if (chargeSize < 0.99 * maxChargeSize && chargeSize > this.chargeMinLaunchSize) {
       const rippleSize = this.rippleRatio * chargeSize;
@@ -111,7 +120,7 @@ export class Ryu extends Sprite {
         }),
         minSize: chargeSize - rippleSize,
         maxSize: chargeSize + rippleSize,
-        wave: world.audio.uintWave,
+        wave: maxChargeWaveForm,
         state: {
           x: this.state.x,
           y: this.state.y,
@@ -127,6 +136,7 @@ export class Ryu extends Sprite {
       ...this.state,
       lastAmplitude: soundAmplitude,
       maxChargeSize,
+      maxChargeWaveForm,
       chargeSize
     };
   }

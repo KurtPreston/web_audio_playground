@@ -21,7 +21,7 @@ export class Hadouken extends Game<HadoukenState> {
   constructor(props: HadoukenProps) {
     super(props);
     this.player = new Ryu({
-      ...props,
+      world: this.world(),
       launchFireball: this.launchFireball
     });
     this.fireballs = new Set<Fireball>();
