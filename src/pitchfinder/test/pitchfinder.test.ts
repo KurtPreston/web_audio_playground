@@ -32,7 +32,7 @@ const decode = async (buffer: Buffer): Promise<Float32Array> => {
 describe('Pitchfinder', () => {
   const detectors: {[name: string]: Detector} = {
     AMDF: Pitchfinder.AMDF(),
-    // DynamicWavelet: Pitchfinder.DynamicWavelet(),
+    DynamicWavelet: Pitchfinder.DynamicWavelet(),
     YIN: Pitchfinder.YIN(),
     // Macleod: Pitchfinder.Macleod(),
     ACF2PLUS: Pitchfinder.acf2plus()
