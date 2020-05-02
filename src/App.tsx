@@ -5,6 +5,7 @@ import {Dimensions} from './types';
 import {ForestVisualizer} from './games/ForestVisualizer';
 
 export interface AppState {
+  requireClickToStart: boolean;
   dimensions: Dimensions;
   audioSource: AudioNode;
 }
@@ -15,6 +16,13 @@ export class App extends React.Component<{}, AppState> {
 
   public async componentDidMount() {
     window.addEventListener('resize', this.setDimensions);
+    if(navigator.mediaDevices) {
+      this.initializeAudio();
+    } else {
+      this.setState({
+        requireClickToStart: true
+      });
+    }
   }
 
   public render() {
@@ -28,7 +36,7 @@ export class App extends React.Component<{}, AppState> {
   private renderGame() {
     if (this.state && this.state.dimensions && this.state.audioSource) {
       return <ForestVisualizer {...this.state} />;
-    } else {
+    } else if (this.state && this.state.requireClickToStart) {
       return (
         <button className='start-btn' onClick={this.initializeAudio}>
           Enable micro&shy;phone
@@ -36,6 +44,9 @@ export class App extends React.Component<{}, AppState> {
           and click to start
         </button>
       );
+    } else {
+      // Waiting for audio to load
+      return null;
     }
   }
 
@@ -74,13 +85,17 @@ export class App extends React.Component<{}, AppState> {
 
     // Get from mic
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: false
-      }
+      audio: true
     });
     const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
 
+
     // Split audio into L/R channels
+    // const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
+    //   audio: {
+    //     echoCancellation: false
+    //   }
+    // })
     // const splitter = audioContext.createChannelSplitter(2);
     // const lAnalyser = audioContext.createAnalyser();
     // const rAnalyser = audioContext.createAnalyser();
