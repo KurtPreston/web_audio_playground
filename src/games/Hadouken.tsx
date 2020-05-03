@@ -1,9 +1,10 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
+import {objectInfoTable} from '../sprites/renderHelpers/objectInfoTable';
 import {Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions} from '../types';
+import {Dimensions, WorldState} from '../types';
 import {Game} from './Game';
 
 export interface HadoukenProps {
@@ -27,11 +28,12 @@ export class Hadouken extends Game<HadoukenState> {
     this.fireballs = new Set<Fireball>();
   }
 
-  protected menu() {
+  protected menu(world: WorldState) {
     return (
       <div>
         <h1>Hadouken</h1>
         <p>Charge your fireball like a super-saiyan</p>
+        {objectInfoTable(world.deviceOrientation)}
       </div>
     );
   }

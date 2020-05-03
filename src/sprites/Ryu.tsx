@@ -1,3 +1,4 @@
+import {isNumber} from 'lodash';
 import React from 'react';
 import tinycolor from 'tinycolor2';
 import {WorldState} from '../types';
@@ -32,6 +33,10 @@ export class Ryu extends Sprite {
   private readonly shrinkRate = 2;
   private readonly growthRate = 2.5;
   private readonly amplitudeThreshold = 0.1;
+
+  // Device orientation params
+  private readonly alphaTiltRange = 35;
+  private readonly gammaTiltRange = 30;
 
   // State
   private readonly launchFireball: (params: FireballSpriteParams) => void;
@@ -144,8 +149,42 @@ export class Ryu extends Sprite {
     let x = this.state.x;
     if (world.keysDown.has('ArrowLeft')) {
       x -= 10;
-    } else if (world.keysDown.has('ArrowRight')) {
+    }
+    if (world.keysDown.has('ArrowRight')) {
       x += 10;
+    }
+    if (isNumber(world.deviceOrientation.alpha)) {
+      const alpha: number =
+        world.deviceOrientation.alpha > 180
+          ? world.deviceOrientation.alpha - 360
+          : world.deviceOrientation.alpha || 0;
+
+      x += scale({
+        input: alpha,
+        inputMin: -1 * this.alphaTiltRange, // Comfortable axis of tilt
+        inputMax: this.alphaTiltRange,
+        outputMin: 10,
+        outputMax: -10,
+        expectOutOfBounds: true
+      });
+    }
+    if (world.deviceOrientation.gamma) {
+      // x += scale({
+      //   input: world.deviceOrientation.gamma || 0,
+      //   inputMin: -1 * this.gammaTiltRange,
+      //   inputMax: this.gammaTiltRange,
+      //   outputMin: -5,
+      //   outputMax: 5,
+      //   expectOutOfBounds: true
+      // });
+    }
+
+    if (x > world.dimensions.width) {
+      x = world.dimensions.width;
+    }
+
+    if (x < 0) {
+      x = 0;
     }
 
     this.state = {

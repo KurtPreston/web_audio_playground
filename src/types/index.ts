@@ -5,6 +5,7 @@ export interface WorldState {
   audio: AudioData;
   keysDown: Set<string>;
   keysPressedThisFrame: Set<string>;
+  deviceOrientation: DeviceOrientation;
 }
 
 export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;
@@ -41,4 +42,11 @@ export interface AudioData {
 
   // Calculated data
   notes: Note[];
+}
+
+export interface DeviceOrientation {
+  absolute: boolean;
+  alpha: number | null;
+  beta: number | null;
+  gamma: number | null;
 }

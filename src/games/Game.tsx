@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions, WorldState} from '../types';
+import {DeviceOrientation, Dimensions, WorldState} from '../types';
 import {AudioAnalyser} from '../util/AudioAnalyser';
 
 export interface GameProps {
@@ -11,13 +11,19 @@ export interface GameProps {
 
 @autobind
 export abstract class Game<TState> extends React.Component<GameProps, TState> {
-  protected abstract menu(): React.ReactNode;
+  protected abstract menu(world: WorldState): React.ReactNode;
   protected abstract sprites(): Sprite[];
 
   private readonly keysDown = new Set<string>();
   private readonly keysPressedThisFrame = new Set<string>();
   private gameLoop: NodeJS.Timeout | undefined;
   private readonly audioAnalyser: AudioAnalyser;
+  private readonly deviceOrientation: DeviceOrientation = {
+    alpha: null,
+    beta: null,
+    gamma: null,
+    absolute: false
+  };
 
   constructor(props: GameProps) {
     super(props);
@@ -29,12 +35,14 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     window.document.addEventListener('keydown', this.onKeyDown);
     window.document.addEventListener('keyup', this.onKeyUp);
     window.document.addEventListener('keypress', this.onKeyPress);
+    window.addEventListener('deviceorientation', this.onDeviceOrientation, false);
   }
 
   public componentWillUnmount() {
     window.document.removeEventListener('keydown', this.onKeyDown);
     window.document.removeEventListener('keyup', this.onKeyUp);
     window.document.removeEventListener('keypress', this.onKeyPress);
+    window.removeEventListener('deviceorientation', this.onDeviceOrientation);
   }
 
   public render(): React.ReactNode {
@@ -50,7 +58,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     const menu = (
       <div className='controls'>
-        {this.menu()}
+        {this.menu(world)}
         {this.renderPauseBtn()}
       </div>
     );
@@ -74,6 +82,14 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
   protected onKeyPress(event: KeyboardEvent) {
     this.keysPressedThisFrame.add(event.key);
+  }
+
+  protected onDeviceOrientation(event: DeviceOrientationEvent) {
+    const {alpha, beta, gamma, absolute} = event;
+    this.deviceOrientation.alpha = alpha;
+    this.deviceOrientation.beta = beta;
+    this.deviceOrientation.gamma = gamma;
+    this.deviceOrientation.absolute = absolute;
   }
 
   private renderPauseBtn() {
@@ -105,7 +121,8 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
       dimensions: this.props.dimensions,
       audio: this.audioAnalyser,
       keysDown: this.keysDown,
-      keysPressedThisFrame: this.keysPressedThisFrame
+      keysPressedThisFrame: this.keysPressedThisFrame,
+      deviceOrientation: this.deviceOrientation
     };
   }
 
