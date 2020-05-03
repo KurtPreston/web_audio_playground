@@ -10,6 +10,16 @@ main {
 
   display: flex;
 
+  .start-btn {
+    color: white;
+    text-shadow: 0 0 1px black;
+    font-size: 5rem;
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
   svg {
     flex: 1 1;
   }
