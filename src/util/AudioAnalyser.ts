@@ -3,7 +3,7 @@ import {Pitchfinder} from '../pitchfinder/src';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types';
 import {freqToMidiNote} from './midi';
-import {getNoteFrequencyRange, getNoteInfo, Note, NoteInfo} from './Note';
+import {getNoteFrequencyRange, Note} from './Note';
 import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
@@ -37,7 +37,7 @@ export class AudioAnalyser implements AudioData {
       sampleRate: audioSource.context.sampleRate
     });
 
-    // Allocate the memory for the array just once
+    // Allocate the memory for the arrays just once
     this._frequencies = new Uint8Array(analyser.frequencyBinCount);
     this._uint8Wave = new Uint8Array(analyser.fftSize);
     this._float32Wave = new Float32Array(analyser.fftSize);
@@ -46,6 +46,10 @@ export class AudioAnalyser implements AudioData {
 
   public reset() {
     this.valuesThisFrame = {};
+  }
+
+  public get sampleRate(): number {
+    return this.analyser.context.sampleRate;
   }
 
   public get frequencies(): Uint8Array {
@@ -90,7 +94,7 @@ export class AudioAnalyser implements AudioData {
     return this.valuesThisFrame.amplitude;
   }
 
-  public get notes(): NoteInfo[] {
+  public get notes(): Note[] {
     if (!this.valuesThisFrame.notes) {
       const freq = this.pitchDetector(this.floatWave);
       const note: Note | null = freq ? freqToMidiNote(freq) : null;
@@ -100,9 +104,7 @@ export class AudioAnalyser implements AudioData {
 
       const detectedNotes: Note[] = compact(this.lastDetectedNotes);
       const avgNote = mean(this.lastDetectedNotes);
-      this.valuesThisFrame.notes = isFinite(avgNote)
-        ? [getNoteInfo(Math.round(mean(detectedNotes)))]
-        : [];
+      this.valuesThisFrame.notes = isFinite(avgNote) ? [Math.round(mean(detectedNotes))] : [];
     }
 
     return this.valuesThisFrame.notes;
@@ -110,42 +112,39 @@ export class AudioAnalyser implements AudioData {
 
   public amplitudeAtNote(note: number): number {
     const [lowFreq, highFreq] = getNoteFrequencyRange(note);
-    const value = this.frequencyRangeMax(lowFreq, highFreq);
+    const value = this.frequencyRangeRms(lowFreq, highFreq);
     return scale({
       input: value,
       inputMin: 0,
       inputMax: 255,
       outputMin: 0,
-      outputMax: 1
+      outputMax: 1,
+      logarithmic: true
     });
   }
 
-  private frequencyRangeMax(lowFreq: number, highFreq: number): number {
-    const lowIdx = Math.round(lowFreq / this.hzPerIdx);
-    const highIdx = Math.round(highFreq / this.hzPerIdx);
-    const {frequencies} = this;
-    let max = frequencies[lowIdx];
-    for (let idx = lowIdx + 1; idx < highIdx; idx++) {
-      const value = frequencies[idx];
-      if (value > max) {
-        max = frequencies[idx];
-      }
+  // Returns total RMS level 0 - 255
+  public get rms(): number {
+    if (!this.valuesThisFrame.rms) {
+      const rms = this.frequencyRangeRms(0, this.sampleRate);
+      this.valuesThisFrame.rms = rms;
     }
 
-    return max;
+    return this.valuesThisFrame.rms;
   }
 
-  public frequencyRangeAvg(lowFreq: number, highFreq: number) {
-    const lowIdx = Math.round(lowFreq / this.hzPerIdx);
-    const highIdx = Math.round(highFreq / this.hzPerIdx);
-    const {frequencies} = this;
-    let total = frequencies[lowIdx];
-    for (let idx = lowIdx + 1; idx < highIdx; idx++) {
-      const value = frequencies[idx];
-      total += value;
+  // Returns RMS level 0 - 255
+  private frequencyRangeRms(lowFreq: number, highFreq: number): number {
+    const {hzPerIdx, frequencies} = this;
+    const lowIdx = Math.max(Math.round(lowFreq / hzPerIdx), 0);
+    const highIdx = Math.min(Math.round(highFreq / hzPerIdx), frequencies.length - 1);
+    let sum = 0;
+    const range = highIdx - lowIdx + 1;
+    for (let i = lowIdx; i <= highIdx; i++) {
+      const amp = frequencies[i];
+      sum += amp * amp;
     }
 
-    const mean = total / (highIdx - lowIdx + 1);
-    return mean;
+    return Math.sqrt(sum / range);
   }
 }

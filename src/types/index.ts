@@ -1,4 +1,4 @@
-import {Note, NoteInfo} from '../util/Note';
+import {Note} from '../util/Note';
 
 export interface WorldState {
   dimensions: Dimensions;
@@ -23,11 +23,20 @@ export interface Dimensions {
 }
 
 export interface AudioData {
-  amplitudeAtNote(note: Note): number;
+  // Waves
   frequencies: Uint8Array;
   uintWave: Uint8Array;
   floatWave: Float32Array;
-  amplitude: number; // 0 - 1
+
+  // Stream Info
+  sampleRate: number;
   hzPerIdx: number;
-  notes: NoteInfo[];
+
+  // Current volume
+  amplitude: number; // 0 - 1
+  rms: number; // 0 - 255
+  amplitudeAtNote(note: Note): number;
+
+  // Calculated data
+  notes: Note[];
 }

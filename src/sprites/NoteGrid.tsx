@@ -4,7 +4,7 @@ import React from 'react';
 import {WorldState} from '../types';
 
 import {midiNoteToFreq} from '../util/midi';
-import {getNoteName, Note, NoteInfo} from '../util/Note';
+import {getNoteName, Note} from '../util/Note';
 import './NoteGrid.scss';
 import {Sprite} from './Sprite';
 
@@ -28,7 +28,7 @@ export class NoteGrid extends Sprite {
       const y = rowHeight * row;
 
       const noteAmplitude = audio.amplitudeAtNote(note);
-      const isNote = audio.notes.find(({midi}: NoteInfo) => midi === note);
+      const isNote = audio.notes.find((midi: Note) => midi === note);
 
       const style: React.CSSProperties = isNote
         ? {}
