@@ -1,4 +1,5 @@
 import React from 'react';
+import {ouroboros} from '../../util/ouroboros';
 import {scale} from '../../util/scale';
 
 interface CircularPathParams {
@@ -11,15 +12,29 @@ interface CircularPathParams {
   angle?: number;
   className?: string;
   style?: React.CSSProperties;
+  tailSmoothing?: number; // number of data points to average between tail and head
 }
 
 export function circularPath(params: CircularPathParams): React.ReactElement<SVGPathElement> {
   const {className, cx, cy, key, minSize, maxSize, style, wave} = params;
   const angle = params.angle || 0;
+  const tailSmoothing: number = params.tailSmoothing || Math.round(wave.length * 0.1);
+  const size = Math.max(wave.length - tailSmoothing, 0);
 
-  const coords: {x: number; y: number}[] = new Array(wave.length);
+  const coords: {x: number; y: number}[] = new Array(size);
 
-  params.wave.forEach((amplitude: number, idx: number) => {
+  wave.forEach((amplitude: number, idx: number) => {
+    if (tailSmoothing) {
+      if (idx <= tailSmoothing) {
+        // For first n elements, average with last n
+        amplitude = ouroboros(wave, idx, tailSmoothing);
+      }
+    }
+
+    if (idx >= size) {
+      return;
+    }
+
     const r = scale({
       input: amplitude,
       inputMin: 0,
@@ -30,7 +45,7 @@ export function circularPath(params: CircularPathParams): React.ReactElement<SVG
     const pointAngle = scale({
       input: idx,
       inputMin: 0,
-      inputMax: wave.length - 1,
+      inputMax: size - 1,
       outputMin: angle,
       outputMax: 2 * Math.PI + angle
     });
@@ -42,7 +57,7 @@ export function circularPath(params: CircularPathParams): React.ReactElement<SVG
     };
   });
 
-  const last = coords[coords.length - 1];
+  const last = size >= 1 ? coords[size - 1] : {x: 0, y: 0};
   const circularFrequencyMeter = [
     `M${last.x},${last.y}`,
     ...coords.map(({x, y}) => {
