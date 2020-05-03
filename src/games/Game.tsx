@@ -14,6 +14,8 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   protected abstract menu(): React.ReactNode;
   protected abstract sprites(): Sprite[];
 
+  private readonly keysDown = new Set<string>();
+  private readonly keysPressedThisFrame = new Set<string>();
   private gameLoop: NodeJS.Timeout | undefined;
   private readonly audioAnalyser: AudioAnalyser;
 
@@ -24,6 +26,15 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
   public componentDidMount() {
     this.runGame();
+    window.document.addEventListener('keydown', this.onKeyDown);
+    window.document.addEventListener('keyup', this.onKeyUp);
+    window.document.addEventListener('keypress', this.onKeyPress);
+  }
+
+  public componentWillUnmount() {
+    window.document.removeEventListener('keydown', this.onKeyDown);
+    window.document.removeEventListener('keyup', this.onKeyUp);
+    window.document.removeEventListener('keypress', this.onKeyPress);
   }
 
   public render(): React.ReactNode {
@@ -52,6 +63,19 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     );
   }
 
+  // Override in subclasses
+  protected onKeyDown(event: KeyboardEvent) {
+    this.keysDown.add(event.key);
+  }
+
+  protected onKeyUp(event: KeyboardEvent) {
+    this.keysDown.delete(event.key);
+  }
+
+  protected onKeyPress(event: KeyboardEvent) {
+    this.keysPressedThisFrame.add(event.key);
+  }
+
   private renderPauseBtn() {
     if (!this.gameLoop) {
       return <button onClick={this.runGame}>Start</button>;
@@ -69,6 +93,9 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     const world = this.world();
     sprites.forEach((sprite) => sprite.tick(world));
 
+    // Clear out key presses
+    this.keysPressedThisFrame.clear();
+
     // Re-render
     this.forceUpdate();
   }
@@ -76,7 +103,9 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   protected world(): WorldState {
     return {
       dimensions: this.props.dimensions,
-      audio: this.audioAnalyser
+      audio: this.audioAnalyser,
+      keysDown: this.keysDown,
+      keysPressedThisFrame: this.keysPressedThisFrame
     };
   }
 

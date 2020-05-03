@@ -141,8 +141,16 @@ export class Ryu extends Sprite {
       chargeSize = 0;
     }
 
+    let x = this.state.x;
+    if (world.keysDown.has('ArrowLeft')) {
+      x -= 10;
+    } else if (world.keysDown.has('ArrowRight')) {
+      x += 10;
+    }
+
     this.state = {
       ...this.state,
+      x,
       lastAmplitude: soundAmplitude,
       maxAmplitude,
       maxChargeSize,

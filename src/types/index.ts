@@ -3,6 +3,8 @@ import {Note} from '../util/Note';
 export interface WorldState {
   dimensions: Dimensions;
   audio: AudioData;
+  keysDown: Set<string>;
+  keysPressedThisFrame: Set<string>;
 }
 
 export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;
