@@ -1,7 +1,7 @@
 import {map} from 'lodash';
 import React from 'react';
 
-export function objectInfoTable<T extends object>(data: T): React.ReactElement<HTMLTableElement> {
+export function objectInfoTable(data: any): React.ReactElement<HTMLTableElement> {
   return (
     <table>
       <tbody>

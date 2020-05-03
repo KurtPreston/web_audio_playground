@@ -18,12 +18,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private readonly keysPressedThisFrame = new Set<string>();
   private gameLoop: NodeJS.Timeout | undefined;
   private readonly audioAnalyser: AudioAnalyser;
-  private readonly deviceOrientation: DeviceOrientation = {
-    alpha: null,
-    beta: null,
-    gamma: null,
-    absolute: false
-  };
+  private deviceOrientation: DeviceOrientation | undefined;
 
   constructor(props: GameProps) {
     super(props);
@@ -85,11 +80,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   }
 
   protected onDeviceOrientation(event: DeviceOrientationEvent) {
-    const {alpha, beta, gamma, absolute} = event;
-    this.deviceOrientation.alpha = alpha;
-    this.deviceOrientation.beta = beta;
-    this.deviceOrientation.gamma = gamma;
-    this.deviceOrientation.absolute = absolute;
+    this.deviceOrientation = event;
   }
 
   private renderPauseBtn() {

@@ -5,7 +5,7 @@ export interface WorldState {
   audio: AudioData;
   keysDown: Set<string>;
   keysPressedThisFrame: Set<string>;
-  deviceOrientation: DeviceOrientation;
+  deviceOrientation: DeviceOrientation | undefined;
 }
 
 export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;

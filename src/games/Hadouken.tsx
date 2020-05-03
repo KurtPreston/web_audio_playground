@@ -1,7 +1,6 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
-import {objectInfoTable} from '../sprites/renderHelpers/objectInfoTable';
 import {Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
 import {Dimensions, WorldState} from '../types';
@@ -33,7 +32,6 @@ export class Hadouken extends Game<HadoukenState> {
       <div>
         <h1>Hadouken</h1>
         <p>Charge your fireball like a super-saiyan</p>
-        {objectInfoTable(world.deviceOrientation)}
       </div>
     );
   }

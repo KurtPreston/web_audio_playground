@@ -1,7 +1,7 @@
-import {isNumber} from 'lodash';
 import React from 'react';
 import tinycolor from 'tinycolor2';
 import {WorldState} from '../types';
+import {spin} from '../util/deviceOrientation';
 import {scale} from '../util/scale';
 import {FireballSpriteParams} from './Fireball';
 import {circularPath} from './renderHelpers/circularPath';
@@ -35,8 +35,8 @@ export class Ryu extends Sprite {
   private readonly amplitudeThreshold = 0.1;
 
   // Device orientation params
-  private readonly alphaTiltRange = 35;
-  private readonly gammaTiltRange = 30;
+  private readonly tiltRange = 35;
+  private readonly maxVelocity = 15;
 
   // State
   private readonly launchFireball: (params: FireballSpriteParams) => void;
@@ -153,30 +153,17 @@ export class Ryu extends Sprite {
     if (world.keysDown.has('ArrowRight')) {
       x += 10;
     }
-    if (isNumber(world.deviceOrientation.alpha)) {
-      const alpha: number =
-        world.deviceOrientation.alpha > 180
-          ? world.deviceOrientation.alpha - 360
-          : world.deviceOrientation.alpha || 0;
+    if (world.deviceOrientation) {
+      const tilt = spin(world.deviceOrientation);
 
       x += scale({
-        input: alpha,
-        inputMin: -1 * this.alphaTiltRange, // Comfortable axis of tilt
-        inputMax: this.alphaTiltRange,
-        outputMin: 10,
-        outputMax: -10,
+        input: tilt,
+        inputMin: -1 * this.tiltRange, // Comfortable axis of tilt
+        inputMax: this.tiltRange,
+        outputMin: -1 * this.maxVelocity,
+        outputMax: this.maxVelocity,
         expectOutOfBounds: true
       });
-    }
-    if (world.deviceOrientation.gamma) {
-      // x += scale({
-      //   input: world.deviceOrientation.gamma || 0,
-      //   inputMin: -1 * this.gammaTiltRange,
-      //   inputMax: this.gammaTiltRange,
-      //   outputMin: -5,
-      //   outputMax: 5,
-      //   expectOutOfBounds: true
-      // });
     }
 
     if (x > world.dimensions.width) {
