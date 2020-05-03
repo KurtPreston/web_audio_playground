@@ -7,8 +7,28 @@ main {
   background-image: url('./images/backgroundDarkWatercolor.jpg');
   background-size: cover;
   overflow: hidden;
-
   display: flex;
+
+  nav {
+    flex: 1 1;
+    padding: 5rem;
+    height: 100%;
+    width: 100%;
+
+    ul {
+      display: grid;
+      list-style: none;
+
+      li {
+        font-size: 3rem;
+
+        a {
+          color: white;
+          text-decoration: none;
+        }
+      }
+    }
+  }
 
   .start-btn {
     color: white;

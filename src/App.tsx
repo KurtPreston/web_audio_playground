@@ -34,12 +34,12 @@ export class App extends React.Component<{}, AppState> {
   public render() {
     return (
       <div className='App'>
-        <main ref={this.mainRefFn}>{this.renderGame()}</main>
+        <main ref={this.mainRefFn}>{this.renderMenu()}</main>
       </div>
     );
   }
 
-  private renderGame() {
+  private renderMenu() {
     if (this.state?.dimensions && this.state?.audioSource?.context.state === 'running') {
       return this.renderRouter();
     } else {
@@ -56,19 +56,17 @@ export class App extends React.Component<{}, AppState> {
   private renderRouter() {
     return (
       <Router>
-        <div>
-          {/* A <Switch> looks through its children <Route>s and
-          renders the first one that matches the current URL. */}
-          <Switch>
-            <Route path='/demo'>
-              <ForestVisualizer {...this.state} />
-            </Route>
-            <Route path='/hadouken'>
-              <Hadouken {...this.state} />
-            </Route>
-            <Route path='/'>{this.nav()}</Route>
-          </Switch>
-        </div>
+        {/* A <Switch> looks through its children <Route>s and
+        renders the first one that matches the current URL. */}
+        <Switch>
+          <Route path='/demo'>
+            <ForestVisualizer {...this.state} />
+          </Route>
+          <Route path='/hadouken'>
+            <Hadouken {...this.state} />
+          </Route>
+          <Route path='/'>{this.nav()}</Route>
+        </Switch>
       </Router>
     );
   }
