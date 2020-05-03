@@ -117,7 +117,12 @@ export class App extends React.Component<{}, AppState> {
     //   return;
     // }
 
+    if (window.location.protocol !== 'https:') {
+      window.location.protocol = 'https:';
+    }
+
     if (!navigator.mediaDevices) {
+      console.warn('No media devices available');
       this.setState({
         requireClickToStart: true
       });
