@@ -60,11 +60,14 @@ export class Fireball extends Sprite {
   public tick(world: WorldState) {
     const {dimensions} = world;
     const size = this.params.maxSize;
+
+    // Spin + move
     this.params.state = {
       ...this.ticker(this.params.state, world),
       spinAngle: this.params.state.spinAngle + this.params.spinMomentum
     };
 
+    // Destroy if out-of-bounds
     const {x, y} = this.params.state;
     const offLeftSide = x < -1 * size;
     const offRightSide = x > dimensions.width + size;

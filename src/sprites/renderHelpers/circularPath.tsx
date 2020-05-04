@@ -12,7 +12,12 @@ interface CircularPathParams {
   angle?: number;
   className?: string;
   style?: React.CSSProperties;
-  tailSmoothing?: number; // number of data points to average between tail and head
+
+  /**
+   * To prevent head from not aligning with tail, tail smoothing removes n items from the tail
+   * and averages them with the head using the ouroboros function, smoothing the loop close
+   */
+  tailSmoothing?: number;
 }
 
 export function circularPath(params: CircularPathParams): React.ReactElement<SVGPathElement> {
