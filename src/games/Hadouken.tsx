@@ -15,14 +15,32 @@ export interface HadoukenState {}
 
 @autobind
 export class Hadouken extends Game<HadoukenState> {
-  private readonly player: Ryu;
+  private readonly player1: Ryu;
+  private readonly player2: Ryu;
   private readonly fireballs: Set<Fireball>;
 
   constructor(props: HadoukenProps) {
     super(props);
-    this.player = new Ryu({
+    const {dimensions} = props;
+
+    this.player1 = new Ryu({
       world: this.world(),
-      launchFireball: this.launchFireball
+      launchFireball: this.launchFireball,
+      position: {
+        x: dimensions.width / 2,
+        y: dimensions.height - 50
+      },
+      angle: (3 * Math.PI) / 2 // facing up
+    });
+
+    this.player2 = new Ryu({
+      world: this.world(),
+      launchFireball: this.launchFireball,
+      position: {
+        x: dimensions.width / 2,
+        y: 50
+      },
+      angle: Math.PI / 2 // facing down
     });
     this.fireballs = new Set<Fireball>();
   }
@@ -38,7 +56,7 @@ export class Hadouken extends Game<HadoukenState> {
 
   protected sprites(): Sprite[] {
     const fireballs: Fireball[] = Array.from(this.fireballs.values());
-    return [this.player, ...fireballs];
+    return [this.player1, this.player2, ...fireballs];
   }
 
   private launchFireball(params: FireballSpriteParams) {

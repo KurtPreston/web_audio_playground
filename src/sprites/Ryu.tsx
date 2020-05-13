@@ -1,5 +1,5 @@
 import React from 'react';
-import {WorldState} from '../types';
+import {IPosition, WorldState} from '../types';
 import {spin} from '../util/deviceOrientation';
 import {scale} from '../util/scale';
 import {ChargingFireball} from './ChargingFireball';
@@ -9,11 +9,8 @@ import {Sprite} from './Sprite';
 export interface RyuProps {
   world: WorldState;
   launchFireball: (params: FireballSpriteParams) => void;
-}
-
-interface RyuState {
-  x: number;
-  y: number;
+  position: IPosition;
+  angle: number;
 }
 
 export class Ryu extends Sprite {
@@ -23,22 +20,20 @@ export class Ryu extends Sprite {
 
   // State
   private readonly launchFireball: (params: FireballSpriteParams) => void;
-  private readonly state: RyuState;
+  private readonly position: IPosition;
+  private readonly angle: number;
   private fireball: ChargingFireball;
 
   constructor(params: RyuProps) {
     super();
-    const {world} = params;
-    const {dimensions} = world;
+    const {angle, position, world} = params;
 
+    this.position = position;
+    this.angle = angle;
     this.launchFireball = params.launchFireball;
-    this.state = {
-      x: dimensions.width / 2,
-      y: dimensions.height - 50
-    };
     this.fireball = new ChargingFireball({
       wave: world.audio.uintWave,
-      position: this.state
+      position
     });
   }
 
@@ -52,7 +47,7 @@ export class Ryu extends Sprite {
 
   public tick(world: WorldState) {
     // Adjust x position
-    let x = this.state.x;
+    let x = this.position.x;
     if (world.keysDown.has('ArrowLeft')) {
       x -= 10;
     }
@@ -80,16 +75,22 @@ export class Ryu extends Sprite {
       x = 0;
     }
 
-    this.state.x = x;
+    this.position.x = x;
 
     // Launch fireball
     this.fireball.tick(world);
     if (this.fireball.shouldLaunch()) {
       const params = this.fireball.launchParams();
-      this.launchFireball(params);
+      this.launchFireball({
+        ...params,
+        state: {
+          ...params.state,
+          angle: this.angle
+        }
+      });
       this.fireball = new ChargingFireball({
         wave: world.audio.uintWave,
-        position: this.state
+        position: this.position
       });
     }
   }
