@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
-import {Ryu} from '../sprites/Ryu';
+import {inputPositionController, randomPositionController, Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
 import {Dimensions, WorldState} from '../types';
 import {Game} from './Game';
@@ -30,7 +30,8 @@ export class Hadouken extends Game<HadoukenState> {
         x: dimensions.width / 2,
         y: dimensions.height - 50
       },
-      angle: (3 * Math.PI) / 2 // facing up
+      angle: (3 * Math.PI) / 2, // facing up.
+      positionController: inputPositionController
     });
 
     this.player2 = new Ryu({
@@ -40,7 +41,8 @@ export class Hadouken extends Game<HadoukenState> {
         x: dimensions.width / 2,
         y: 50
       },
-      angle: Math.PI / 2 // facing down
+      angle: Math.PI / 2, // facing down,
+      positionController: randomPositionController
     });
     this.fireballs = new Set<Fireball>();
   }

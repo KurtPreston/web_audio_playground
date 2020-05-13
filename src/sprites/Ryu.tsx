@@ -1,3 +1,4 @@
+import {random} from 'lodash';
 import React from 'react';
 import {IPosition, WorldState} from '../types';
 import {spin} from '../util/deviceOrientation';
@@ -10,24 +11,25 @@ export interface RyuProps {
   world: WorldState;
   launchFireball: (params: FireballSpriteParams) => void;
   position: IPosition;
+  positionController: PositionController;
   angle: number;
 }
 
-export class Ryu extends Sprite {
-  // Device orientation params
-  private readonly tiltRange = 35;
-  private readonly maxVelocity = 15;
+export type PositionController = (x: number, world: WorldState) => number;
 
+export class Ryu extends Sprite {
   // State
   private readonly launchFireball: (params: FireballSpriteParams) => void;
   private readonly position: IPosition;
+  private readonly positionController: PositionController;
   private readonly angle: number;
   private fireball: ChargingFireball;
 
   constructor(params: RyuProps) {
     super();
-    const {angle, position, world} = params;
+    const {angle, position, positionController, world} = params;
 
+    this.positionController = positionController;
     this.position = position;
     this.angle = angle;
     this.launchFireball = params.launchFireball;
@@ -47,35 +49,7 @@ export class Ryu extends Sprite {
 
   public tick(world: WorldState) {
     // Adjust x position
-    let x = this.position.x;
-    if (world.keysDown.has('ArrowLeft')) {
-      x -= 10;
-    }
-    if (world.keysDown.has('ArrowRight')) {
-      x += 10;
-    }
-    if (world.deviceOrientation) {
-      const tilt = spin(world.deviceOrientation);
-
-      x += scale({
-        input: tilt,
-        inputMin: -1 * this.tiltRange, // Comfortable axis of tilt
-        inputMax: this.tiltRange,
-        outputMin: -1 * this.maxVelocity,
-        outputMax: this.maxVelocity,
-        expectOutOfBounds: true
-      });
-    }
-
-    if (x > world.dimensions.width) {
-      x = world.dimensions.width;
-    }
-
-    if (x < 0) {
-      x = 0;
-    }
-
-    this.position.x = x;
+    this.position.x = this.positionController(this.position.x, world);
 
     // Launch fireball
     this.fireball.tick(world);
@@ -95,3 +69,58 @@ export class Ryu extends Sprite {
     }
   }
 }
+
+const maxVelocity = 15;
+
+export const inputPositionController: PositionController = (
+  x: number,
+  world: WorldState
+): number => {
+  const tiltRange = 35;
+
+  if (world.keysDown.has('ArrowLeft')) {
+    x -= maxVelocity;
+  }
+  if (world.keysDown.has('ArrowRight')) {
+    x += maxVelocity;
+  }
+  if (world.deviceOrientation) {
+    const tilt = spin(world.deviceOrientation);
+
+    x += scale({
+      input: tilt,
+      inputMin: -1 * tiltRange, // Comfortable axis of tilt
+      inputMax: tiltRange,
+      outputMin: -1 * maxVelocity,
+      outputMax: maxVelocity,
+      expectOutOfBounds: true
+    });
+  }
+
+  if (x > world.dimensions.width) {
+    x = world.dimensions.width;
+  }
+
+  if (x < 0) {
+    x = 0;
+  }
+
+  return x;
+};
+
+export const randomPositionController: PositionController = (
+  x: number,
+  world: WorldState
+): number => {
+  x += random(-1 * maxVelocity, maxVelocity, true);
+
+  if (x > world.dimensions.width) {
+    x = world.dimensions.width;
+  }
+
+  if (x < 0) {
+    x = 0;
+  }
+
+  return x;
+};
