@@ -11,6 +11,11 @@ export interface WorldState {
 export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;
 
 // Sprite states
+export interface IPosition {
+  x: number;
+  y: number;
+}
+
 export interface IWanderer {
   x: number;
   y: number;
