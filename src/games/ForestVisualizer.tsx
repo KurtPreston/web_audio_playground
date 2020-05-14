@@ -1,6 +1,7 @@
 import {autobind} from 'core-decorators';
 import {flatten, isBoolean, isEqual, times, values, without} from 'lodash';
 import React from 'react';
+import {Background} from '../sprites/Background';
 import {Circle} from '../sprites/Circle';
 import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
@@ -18,6 +19,7 @@ type ActiveSprites = {
   circles: Sprite[];
   noteGrid: Sprite[];
   spectrogram: Sprite[];
+  background: Sprite[];
 };
 
 interface Options {
@@ -37,6 +39,21 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
       spectrogram: true
     },
     sprites: {
+      background: [
+        new Background({}, 0),
+        new Background(
+          {
+            mixBlendMode: 'soft-light'
+          },
+          0.4
+        ),
+        new Background(
+          {
+            mixBlendMode: 'exclusion'
+          },
+          -0.8
+        )
+      ],
       flower: [],
       circles: [],
       noteGrid: [],
@@ -59,6 +76,7 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
     const {dimensions} = this.props;
 
     const newSprites: ActiveSprites = {
+      background: [],
       flower: [],
       circles: [],
       noteGrid: [],
@@ -92,6 +110,8 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
         );
       }
     );
+
+    newSprites.background = sprites.background;
 
     this.setState({
       sprites: newSprites
