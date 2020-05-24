@@ -40,6 +40,6 @@ export class Background extends Sprite {
   }
 
   public tick(world: WorldState) {
-    this.angle += this.angularVelocity;
+    this.angle += this.angularVelocity * world.audio.amplitude;
   }
 }
