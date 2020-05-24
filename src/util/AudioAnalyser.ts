@@ -1,3 +1,4 @@
+import {autobind} from 'core-decorators';
 import {compact, mean} from 'lodash';
 import {Pitchfinder} from '../pitchfinder/src';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
@@ -12,6 +13,7 @@ export type FftSize = 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16
 
 export const NOTE_FRAMES_TO_AVG = 10;
 
+@autobind
 export class AudioAnalyser implements AudioData {
   // References
   private readonly analyser: AnalyserNode;
@@ -96,7 +98,7 @@ export class AudioAnalyser implements AudioData {
 
   public get notes(): Note[] {
     if (!this.valuesThisFrame.notes) {
-      const freq = this.pitchDetector(this.floatWave);
+      const freq = this.peakFreq;
       const note: Note | null = freq ? freqToMidiNote(freq) : null;
 
       this.lastDetectedNotes.shift();
@@ -108,6 +110,14 @@ export class AudioAnalyser implements AudioData {
     }
 
     return this.valuesThisFrame.notes;
+  }
+
+  public get peakFreq(): number | null {
+    if (!this.valuesThisFrame.peakFreq) {
+      this.valuesThisFrame.peakFreq = this.pitchDetector(this.floatWave);
+    }
+
+    return this.valuesThisFrame.peakFreq;
   }
 
   public amplitudeAtNote(note: number): number {

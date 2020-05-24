@@ -46,6 +46,7 @@ export interface AudioData {
   amplitudeAtNote(note: Note): number;
 
   // Calculated data
+  peakFreq: number | null;
   notes: Note[];
 }
 
