@@ -14,7 +14,7 @@ export class NoteGrid extends Sprite {
   public render(world: WorldState): React.ReactElement<SVGElement> {
     const {audio, dimensions} = world;
     const {width, height} = dimensions;
-    const lowOctave = 3;
+    const lowOctave = 2;
     const highOctave = 8;
     const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
 

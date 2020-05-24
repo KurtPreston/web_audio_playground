@@ -33,7 +33,7 @@ export class AudioAnalyser implements AudioData {
     analyser.fftSize = fftSize;
     this.analyser = analyser;
 
-    this.pitchDetector = Pitchfinder.DynamicWavelet({
+    this.pitchDetector = Pitchfinder.AMDF({
       sampleRate: audioSource.context.sampleRate
     });
 
