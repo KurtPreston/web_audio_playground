@@ -61,7 +61,14 @@ export class NoteGrid extends Sprite {
           outputMax: colWidth,
           overflowMode: OverflowMode.Overflow
         });
-        peakFreqCircle = <circle cx={cx + xOffset} cy={cy + 20} r={5} className='peak-freq' />;
+        peakFreqCircle = (
+          <g className='peak-freq'>
+            <circle cx={x + xOffset} cy={cy + 20} r={5} />;
+            <text x={x + xOffset} y={cy + 40}>
+              {Math.round(peakFreq)}
+            </text>
+          </g>
+        );
       }
 
       return (

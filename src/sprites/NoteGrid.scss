@@ -5,7 +5,14 @@
     }
 
     .peak-freq {
-      fill: 'red';
+      circle {
+        fill: 'red';
+      }
+
+      text {
+        fill: black;
+        font-size: 4rem;
+      }
     }
 
     &.active {

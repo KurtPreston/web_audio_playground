@@ -35,8 +35,8 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
     options: {
       flower: false,
       circles: 0,
-      noteGrid: false,
-      spectrogram: true
+      noteGrid: true,
+      spectrogram: false
     },
     sprites: {
       background: [
