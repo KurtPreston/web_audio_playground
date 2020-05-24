@@ -4,6 +4,10 @@
       fill: white;
     }
 
+    .peak-freq {
+      fill: 'red';
+    }
+
     &.active {
       text {
         font-size: 1.5rem;

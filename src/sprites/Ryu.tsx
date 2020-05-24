@@ -2,7 +2,7 @@ import {random} from 'lodash';
 import React from 'react';
 import {IPosition, WorldState} from '../types';
 import {spin} from '../util/deviceOrientation';
-import {scale} from '../util/scale';
+import {OverflowMode, scale} from '../util/scale';
 import {ChargingFireball} from './ChargingFireball';
 import {FireballSpriteParams} from './Fireball';
 import {Sprite} from './Sprite';
@@ -93,7 +93,7 @@ export const inputPositionController: PositionController = (
       inputMax: tiltRange,
       outputMin: -1 * maxVelocity,
       outputMax: maxVelocity,
-      expectOutOfBounds: true
+      overflowMode: OverflowMode.Constrain
     });
   }
 

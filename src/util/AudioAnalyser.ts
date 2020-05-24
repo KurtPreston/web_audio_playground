@@ -113,7 +113,7 @@ export class AudioAnalyser implements AudioData {
   }
 
   public get peakFreq(): number | null {
-    if (!this.valuesThisFrame.peakFreq) {
+    if (typeof this.valuesThisFrame.peakFreq === 'undefined') {
       this.valuesThisFrame.peakFreq = this.pitchDetector(this.floatWave);
     }
 

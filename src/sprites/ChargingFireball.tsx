@@ -2,7 +2,7 @@ import {random} from 'lodash';
 import React from 'react';
 import tinycolor from 'tinycolor2';
 import {IPosition, WorldState} from '../types';
-import {scale} from '../util/scale';
+import {OverflowMode, scale} from '../util/scale';
 import {FireballSpriteParams} from './Fireball';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
@@ -69,7 +69,7 @@ export class ChargingFireball extends Sprite {
             inputMax: 1,
             outputMin: 0,
             outputMax: this.growthRate,
-            expectOutOfBounds: true
+            overflowMode: OverflowMode.Constrain
           })
         : scale({
             input: amplitudeDelta,
@@ -77,7 +77,7 @@ export class ChargingFireball extends Sprite {
             inputMax: 0,
             outputMin: -1 * this.shrinkRate,
             outputMax: 0,
-            expectOutOfBounds: true
+            overflowMode: OverflowMode.Constrain
           });
 
     const unboundedCargeSize = this.chargeSize ? this.chargeSize + growth : growth;
@@ -108,7 +108,7 @@ export class ChargingFireball extends Sprite {
         inputMax: this.chargeMinLaunchSize,
         outputMin: 0,
         outputMax: 100,
-        expectOutOfBounds: true
+        overflowMode: OverflowMode.Constrain
       });
       return {
         fill: tinycolor.mix('#000', '#00a', blend).toHexString(),
@@ -122,7 +122,7 @@ export class ChargingFireball extends Sprite {
         inputMax: this.chargeMaxSize,
         outputMin: 0,
         outputMax: 100,
-        expectOutOfBounds: true
+        overflowMode: OverflowMode.Constrain
       });
       return {
         fill: tinycolor.mix('#00f', '#f00', blend).toHexString(),

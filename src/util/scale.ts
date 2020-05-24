@@ -5,24 +5,40 @@ export interface ScaleProps {
   outputMin: number;
   outputMax: number;
   logarithmic?: boolean;
-  expectOutOfBounds?: boolean;
+  overflowMode?: OverflowMode;
+}
+
+export enum OverflowMode {
+  Warn,
+  Constrain,
+  Overflow
 }
 
 export function scale(props: ScaleProps): number {
-  const {input, inputMin, inputMax, outputMin, outputMax, logarithmic, expectOutOfBounds} = props;
-  if (input > inputMax) {
-    if (!expectOutOfBounds) {
-      console.warn('scale() received out-of-bounds input', props);
-      debugger;
+  const {
+    input,
+    inputMin,
+    inputMax,
+    outputMin,
+    outputMax,
+    logarithmic,
+    overflowMode = OverflowMode.Warn
+  } = props;
+  if (overflowMode === OverflowMode.Warn || overflowMode === OverflowMode.Constrain) {
+    if (input > inputMax) {
+      if (overflowMode === OverflowMode.Warn) {
+        console.warn('scale() received out-of-bounds input', props);
+        debugger;
+      }
+      return outputMax;
     }
-    return outputMax;
-  }
-  if (input < inputMin) {
-    if (!expectOutOfBounds) {
-      console.warn('scale() received out-of-bounds input', props);
-      debugger;
+    if (input < inputMin) {
+      if (overflowMode === OverflowMode.Warn) {
+        console.warn('scale() received out-of-bounds input', props);
+        debugger;
+      }
+      return outputMin;
     }
-    return outputMin;
   }
 
   const inputRange = inputMax - inputMin;
