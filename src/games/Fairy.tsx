@@ -4,18 +4,13 @@ import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions, WorldState} from '../types';
+import {WorldState} from '../types';
 import {Game, GameProps} from './Game';
 
-export interface HadoukenProps {
-  dimensions: Dimensions;
-  audioSource: AudioNode;
-}
-
-export interface HadoukenState {}
+interface FairyState {}
 
 @autobind
-export class Fairy extends Game<HadoukenState> {
+export class Fairy extends Game<FairyState> {
   private readonly player: FlyingWamdag;
   private readonly noteGrid: NoteGrid;
   private readonly circles: Set<Circle> = new Set<Circle>();
@@ -23,8 +18,11 @@ export class Fairy extends Game<HadoukenState> {
   constructor(props: GameProps) {
     super(props);
     const {dimensions} = props;
-    this.player = new FlyingWamdag({dimensions});
     this.noteGrid = new NoteGrid();
+    this.player = new FlyingWamdag({
+      dimensions,
+      noteGrid: this.noteGrid
+    });
   }
 
   protected menu(world: WorldState) {
@@ -38,6 +36,6 @@ export class Fairy extends Game<HadoukenState> {
 
   protected sprites(): Sprite[] {
     const circles: Circle[] = Array.from(this.circles.values());
-    return [this.player, this.noteGrid, ...circles];
+    return [this.noteGrid, this.player, ...circles];
   }
 }

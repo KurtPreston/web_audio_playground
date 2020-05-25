@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import {range} from 'lodash';
 import React from 'react';
-import {WorldState} from '../types';
+import {AudioData, IPosition, WorldState} from '../types';
 
 import {midiNoteToFreq} from '../util/midi';
 import {getNoteFrequencyRange, getNoteName, Note} from '../util/Note';
@@ -10,84 +10,122 @@ import './NoteGrid.scss';
 import {Sprite} from './Sprite';
 
 export class NoteGrid extends Sprite {
-  public tick() {}
+  public peakFreqPosition: IPosition | null = null;
+  private readonly lowOctave = 2;
+  private readonly highOctave = 6;
+
+  private colWidth: number = 0;
+  private rowHeight: number = 0;
+
+  public tick(world: WorldState) {
+    const {width, height} = world.dimensions;
+    const {peakFreq, notes} = world.audio;
+    const {lowOctave, highOctave} = this;
+
+    // Adjust width & height to dimensions
+    this.colWidth = width / 12;
+    this.rowHeight = height / (highOctave - lowOctave + 1);
+
+    // Set peakFreqIndicator
+    if (notes.length && peakFreq) {
+      const note: Note = notes[0];
+      const [lowFreq, highFreq] = getNoteFrequencyRange(note);
+      const {xMin, xMax, yMin, yMax} = this.notePosition(note);
+      const x = scale({
+        input: peakFreq,
+        inputMin: lowFreq,
+        inputMax: highFreq,
+        outputMin: xMin,
+        outputMax: xMax,
+        overflowMode: OverflowMode.Overflow
+      });
+      const y = (yMin + yMax) / 2;
+
+      this.peakFreqPosition = {
+        x,
+        y
+      };
+    }
+  }
 
   public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {audio, dimensions} = world;
-    const {width, height} = dimensions;
-    const lowOctave = 2;
-    const highOctave = 6;
+    const {peakFreq} = world.audio;
+    const {lowOctave, highOctave} = this;
     const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
+    const boxes = notes.map((note: Note) => this.renderNote(note, world.audio));
 
-    const colWidth = width / 12;
-    const rowHeight = height / (highOctave - lowOctave + 1);
-
-    const boxes = notes.map((note: Note, idx: number) => {
-      const col = idx % 12;
-      const row = Math.floor(idx / 12);
-      const x = colWidth * col;
-      const y = rowHeight * row;
-
-      const {peakFreq, amplitudeAtNote, notes} = audio;
-      const noteAmplitude = amplitudeAtNote(note);
-      const isNote = notes.includes(note);
-
-      const style: React.CSSProperties = isNote
-        ? {}
-        : {
-            opacity: noteAmplitude
-          };
-
-      const noteName = getNoteName(note);
-      const freq = Math.round(midiNoteToFreq(note));
-
-      const cx = x + colWidth / 2;
-      const cy = y + rowHeight / 2;
-
-      const className = classnames({
-        'note-grid-cell': true,
-        active: isNote
-      });
-
-      let peakFreqCircle: React.ReactNode = null;
-
-      if (isNote && peakFreq) {
-        const [inputMin, inputMax] = getNoteFrequencyRange(note);
-        const xOffset = scale({
-          input: peakFreq,
-          inputMin,
-          inputMax,
-          outputMin: 0,
-          outputMax: colWidth,
-          overflowMode: OverflowMode.Overflow
-        });
-        peakFreqCircle = (
-          <g className='peak-freq'>
-            <circle cx={x + xOffset} cy={cy + 20} r={5} />;
-            <text x={x + xOffset} y={cy + 40}>
-              {Math.round(peakFreq)}
-            </text>
-          </g>
-        );
-      }
-
-      return (
-        <g key={note} className={className}>
-          <rect key={note} x={x} y={y} width={colWidth} height={rowHeight} style={style} />
-          <text x={cx} y={cy - 10}>
-            {noteName}
+    let peakFreqCircle: React.ReactNode = null;
+    if (this.peakFreqPosition && peakFreq) {
+      const {x, y} = this.peakFreqPosition;
+      peakFreqCircle = (
+        <g className='peak-freq'>
+          <circle cx={x} cy={y} r={5} />;
+          <text x={x} y={y + 40}>
+            {Math.round(peakFreq)}
           </text>
-          <text x={cx} y={cy + 10}>
-            {freq}
-          </text>
-          {peakFreqCircle}
         </g>
       );
-    });
+    }
 
     return (
       <g key={this.id} className='note-grid'>
         {boxes}
+        {peakFreqCircle}
+      </g>
+    );
+  }
+
+  private notePosition(note: Note) {
+    const col = note % 12;
+    const row = Math.floor(note / 12 - this.lowOctave - 1);
+    const xMin = this.colWidth * col;
+    const yMin = this.rowHeight * row;
+    const xMax = xMin + this.colWidth;
+    const yMax = yMin + this.rowHeight;
+
+    return {
+      col,
+      row,
+      xMin,
+      xMax,
+      yMin,
+      yMax
+    };
+  }
+
+  private renderNote(note: Note, audio: AudioData) {
+    const {colWidth, rowHeight} = this;
+    const {xMin, yMin} = this.notePosition(note);
+    const {amplitudeAtNote, notes} = audio;
+    const noteAmplitude = amplitudeAtNote(note);
+    const isNote = notes.includes(note);
+
+    const style: React.CSSProperties = isNote
+      ? {}
+      : {
+          opacity: noteAmplitude
+        };
+
+    const noteName = getNoteName(note);
+    const freq = Math.round(midiNoteToFreq(note));
+
+    const cx = xMin + colWidth / 2;
+    const cy = yMin + rowHeight / 2;
+
+    const className = classnames({
+      'note-grid-cell': true,
+      active: isNote
+    });
+
+    return (
+      <g key={note} className={className}>
+        <rect key={note} x={xMin} y={yMin} width={colWidth} height={rowHeight} style={style} />
+        <text x={cx} y={cy - 10}>
+          {noteName}
+        </text>
+        <text x={cx} y={cy + 10}>
+          {freq}
+        </text>
       </g>
     );
   }
