@@ -88,7 +88,14 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
     }
 
     if (options.noteGrid) {
-      newSprites.noteGrid = sprites.noteGrid.length ? sprites.noteGrid : [new NoteGrid()];
+      newSprites.noteGrid = sprites.noteGrid.length
+        ? sprites.noteGrid
+        : [
+            new NoteGrid({
+              lowOctave: 2,
+              highOctave: 6
+            })
+          ];
     }
 
     if (options.spectrogram) {

@@ -9,13 +9,24 @@ import {OverflowMode, scale} from '../util/scale';
 import './NoteGrid.scss';
 import {Sprite} from './Sprite';
 
+export interface NoteGridParams {
+  lowOctave: number;
+  highOctave: number;
+}
+
 export class NoteGrid extends Sprite {
   public peakFreqPosition: IPosition | null = null;
-  private readonly lowOctave = 2;
-  private readonly highOctave = 6;
+  private readonly lowOctave: number;
+  private readonly highOctave: number;
 
   private colWidth: number = 0;
   private rowHeight: number = 0;
+
+  constructor(params: NoteGridParams) {
+    super();
+    this.lowOctave = params.lowOctave;
+    this.highOctave = params.highOctave;
+  }
 
   public tick(world: WorldState) {
     const {width, height} = world.dimensions;

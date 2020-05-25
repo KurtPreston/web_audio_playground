@@ -18,7 +18,10 @@ export class Fairy extends Game<FairyState> {
   constructor(props: GameProps) {
     super(props);
     const {dimensions} = props;
-    this.noteGrid = new NoteGrid();
+    this.noteGrid = new NoteGrid({
+      lowOctave: 2,
+      highOctave: 4
+    });
     this.player = new FlyingWamdag({
       dimensions,
       noteGrid: this.noteGrid
