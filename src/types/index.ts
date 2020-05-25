@@ -22,6 +22,11 @@ export interface IWanderer {
   angle: number;
 }
 
+export interface IVector {
+  xMomentum: number;
+  yMomentum: number;
+}
+
 export interface INoteGrid {}
 
 // App types

@@ -2,6 +2,7 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
+import {Fairy} from './games/Fairy';
 import {ForestVisualizer} from './games/ForestVisualizer';
 import {Hadouken} from './games/Hadouken';
 import {Dimensions} from './types';
@@ -65,6 +66,9 @@ export class App extends React.Component<{}, AppState> {
           <Route path='/hadouken'>
             <Hadouken {...this.state} />
           </Route>
+          <Route path='/fairy'>
+            <Fairy {...this.state} />
+          </Route>
           <Route path='/'>{this.nav()}</Route>
         </Switch>
       </Router>
@@ -80,6 +84,9 @@ export class App extends React.Component<{}, AppState> {
           </li>
           <li>
             <Link to='/hadouken'>Hadouken</Link>
+          </li>
+          <li>
+            <Link to='/fairy'>Fairy</Link>
           </li>
         </ul>
       </nav>

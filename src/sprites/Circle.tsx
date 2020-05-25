@@ -9,7 +9,7 @@ import {Sprite} from './Sprite';
 export interface CircleParams {
   dimensions: Dimensions;
   bounceOffEdge: boolean;
-  destroy: (sprite: Sprite) => boolean;
+  destroy: (sprite: Circle) => boolean;
 }
 
 interface CircleState extends IWanderer {
