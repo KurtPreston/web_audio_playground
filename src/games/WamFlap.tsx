@@ -9,10 +9,10 @@ import {Sprite} from '../sprites/Sprite';
 import {WorldState} from '../types';
 import {Game, GameProps} from './Game';
 
-interface WamFlapState {}
+interface WamflapState {}
 
 @autobind
-export class WamFlap extends Game<WamFlapState> {
+export class Wamflap extends Game<WamflapState> {
   private readonly player: FlyingWamdag;
   private readonly noteGrid: NoteGrid;
   private readonly circles: Set<Circle> = new Set<Circle>();
@@ -64,10 +64,6 @@ export class WamFlap extends Game<WamFlapState> {
         <p>Try to collect all the circles</p>
       </div>
     );
-  }
-
-  private powerUpWamdag() {
-    this.player.powerUp();
   }
 
   protected sprites(): Sprite[] {
