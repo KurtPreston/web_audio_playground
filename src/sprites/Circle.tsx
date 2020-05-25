@@ -1,5 +1,4 @@
-import {random, sample} from 'lodash';
-import React from 'react';
+import {random} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {randomColor} from '../util/color';
@@ -17,11 +16,14 @@ interface CircleState extends IWanderer {
 }
 
 export class Circle extends Sprite {
+  // State
   public state: CircleState;
+
+  // Constants
   private readonly minSize = 15;
   private readonly maxSize = 60;
   private readonly color = randomColor();
-  private readonly mixBlendMode: string = sample(['color-dodge', 'color-burn']) as string;
+  private readonly mixBlendMode = 'color-dodge';
   private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
   private readonly destroy: () => boolean;

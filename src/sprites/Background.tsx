@@ -1,19 +1,24 @@
 import React from 'react';
-import BackgroundLayer from '../images/background_watercolor_layer.png';
+import BackgroundLayer from '../images/backgroundDarkWatercolor.jpg';
 import {WorldState} from '../types';
 import {Sprite} from './Sprite';
 
 export class Background extends Sprite {
   private angle = 0;
+  private loadedImage: HTMLImageElement;
 
   constructor(
     private readonly style: React.CSSProperties,
     private readonly angularVelocity: number
   ) {
     super();
+    this.loadedImage = new Image();
+    this.loadedImage.src = BackgroundLayer;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    const {width, height} = world.dimensions;
+    canvas.drawImage(this.loadedImage, 0, 0, width, height);
     // const {dimensions} = world;
     // const {width, height} = dimensions;
     // const maxDimension = Math.max(width, height) * Math.sqrt(2);

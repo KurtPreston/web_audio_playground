@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import React, {CanvasHTMLAttributes} from 'react';
+import React from 'react';
 import {Sprite} from '../sprites/Sprite';
 import {DeviceOrientation, Dimensions, WorldState} from '../types';
 import {AudioAnalyser} from '../util/AudioAnalyser';
@@ -106,6 +106,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     // Re-render
     if (this.canvasCtx) {
+      this.canvasCtx.globalCompositeOperation = 'normal';
       this.canvasCtx.clearRect(0, 0, world.dimensions.width, world.dimensions.height);
       sprites.forEach((sprite) => sprite.render(this.canvasCtx as CanvasRenderingContext2D, world));
     }

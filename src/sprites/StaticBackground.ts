@@ -1,0 +1,19 @@
+import {WorldState} from '../types';
+import {Sprite} from './Sprite';
+
+export class StaticBackground extends Sprite {
+  private loadedImage: HTMLImageElement;
+
+  constructor(imageSrc: string) {
+    super();
+    this.loadedImage = new Image();
+    this.loadedImage.src = imageSrc;
+  }
+
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    const {width, height} = world.dimensions;
+    canvas.drawImage(this.loadedImage, 0, 0, width, height);
+  }
+
+  public tick(world: WorldState) {}
+}

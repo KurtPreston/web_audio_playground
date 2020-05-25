@@ -1,11 +1,13 @@
 import {autobind} from 'core-decorators';
 import {times} from 'lodash';
 import React from 'react';
+import backgroundDarkWaterColor from '../images/backgroundDarkWatercolor.jpg';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {distanceBetween} from '../sprites/renderHelpers/distanceBetween';
 import {Sprite} from '../sprites/Sprite';
+import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
 import {Game, GameProps} from './Game';
 
@@ -15,6 +17,7 @@ interface WamflapState {}
 export class Wamflap extends Game<WamflapState> {
   private readonly player: FlyingWamdag;
   private readonly noteGrid: NoteGrid;
+  private readonly bg: StaticBackground;
   private readonly circles: Set<Circle> = new Set<Circle>();
 
   constructor(props: GameProps) {
@@ -29,6 +32,7 @@ export class Wamflap extends Game<WamflapState> {
       dimensions,
       noteGrid: this.noteGrid
     });
+    this.bg = new StaticBackground(backgroundDarkWaterColor);
 
     times(5, () => {
       this.circles.add(
@@ -68,6 +72,6 @@ export class Wamflap extends Game<WamflapState> {
 
   protected sprites(): Sprite[] {
     const circles: Circle[] = Array.from(this.circles.values());
-    return [this.noteGrid, ...circles, this.player];
+    return [this.bg, this.noteGrid, ...circles, this.player];
   }
 }
