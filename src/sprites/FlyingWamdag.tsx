@@ -20,8 +20,8 @@ const flyingWamdagSvgs = [flyingWamdagSvg1, flyingWamdagSvg2, flyingWamdagSvg3, 
 @autobind
 export class FlyingWamdag extends Sprite {
   // Constants
-  private readonly force: number = 1;
-  private readonly maxVelocity = 6;
+  private readonly force: number = 0.7;
+  private readonly maxVelocity = 10;
   private readonly animationFrameRate = 4; // change every 4 frames
 
   // State
