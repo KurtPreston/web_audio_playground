@@ -1,4 +1,5 @@
 import {autobind} from 'core-decorators';
+import {times} from 'lodash';
 import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
@@ -27,6 +28,20 @@ export class Fairy extends Game<FairyState> {
       dimensions,
       noteGrid: this.noteGrid
     });
+
+    times(5, () => {
+      this.circles.add(
+        new Circle({
+          dimensions,
+          bounceOffEdge: true,
+          destroy: this.destroyCircle
+        })
+      );
+    });
+  }
+
+  private destroyCircle(circle: Circle) {
+    return this.circles.delete(circle);
   }
 
   protected menu(world: WorldState) {
