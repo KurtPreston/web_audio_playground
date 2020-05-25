@@ -4,6 +4,7 @@ import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {NoteGrid} from '../sprites/NoteGrid';
+import {distanceBetween} from '../sprites/renderHelpers/distanceBetween';
 import {Sprite} from '../sprites/Sprite';
 import {WorldState} from '../types';
 import {Game, GameProps} from './Game';
@@ -40,6 +41,17 @@ export class Fairy extends Game<FairyState> {
     });
   }
 
+  protected gameTick(world: WorldState) {
+    this.circles.forEach((circle: Circle) => {
+      const {size, ...circlePosition} = circle.state;
+      const distance = distanceBetween(circlePosition, this.player.position);
+      if (distance < size) {
+        this.circles.delete(circle);
+        this.player.powerUp();
+      }
+    });
+  }
+
   private destroyCircle(circle: Circle) {
     return this.circles.delete(circle);
   }
@@ -51,6 +63,10 @@ export class Fairy extends Game<FairyState> {
         <p>Collect the circles by singing a note.</p>
       </div>
     );
+  }
+
+  private powerUpWamdag() {
+    this.player.powerUp();
   }
 
   protected sprites(): Sprite[] {

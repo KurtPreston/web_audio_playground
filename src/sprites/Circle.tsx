@@ -17,7 +17,7 @@ interface CircleState extends IWanderer {
 }
 
 export class Circle extends Sprite {
-  private state: CircleState;
+  public state: CircleState;
   private readonly minSize = 15;
   private readonly maxSize = 60;
   private readonly style: React.CSSProperties = {

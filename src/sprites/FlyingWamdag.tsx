@@ -5,6 +5,7 @@ import flyingWamdagSvg2 from '../images/flyingWamdag2.svg';
 import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
 import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
+import {scale} from '../util/scale';
 import './FlyingWamdag.scss';
 import {NoteGrid} from './NoteGrid';
 import {circularPath} from './renderHelpers/circularPath';
@@ -23,12 +24,14 @@ export class FlyingWamdag extends Sprite {
   private readonly force: number = 0.7;
   private readonly maxVelocity = 10;
   private readonly animationFrameRate = 4; // change every 4 frames
+  private readonly numPowerUpFrames = 15;
 
   // State
-  private position: IPosition;
+  public position: IPosition;
   private target: IPosition;
   private vector: IVector;
   private animationFrame: number = 0;
+  private framesSincePowerUp: number = Number.POSITIVE_INFINITY;
 
   // Referenced sprites
   private noteGrid: NoteGrid;
@@ -61,6 +64,10 @@ export class FlyingWamdag extends Sprite {
     this.noteGrid = params.noteGrid;
   }
 
+  public powerUp() {
+    this.framesSincePowerUp = 0;
+  }
+
   public render(world: WorldState): React.ReactElement<SVGElement> {
     const targetIndicator = circularPath({
       cx: this.target.x,
@@ -76,6 +83,7 @@ export class FlyingWamdag extends Sprite {
       <g key={this.id}>
         {this.svgDefs}
         {targetIndicator}
+        {this.renderPowerUp()}
         {this.renderFlyingWamdags()}
       </g>
     );
@@ -116,6 +124,27 @@ export class FlyingWamdag extends Sprite {
     });
   }
 
+  private renderPowerUp(): React.ReactNode {
+    if (this.framesSincePowerUp < this.numPowerUpFrames) {
+      const value = scale({
+        input: this.framesSincePowerUp,
+        inputMin: 0,
+        inputMax: this.numPowerUpFrames - 1,
+        outputMin: 0,
+        outputMax: Math.PI
+      });
+
+      return (
+        <circle
+          className='flying-wamdag-power-up'
+          cx={this.position.x}
+          cy={this.position.y}
+          r={Math.sin(value) * 80}
+        />
+      );
+    }
+  }
+
   public tick(world: WorldState) {
     const {width, height} = world.dimensions;
     const {noteGrid, position, target, vector} = this;
@@ -123,6 +152,7 @@ export class FlyingWamdag extends Sprite {
     if (world.frameNum % this.animationFrameRate === 0) {
       this.animationFrame = (this.animationFrame + 1) % flyingWamdagSvgs.length;
     }
+    this.framesSincePowerUp++;
 
     // Adjust target
     if (noteGrid.peakFreqPosition) {

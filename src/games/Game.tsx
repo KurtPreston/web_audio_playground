@@ -100,6 +100,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     // Update sprites
     const sprites = this.sprites();
     const world = this.world();
+    this.gameTick(world);
     sprites.forEach((sprite) => sprite.tick(world));
 
     // Clear out key presses
@@ -107,6 +108,10 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     // Re-render
     this.forceUpdate();
+  }
+
+  protected gameTick(world: WorldState) {
+    // Override in subclasses
   }
 
   protected world(): WorldState {
