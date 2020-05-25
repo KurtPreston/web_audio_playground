@@ -63,6 +63,10 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
   private canvasRefFn(ref: HTMLCanvasElement) {
     this.canvasCtx = ref.getContext('2d');
+    if (this.canvasCtx) {
+      this.canvasCtx.globalCompositeOperation = 'normal';
+      this.canvasCtx.save();
+    }
   }
 
   // Override in subclasses
@@ -109,6 +113,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     if (canvasCtx) {
       canvasCtx.clearRect(0, 0, world.dimensions.width, world.dimensions.height);
       sprites.forEach((sprite) => {
+        canvasCtx.restore();
         canvasCtx.globalCompositeOperation = 'normal';
         sprite.render(canvasCtx, world);
       });

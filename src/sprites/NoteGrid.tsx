@@ -63,7 +63,7 @@ export class NoteGrid extends Sprite {
     // const {peakFreq} = world.audio;
     const {lowOctave, highOctave} = this;
     const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
-    notes.forEach((note: Note) => this.renderNote(note, world.audio, canvas));
+    notes.forEach((note: Note) => this.drawNoteBox(note, world.audio, canvas));
     // let peakFreqCircle: React.ReactNode = null;
     // if (this.peakFreqPosition && peakFreq && this.showPitchIndicator) {
     //   const {x, y} = this.peakFreqPosition;
@@ -102,7 +102,7 @@ export class NoteGrid extends Sprite {
     };
   }
 
-  private renderNote(note: Note, audio: AudioData, canvas: CanvasRenderingContext2D) {
+  private drawNoteBox(note: Note, audio: AudioData, canvas: CanvasRenderingContext2D) {
     const {colWidth, rowHeight} = this;
     const {xMin, yMin} = this.notePosition(note);
     const {amplitudeAtNote, notes} = audio;
@@ -114,11 +114,6 @@ export class NoteGrid extends Sprite {
 
     const cx = xMin + colWidth / 2;
     const cy = yMin + rowHeight / 2;
-
-    // const className = classnames({
-    //   'note-grid-cell': true,
-    //   active: isNote
-    // });
 
     // Draw rectangle
     if (isNote) {
@@ -143,16 +138,5 @@ export class NoteGrid extends Sprite {
     canvas.fillText(noteName, cx, cy - 5);
     canvas.textBaseline = 'top';
     canvas.fillText(freq.toString(), cx, cy + 5);
-    // return (
-    //   <g key={note} className={className}>
-    //     <rect key={note} x={xMin} y={yMin} width={colWidth} height={rowHeight} style={style} />
-    //     <text x={cx} y={cy - 10}>
-    //       {noteName}
-    //     </text>
-    //     <text x={cx} y={cy + 10}>
-    //       {freq}
-    //     </text>
-    //   </g>
-    // );
   }
 }
