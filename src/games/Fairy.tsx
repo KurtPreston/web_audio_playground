@@ -55,6 +55,6 @@ export class Fairy extends Game<FairyState> {
 
   protected sprites(): Sprite[] {
     const circles: Circle[] = Array.from(this.circles.values());
-    return [this.noteGrid, this.player, ...circles];
+    return [this.noteGrid, ...circles, this.player];
   }
 }
