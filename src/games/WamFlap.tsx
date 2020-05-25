@@ -9,10 +9,10 @@ import {Sprite} from '../sprites/Sprite';
 import {WorldState} from '../types';
 import {Game, GameProps} from './Game';
 
-interface FairyState {}
+interface WamFlapState {}
 
 @autobind
-export class Fairy extends Game<FairyState> {
+export class WamFlap extends Game<WamFlapState> {
   private readonly player: FlyingWamdag;
   private readonly noteGrid: NoteGrid;
   private readonly circles: Set<Circle> = new Set<Circle>();
@@ -59,8 +59,9 @@ export class Fairy extends Game<FairyState> {
   protected menu(world: WorldState) {
     return (
       <div>
-        <h1>Fairy</h1>
-        <p>Collect the circles by singing a note.</p>
+        <h1>Wamflap</h1>
+        <p>Guide the wamdag by singing or playing an instrument</p>
+        <p>Try to collect all the circles</p>
       </div>
     );
   }
