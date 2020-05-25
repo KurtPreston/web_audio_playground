@@ -75,8 +75,8 @@ export class FlyingWamdag extends Sprite {
     return (
       <g key={this.id}>
         {this.svgDefs}
-        {this.renderFlyingWamdags()}
         {targetIndicator}
+        {this.renderFlyingWamdags()}
       </g>
     );
   }
