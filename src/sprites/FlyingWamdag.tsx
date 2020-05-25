@@ -3,6 +3,7 @@ import React from 'react';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import './FlyingWamdag.scss';
 import {NoteGrid} from './NoteGrid';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface FlyingWamdagParams {
@@ -44,10 +45,20 @@ export class FlyingWamdag extends Sprite {
   }
 
   public render(world: WorldState): React.ReactElement<SVGElement> {
+    const targetIndicator = circularPath({
+      cx: this.target.x,
+      cy: this.target.y,
+      wave: world.audio.uintWave,
+      minSize: 3,
+      maxSize: 45 * world.audio.amplitude,
+      className: 'flying-wamdag-target',
+      key: 'flying-wamdag-target'
+    });
+
     return (
       <g key={this.id}>
         <circle className='flying-wamdag' cx={this.position.x} cy={this.position.y} r={10} />;
-        <circle className='flying-wamdag-target' cx={this.target.x} cy={this.target.y} r={5} />;
+        {targetIndicator}
       </g>
     );
   }
