@@ -13,30 +13,27 @@ export class Background extends Sprite {
     super();
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {dimensions} = world;
-    const {width, height} = dimensions;
-
-    const maxDimension = Math.max(width, height) * Math.sqrt(2);
-    const xOverflow = Math.abs(maxDimension - width) / 2;
-    const yOverflow = Math.abs(maxDimension - height) / 2;
-
-    const midPointX = maxDimension / 2 - xOverflow;
-    const midPointY = maxDimension / 2 - yOverflow;
-
-    return (
-      <image
-        key={this.id}
-        x={-1 * xOverflow}
-        y={-1 * yOverflow}
-        width={maxDimension}
-        height={maxDimension}
-        href={BackgroundLayer}
-        preserveAspectRatio={'xMaxYMin slice'}
-        transform={`rotate(${this.angle} ${midPointX} ${midPointY})`}
-        style={this.style}
-      />
-    );
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // const {dimensions} = world;
+    // const {width, height} = dimensions;
+    // const maxDimension = Math.max(width, height) * Math.sqrt(2);
+    // const xOverflow = Math.abs(maxDimension - width) / 2;
+    // const yOverflow = Math.abs(maxDimension - height) / 2;
+    // const midPointX = maxDimension / 2 - xOverflow;
+    // const midPointY = maxDimension / 2 - yOverflow;
+    // return (
+    //   <image
+    //     key={this.id}
+    //     x={-1 * xOverflow}
+    //     y={-1 * yOverflow}
+    //     width={maxDimension}
+    //     height={maxDimension}
+    //     href={BackgroundLayer}
+    //     preserveAspectRatio={'xMaxYMin slice'}
+    //     transform={`rotate(${this.angle} ${midPointX} ${midPointY})`}
+    //     style={this.style}
+    //   />
+    // );
   }
 
   public tick(world: WorldState) {

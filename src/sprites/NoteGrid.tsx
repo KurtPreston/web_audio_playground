@@ -62,31 +62,29 @@ export class NoteGrid extends Sprite {
     }
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {peakFreq} = world.audio;
-    const {lowOctave, highOctave} = this;
-    const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
-    const boxes = notes.map((note: Note) => this.renderNote(note, world.audio));
-
-    let peakFreqCircle: React.ReactNode = null;
-    if (this.peakFreqPosition && peakFreq && this.showPitchIndicator) {
-      const {x, y} = this.peakFreqPosition;
-      peakFreqCircle = (
-        <g className='peak-freq'>
-          <circle cx={x} cy={y} r={5} />;
-          <text x={x} y={y + 40}>
-            {Math.round(peakFreq)}
-          </text>
-        </g>
-      );
-    }
-
-    return (
-      <g key={this.id} className='note-grid'>
-        {boxes}
-        {peakFreqCircle}
-      </g>
-    );
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // const {peakFreq} = world.audio;
+    // const {lowOctave, highOctave} = this;
+    // const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
+    // const boxes = notes.map((note: Note) => this.renderNote(note, world.audio));
+    // let peakFreqCircle: React.ReactNode = null;
+    // if (this.peakFreqPosition && peakFreq && this.showPitchIndicator) {
+    //   const {x, y} = this.peakFreqPosition;
+    //   peakFreqCircle = (
+    //     <g className='peak-freq'>
+    //       <circle cx={x} cy={y} r={5} />;
+    //       <text x={x} y={y + 40}>
+    //         {Math.round(peakFreq)}
+    //       </text>
+    //     </g>
+    //   );
+    // }
+    // return (
+    //   <g key={this.id} className='note-grid'>
+    //     {boxes}
+    //     {peakFreqCircle}
+    //   </g>
+    // );
   }
 
   private notePosition(note: Note) {

@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import React from 'react';
+import React, {CanvasHTMLAttributes} from 'react';
 import {Sprite} from '../sprites/Sprite';
 import {DeviceOrientation, Dimensions, WorldState} from '../types';
 import {AudioAnalyser} from '../util/AudioAnalyser';
@@ -20,6 +20,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private readonly audioAnalyser: AudioAnalyser;
   private deviceOrientation: DeviceOrientation | undefined;
   private frameNum: number = 0;
+  private canvasCtx: CanvasRenderingContext2D | null = null;
 
   constructor(props: GameProps) {
     super(props);
@@ -46,12 +47,6 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     const world: WorldState = this.world();
 
-    const svg = (
-      <svg height={height} width={width}>
-        {this.sprites().map((s) => s.render(world))}
-      </svg>
-    );
-
     const menu = (
       <div className='controls'>
         {this.menu(world)}
@@ -61,10 +56,13 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     return (
       <div className='game'>
-        {svg}
-        {menu}
+        <canvas height={height} width={width} ref={this.canvasRefFn} />;{menu}
       </div>
     );
+  }
+
+  private canvasRefFn(ref: HTMLCanvasElement) {
+    this.canvasCtx = ref.getContext('2d');
   }
 
   // Override in subclasses
@@ -107,7 +105,10 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     this.keysPressedThisFrame.clear();
 
     // Re-render
-    this.forceUpdate();
+    if (this.canvasCtx) {
+      this.canvasCtx.clearRect(0, 0, world.dimensions.width, world.dimensions.height);
+      sprites.forEach((sprite) => sprite.render(this.canvasCtx as CanvasRenderingContext2D, world));
+    }
   }
 
   protected gameTick(world: WorldState) {

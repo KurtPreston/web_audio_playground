@@ -42,19 +42,18 @@ export class Fireball extends Sprite {
     this.destroy = () => destroy(this);
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {wave, state, minSize, maxSize, style} = this.params;
-
-    return circularPath({
-      wave,
-      cx: state.x,
-      cy: state.y,
-      minSize,
-      maxSize,
-      key: this.id,
-      angle: state.spinAngle,
-      style
-    });
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // const {wave, state, minSize, maxSize, style} = this.params;
+    // return circularPath({
+    //   wave,
+    //   cx: state.x,
+    //   cy: state.y,
+    //   minSize,
+    //   maxSize,
+    //   key: this.id,
+    //   angle: state.spinAngle,
+    //   style
+    // });
   }
 
   public tick(world: WorldState) {

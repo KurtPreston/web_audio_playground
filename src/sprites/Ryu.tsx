@@ -39,12 +39,12 @@ export class Ryu extends Sprite {
     });
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    if (this.fireball) {
-      return <g key={this.id}>{this.fireball.render(world)}</g>;
-    } else {
-      return <g key={this.id} />;
-    }
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // if (this.fireball) {
+    //   return <g key={this.id}>{this.fireball.render(world)}</g>;
+    // } else {
+    //   return <g key={this.id} />;
+    // }
   }
 
   public tick(world: WorldState) {

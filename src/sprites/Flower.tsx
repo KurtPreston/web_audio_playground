@@ -31,32 +31,30 @@ export class Flower extends Sprite {
     };
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {audio} = world;
-    const {amplitude, frequencies} = audio;
-    const maxFlowerSize = scale({
-      input: amplitude,
-      inputMin: 0,
-      inputMax: 1,
-      outputMin: this.minSize,
-      outputMax: this.maxSize,
-      logarithmic: true
-    });
-
-    const frequencyGroups = chunk(frequencies, frequencies.length / this.numFlowers);
-    const flowerRings = frequencyGroups.map((group, groupIdx) => {
-      return circularPath({
-        cx: this.state.x,
-        cy: this.state.y,
-        minSize: 0,
-        maxSize: maxFlowerSize,
-        className: 'flower',
-        key: groupIdx,
-        wave: group
-      });
-    });
-
-    return <g key={this.id}>{flowerRings}</g>;
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // const {audio} = world;
+    // const {amplitude, frequencies} = audio;
+    // const maxFlowerSize = scale({
+    //   input: amplitude,
+    //   inputMin: 0,
+    //   inputMax: 1,
+    //   outputMin: this.minSize,
+    //   outputMax: this.maxSize,
+    //   logarithmic: true
+    // });
+    // const frequencyGroups = chunk(frequencies, frequencies.length / this.numFlowers);
+    // const flowerRings = frequencyGroups.map((group, groupIdx) => {
+    //   return circularPath({
+    //     cx: this.state.x,
+    //     cy: this.state.y,
+    //     minSize: 0,
+    //     maxSize: maxFlowerSize,
+    //     className: 'flower',
+    //     key: groupIdx,
+    //     wave: group
+    //   });
+    // });
+    // return <g key={this.id}>{flowerRings}</g>;
   }
 
   public tick(world: WorldState) {

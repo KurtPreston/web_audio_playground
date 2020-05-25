@@ -41,20 +41,19 @@ export class ChargingFireball extends Sprite {
     this.maxChargeWaveForm = params.wave.slice(0);
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    const {chargeSize, position, spinAngle} = this;
-    const {minSize, maxSize} = this.sizeBounds();
-
-    return circularPath({
-      wave: world.audio.uintWave,
-      cx: position.x,
-      cy: position.y,
-      minSize,
-      maxSize,
-      key: this.id,
-      angle: spinAngle,
-      style: this.fireballStyle(chargeSize)
-    });
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // const {chargeSize, position, spinAngle} = this;
+    // const {minSize, maxSize} = this.sizeBounds();
+    // return circularPath({
+    //   wave: world.audio.uintWave,
+    //   cx: position.x,
+    //   cy: position.y,
+    //   minSize,
+    //   maxSize,
+    //   key: this.id,
+    //   angle: spinAngle,
+    //   style: this.fireballStyle(chargeSize)
+    // });
   }
 
   public tick(world: WorldState) {

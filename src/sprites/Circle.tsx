@@ -1,4 +1,4 @@
-import {random} from 'lodash';
+import {random, sample} from 'lodash';
 import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
@@ -20,10 +20,8 @@ export class Circle extends Sprite {
   public state: CircleState;
   private readonly minSize = 15;
   private readonly maxSize = 60;
-  private readonly style: React.CSSProperties = {
-    fill: randomColor(),
-    mixBlendMode: 'color-dodge'
-  };
+  private readonly color = randomColor();
+  private readonly mixBlendMode: string = sample(['color-dodge', 'color-burn']) as string;
   private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
   private readonly destroy: () => boolean;
@@ -51,12 +49,13 @@ export class Circle extends Sprite {
     };
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {x, y, size} = this.state;
-
-    return (
-      <circle key={this.id} className='instrument' cx={x} cy={y} r={size} style={this.style} />
-    );
+    canvas.globalCompositeOperation = this.mixBlendMode;
+    canvas.beginPath();
+    canvas.arc(x, y, size, 0, 2 * Math.PI);
+    canvas.fillStyle = this.color;
+    canvas.fill();
   }
 
   public tick(world: WorldState) {

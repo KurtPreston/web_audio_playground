@@ -68,25 +68,24 @@ export class FlyingWamdag extends Sprite {
     this.framesSincePowerUp = 0;
   }
 
-  public render(world: WorldState): React.ReactElement<SVGElement> {
-    const targetIndicator = circularPath({
-      cx: this.target.x,
-      cy: this.target.y,
-      wave: world.audio.uintWave,
-      minSize: 3,
-      maxSize: 45 * world.audio.amplitude,
-      className: 'flying-wamdag-target',
-      key: 'flying-wamdag-target'
-    });
-
-    return (
-      <g key={this.id}>
-        {this.svgDefs}
-        {targetIndicator}
-        {this.renderPowerUp()}
-        {this.renderFlyingWamdags()}
-      </g>
-    );
+  public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // const targetIndicator = circularPath({
+    //   cx: this.target.x,
+    //   cy: this.target.y,
+    //   wave: world.audio.uintWave,
+    //   minSize: 3,
+    //   maxSize: 45 * world.audio.amplitude,
+    //   className: 'flying-wamdag-target',
+    //   key: 'flying-wamdag-target'
+    // });
+    // return (
+    //   <g key={this.id}>
+    //     {this.svgDefs}
+    //     {targetIndicator}
+    //     {this.renderPowerUp()}
+    //     {this.renderFlyingWamdags()}
+    //   </g>
+    // );
   }
 
   private renderFlyingWamdags() {
