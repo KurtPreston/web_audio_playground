@@ -93,7 +93,8 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
         : [
             new NoteGrid({
               lowOctave: 2,
-              highOctave: 6
+              highOctave: 6,
+              showPitchIndicator: true
             })
           ];
     }

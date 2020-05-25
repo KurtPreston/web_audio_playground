@@ -20,7 +20,8 @@ export class Fairy extends Game<FairyState> {
     const {dimensions} = props;
     this.noteGrid = new NoteGrid({
       lowOctave: 2,
-      highOctave: 4
+      highOctave: 4,
+      showPitchIndicator: false
     });
     this.player = new FlyingWamdag({
       dimensions,

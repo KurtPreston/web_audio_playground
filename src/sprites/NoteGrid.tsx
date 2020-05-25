@@ -12,12 +12,14 @@ import {Sprite} from './Sprite';
 export interface NoteGridParams {
   lowOctave: number;
   highOctave: number;
+  showPitchIndicator: boolean;
 }
 
 export class NoteGrid extends Sprite {
   public peakFreqPosition: IPosition | null = null;
   private readonly lowOctave: number;
   private readonly highOctave: number;
+  private readonly showPitchIndicator: boolean;
 
   private colWidth: number = 0;
   private rowHeight: number = 0;
@@ -26,6 +28,7 @@ export class NoteGrid extends Sprite {
     super();
     this.lowOctave = params.lowOctave;
     this.highOctave = params.highOctave;
+    this.showPitchIndicator = params.showPitchIndicator;
   }
 
   public tick(world: WorldState) {
@@ -66,7 +69,7 @@ export class NoteGrid extends Sprite {
     const boxes = notes.map((note: Note) => this.renderNote(note, world.audio));
 
     let peakFreqCircle: React.ReactNode = null;
-    if (this.peakFreqPosition && peakFreq) {
+    if (this.peakFreqPosition && peakFreq && this.showPitchIndicator) {
       const {x, y} = this.peakFreqPosition;
       peakFreqCircle = (
         <g className='peak-freq'>
