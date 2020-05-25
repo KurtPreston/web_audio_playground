@@ -1,12 +1,9 @@
-import classnames from 'classnames';
 import {range} from 'lodash';
-import React from 'react';
 import {AudioData, IPosition, WorldState} from '../types';
 
 import {midiNoteToFreq} from '../util/midi';
 import {getNoteFrequencyRange, getNoteName, Note} from '../util/Note';
 import {OverflowMode, scale} from '../util/scale';
-import './NoteGrid.scss';
 import {Sprite} from './Sprite';
 
 export interface NoteGridParams {
@@ -64,9 +61,9 @@ export class NoteGrid extends Sprite {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // const {peakFreq} = world.audio;
-    // const {lowOctave, highOctave} = this;
-    // const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
-    // const boxes = notes.map((note: Note) => this.renderNote(note, world.audio));
+    const {lowOctave, highOctave} = this;
+    const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
+    notes.forEach((note: Note) => this.renderNote(note, world.audio, canvas));
     // let peakFreqCircle: React.ReactNode = null;
     // if (this.peakFreqPosition && peakFreq && this.showPitchIndicator) {
     //   const {x, y} = this.peakFreqPosition;
@@ -105,18 +102,12 @@ export class NoteGrid extends Sprite {
     };
   }
 
-  private renderNote(note: Note, audio: AudioData) {
+  private renderNote(note: Note, audio: AudioData, canvas: CanvasRenderingContext2D) {
     const {colWidth, rowHeight} = this;
     const {xMin, yMin} = this.notePosition(note);
     const {amplitudeAtNote, notes} = audio;
     const noteAmplitude = amplitudeAtNote(note);
     const isNote = notes.includes(note);
-
-    const style: React.CSSProperties = isNote
-      ? {}
-      : {
-          opacity: noteAmplitude
-        };
 
     const noteName = getNoteName(note);
     const freq = Math.round(midiNoteToFreq(note));
@@ -124,21 +115,44 @@ export class NoteGrid extends Sprite {
     const cx = xMin + colWidth / 2;
     const cy = yMin + rowHeight / 2;
 
-    const className = classnames({
-      'note-grid-cell': true,
-      active: isNote
-    });
+    // const className = classnames({
+    //   'note-grid-cell': true,
+    //   active: isNote
+    // });
 
-    return (
-      <g key={note} className={className}>
-        <rect key={note} x={xMin} y={yMin} width={colWidth} height={rowHeight} style={style} />
-        <text x={cx} y={cy - 10}>
-          {noteName}
-        </text>
-        <text x={cx} y={cy + 10}>
-          {freq}
-        </text>
-      </g>
-    );
+    // Draw rectangle
+    if (isNote) {
+      canvas.fillStyle = 'lightblue';
+      canvas.globalAlpha = 1;
+    } else {
+      canvas.fillStyle = 'white';
+      canvas.globalAlpha = noteAmplitude;
+    }
+    canvas.fillRect(xMin, yMin, colWidth, rowHeight);
+
+    // Draw text
+    canvas.fillStyle = 'white';
+    canvas.globalAlpha = 1;
+    canvas.textAlign = 'center';
+    if (isNote) {
+      canvas.font = 'bold 45px Arial';
+    } else {
+      canvas.font = '25px Arial';
+    }
+    canvas.textBaseline = 'bottom';
+    canvas.fillText(noteName, cx, cy - 5);
+    canvas.textBaseline = 'top';
+    canvas.fillText(freq.toString(), cx, cy + 5);
+    // return (
+    //   <g key={note} className={className}>
+    //     <rect key={note} x={xMin} y={yMin} width={colWidth} height={rowHeight} style={style} />
+    //     <text x={cx} y={cy - 10}>
+    //       {noteName}
+    //     </text>
+    //     <text x={cx} y={cy + 10}>
+    //       {freq}
+    //     </text>
+    //   </g>
+    // );
   }
 }

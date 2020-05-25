@@ -105,10 +105,13 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     this.keysPressedThisFrame.clear();
 
     // Re-render
-    if (this.canvasCtx) {
-      this.canvasCtx.globalCompositeOperation = 'normal';
-      this.canvasCtx.clearRect(0, 0, world.dimensions.width, world.dimensions.height);
-      sprites.forEach((sprite) => sprite.render(this.canvasCtx as CanvasRenderingContext2D, world));
+    const {canvasCtx} = this;
+    if (canvasCtx) {
+      canvasCtx.clearRect(0, 0, world.dimensions.width, world.dimensions.height);
+      sprites.forEach((sprite) => {
+        canvasCtx.globalCompositeOperation = 'normal';
+        sprite.render(canvasCtx, world);
+      });
     }
   }
 
