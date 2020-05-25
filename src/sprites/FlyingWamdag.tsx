@@ -22,6 +22,7 @@ export class FlyingWamdag extends Sprite {
   // Constants
   private readonly force: number = 1;
   private readonly maxVelocity = 6;
+  private readonly animationFrameRate = 4; // change every 4 frames
 
   // State
   private position: IPosition;
@@ -71,18 +72,34 @@ export class FlyingWamdag extends Sprite {
   }
 
   private renderFlyingWamdags() {
+    const {x, y} = this.position;
+    const width = 100;
+    const height = 100;
+
+    const xMin = x - width / 2;
+    const yMin = y - height / 2;
+
+    const transform =
+      this.vector.xMomentum < 0
+        ? `translate(${x}px,0) scale(-1,1) translate(-${x}px,0)`
+        : undefined;
+
     return flyingWamdagSvgs.map((flyingWamdagSvg: string, idx: number) => {
       const style: React.CSSProperties = {
-        opacity: idx === this.animationFrame ? 1 : 0
+        opacity: idx === this.animationFrame ? 1 : 0,
+        transform
       };
 
       return (
         <image
           key={flyingWamdagSvg}
-          x={this.position.x}
-          y={this.position.y}
+          x={xMin}
+          y={yMin}
           style={style}
-          xlinkHref={flyingWamdagSvgs[this.animationFrame]}
+          width={width}
+          height={height}
+          preserveAspectRatio='xMaxYMin slice'
+          xlinkHref={flyingWamdagSvgs[idx]}
         />
       );
     });
@@ -92,7 +109,9 @@ export class FlyingWamdag extends Sprite {
     const {width, height} = world.dimensions;
     const {noteGrid, position, target, vector} = this;
     // Animate
-    this.animationFrame = (this.animationFrame + 1) % flyingWamdagSvgs.length;
+    if (world.frameNum % this.animationFrameRate === 0) {
+      this.animationFrame = (this.animationFrame + 1) % flyingWamdagSvgs.length;
+    }
 
     // Adjust target
     if (noteGrid.peakFreqPosition) {

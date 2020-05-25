@@ -6,6 +6,7 @@ export interface WorldState {
   keysDown: Set<string>;
   keysPressedThisFrame: Set<string>;
   deviceOrientation: DeviceOrientation | undefined;
+  frameNum: number;
 }
 
 export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;

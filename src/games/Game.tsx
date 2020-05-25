@@ -19,6 +19,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private gameLoop: NodeJS.Timeout | undefined;
   private readonly audioAnalyser: AudioAnalyser;
   private deviceOrientation: DeviceOrientation | undefined;
+  private frameNum: number = 0;
 
   constructor(props: GameProps) {
     super(props);
@@ -92,7 +93,8 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   }
 
   private tick() {
-    // Reset audio analysis
+    // Reset frame
+    this.frameNum++;
     this.audioAnalyser.reset();
 
     // Update sprites
@@ -113,7 +115,8 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
       audio: this.audioAnalyser,
       keysDown: this.keysDown,
       keysPressedThisFrame: this.keysPressedThisFrame,
-      deviceOrientation: this.deviceOrientation
+      deviceOrientation: this.deviceOrientation,
+      frameNum: this.frameNum
     };
   }
 
