@@ -60,28 +60,14 @@ export class NoteGrid extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    // const {peakFreq} = world.audio;
     const {lowOctave, highOctave} = this;
+    const {audio} = world;
     const notes: Note[] = range((lowOctave + 1) * 12, (highOctave + 2) * 12);
-    notes.forEach((note: Note) => this.drawNoteBox(note, world.audio, canvas));
-    // let peakFreqCircle: React.ReactNode = null;
-    // if (this.peakFreqPosition && peakFreq && this.showPitchIndicator) {
-    //   const {x, y} = this.peakFreqPosition;
-    //   peakFreqCircle = (
-    //     <g className='peak-freq'>
-    //       <circle cx={x} cy={y} r={5} />;
-    //       <text x={x} y={y + 40}>
-    //         {Math.round(peakFreq)}
-    //       </text>
-    //     </g>
-    //   );
-    // }
-    // return (
-    //   <g key={this.id} className='note-grid'>
-    //     {boxes}
-    //     {peakFreqCircle}
-    //   </g>
-    // );
+    notes.forEach((note: Note) => this.drawNoteBox(note, audio, canvas));
+
+    if (this.peakFreqPosition && audio.peakFreq && this.showPitchIndicator) {
+      this.drawPeakFreq(canvas);
+    }
   }
 
   private notePosition(note: Note) {
@@ -138,5 +124,31 @@ export class NoteGrid extends Sprite {
     canvas.fillText(noteName, cx, cy - 5);
     canvas.textBaseline = 'top';
     canvas.fillText(freq.toString(), cx, cy + 5);
+  }
+
+  private drawPeakFreq(canvas: CanvasRenderingContext2D) {
+    const {peakFreqPosition} = this;
+    if (!peakFreqPosition) {
+      return;
+    }
+    const {x, y} = peakFreqPosition;
+    canvas.beginPath();
+    canvas.arc(x, y, 5, 0, 2 * Math.PI);
+    canvas.fill();
+    //   peakFreqCircle = (
+    //     <g className='peak-freq'>
+    //       <circle cx={x} cy={y} r={5} />;
+    //       <text x={x} y={y + 40}>
+    //         {Math.round(peakFreq)}
+    //       </text>
+    //     </g>
+    //   );
+    // }
+    // return (
+    //   <g key={this.id} className='note-grid'>
+    //     {boxes}
+    //     {peakFreqCircle}
+    //   </g>
+    // );
   }
 }
