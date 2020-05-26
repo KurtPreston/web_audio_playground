@@ -34,6 +34,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     window.document.addEventListener('keyup', this.onKeyUp);
     window.document.addEventListener('keypress', this.onKeyPress);
     window.addEventListener('deviceorientation', this.onDeviceOrientation, false);
+    document.title = `KurtPreston.com | ${this.constructor.name}`;
   }
 
   public componentWillUnmount() {
