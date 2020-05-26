@@ -41,6 +41,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     window.document.removeEventListener('keyup', this.onKeyUp);
     window.document.removeEventListener('keypress', this.onKeyPress);
     window.removeEventListener('deviceorientation', this.onDeviceOrientation);
+    this.pauseGame();
   }
 
   public render(): React.ReactNode {
