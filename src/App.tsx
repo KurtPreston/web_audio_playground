@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
-import {ForestVisualizer} from './games/ForestVisualizer';
+import {Demo} from './games/Demo';
 import {GameProps} from './games/Game';
 import {Hadouken} from './games/Hadouken';
 import {Tadpole} from './games/Tadpole';
@@ -23,7 +23,7 @@ interface GameLink {
 
 const games: GameLink[] = [
   {
-    game: ForestVisualizer,
+    game: Demo,
     name: 'Demo',
     url: '/demo'
   },

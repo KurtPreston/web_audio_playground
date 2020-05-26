@@ -9,7 +9,7 @@ import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
 import {Game, GameProps} from './Game';
 
-export interface ForestVisualizerState {
+export interface DemoState {
   options: Options;
   sprites: ActiveSprites;
 }
@@ -30,8 +30,8 @@ interface Options {
 }
 
 @autobind
-export class ForestVisualizer extends Game<ForestVisualizerState> {
-  public state: ForestVisualizerState = {
+export class Demo extends Game<DemoState> {
+  public state: DemoState = {
     options: {
       flower: false,
       circles: 0,
@@ -61,7 +61,7 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
     }
   };
 
-  public componentDidUpdate(prevProps: GameProps, prevState: ForestVisualizerState) {
+  public componentDidUpdate(prevProps: GameProps, prevState: DemoState) {
     if (!isEqual(this.state.options, prevState.options)) {
       this.updateSprites();
     }
