@@ -1,61 +1,62 @@
 import {Sprite} from './Sprite';
 
+import {times} from 'lodash';
 import {WorldState} from '../types';
-import './Spectrogram.scss';
+import {freqToMidiNote} from '../util/midi';
+import {getNoteName, Note} from '../util/Note';
+import {scale} from '../util/scale';
 
 export class Spectrogram extends Sprite {
   public tick() {}
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    // const {audio, dimensions} = world;
-    // const {width, height} = dimensions;
-    // const {hzPerIdx, frequencies} = audio;
-    // const maxFreq = (frequencies.length - 1) * hzPerIdx;
-    // const maxNote = Math.floor(freqToMidiNote(maxFreq));
-    // const lines = times(frequencies.length, (idx: number) => {
-    //   const amplitude = frequencies[idx];
-    //   const freq = (idx + 0.5) * hzPerIdx;
-    //   const midiNote = freqToMidiNote(freq);
-    //   const x = scale({
-    //     input: midiNote,
-    //     inputMin: 0,
-    //     inputMax: maxNote,
-    //     outputMin: 0,
-    //     outputMax: width
-    //   });
-    //   const y = scale({
-    //     input: amplitude,
-    //     inputMin: 0,
-    //     inputMax: 255,
-    //     outputMin: height,
-    //     outputMax: 0,
-    //     logarithmic: true
-    //   });
-    //   return <line key={idx} x1={x} y1={height} x2={x} y2={y} />;
-    // });
-    // const notes = times(maxNote, (note: Note) => {
-    //   if (!(note % 12 === 0)) {
-    //     return null;
-    //   }
-    //   const name = getNoteName(note);
-    //   const x = scale({
-    //     input: note,
-    //     inputMin: 0,
-    //     inputMax: maxNote,
-    //     outputMin: 0,
-    //     outputMax: width
-    //   });
-    //   return (
-    //     <text key={note} x={x} y={height - 10}>
-    //       {name}
-    //     </text>
-    //   );
-    // });
-    // return (
-    //   <g className='spectrogram' key={this.id}>
-    //     {lines}
-    //     {notes}
-    //   </g>
-    // );
+    const {audio, dimensions} = world;
+    const {width, height} = dimensions;
+    const {hzPerIdx, frequencies} = audio;
+    const maxFreq = (frequencies.length - 1) * hzPerIdx;
+    const maxNote = Math.floor(freqToMidiNote(maxFreq));
+    times(frequencies.length, (idx: number) => {
+      const amplitude = frequencies[idx];
+      const freq = (idx + 0.5) * hzPerIdx;
+      const midiNote = freqToMidiNote(freq);
+      const x = scale({
+        input: midiNote,
+        inputMin: 0,
+        inputMax: maxNote,
+        outputMin: 0,
+        outputMax: width
+      });
+      const y = scale({
+        input: amplitude,
+        inputMin: 0,
+        inputMax: 255,
+        outputMin: height,
+        outputMax: 0,
+        logarithmic: true
+      });
+
+      canvas.strokeStyle = 'white';
+      canvas.lineWidth = 3;
+      canvas.beginPath();
+      canvas.moveTo(x, height);
+      canvas.lineTo(x, y);
+      canvas.stroke();
+      canvas.closePath();
+    });
+    times(maxNote, (note: Note) => {
+      if (!(note % 12 === 0)) {
+        return null;
+      }
+      const name = getNoteName(note);
+      const x = scale({
+        input: note,
+        inputMin: 0,
+        inputMax: maxNote,
+        outputMin: 0,
+        outputMax: width
+      });
+      canvas.textBaseline = 'bottom';
+      canvas.fillText(name, x, height - 10);
+    });
   }
 }
