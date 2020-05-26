@@ -93,6 +93,11 @@ export class FlyingWamdag extends Sprite {
     const image: HTMLImageElement = flyingWamdagImages[this.animationFrame];
 
     canvas.globalCompositeOperation = 'normal';
+    canvas.save();
+    canvas.shadowOffsetX = 35;
+    canvas.shadowOffsetY = 35;
+    canvas.shadowBlur = 20;
+    canvas.shadowColor = 'black';
     if (this.vector.xMomentum < 0) {
       // Facing left
       canvas.scale(-1, 1);
@@ -102,6 +107,7 @@ export class FlyingWamdag extends Sprite {
       // Facing right
       canvas.drawImage(image, xMin, yMin, width, height);
     }
+    canvas.restore();
   }
 
   private renderTargetIndicator(canvas: CanvasRenderingContext2D, world: WorldState) {
