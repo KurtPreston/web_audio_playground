@@ -62,7 +62,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   }
 
   private canvasRefFn(ref: HTMLCanvasElement) {
-    this.canvasCtx = ref.getContext('2d');
+    this.canvasCtx = ref?.getContext('2d');
     if (this.canvasCtx) {
       this.canvasCtx.globalCompositeOperation = 'normal';
       this.canvasCtx.save();
