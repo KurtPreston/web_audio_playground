@@ -68,7 +68,7 @@ export class FlyingWamdag extends Sprite {
       y: yMid
     };
     this.noteGrid = params.noteGrid;
-    this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 9);
+    this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 8);
     this.powerUpSize = this.flyingWamdagSize * 1.5;
   }
 

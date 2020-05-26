@@ -25,7 +25,9 @@ export class Wamflap extends Game<WamflapState> {
     this.noteGrid = new NoteGrid({
       lowOctave: 2,
       highOctave: 4,
-      showPitchIndicator: false
+      showPitchIndicator: false,
+      showFrequency: false,
+      showNoteAmplitude: false
     });
     this.player = new FlyingWamdag({
       dimensions,
@@ -33,7 +35,7 @@ export class Wamflap extends Game<WamflapState> {
     });
     this.bg = new StaticBackground();
 
-    times(5, () => {
+    times(15, () => {
       this.circles.add(
         new Circle({
           dimensions,
