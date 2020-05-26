@@ -41,15 +41,6 @@ export class FlyingWamdag extends Sprite {
 
   // Referenced sprites
   private noteGrid: NoteGrid;
-  // private svgDefs = (
-  //   <defs>
-  //     <filter id='flying-wamdag-shadow' x='0' y='0' width='200%' height='200%'>
-  //       <feOffset result='offOut' in='SourceAlpha' dx='20' dy='20' />
-  //       <feGaussianBlur result='blurOut' in='offOut' stdDeviation='10' />
-  //       <feBlend in='SourceGraphic' in2='blurOut' mode='normal' />
-  //     </filter>
-  //   </defs>
-  // );
 
   constructor(params: FlyingWamdagParams) {
     super();
