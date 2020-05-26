@@ -15,6 +15,11 @@ export interface FlyingWamdagParams {
 }
 
 const flyingWamdagSvgs = [flyingWamdagSvg1, flyingWamdagSvg2, flyingWamdagSvg3, flyingWamdagSvg4];
+const flyingWamdagImages: HTMLImageElement[] = flyingWamdagSvgs.map((href) => {
+  const image = new Image();
+  image.src = href;
+  return image;
+});
 
 @autobind
 export class FlyingWamdag extends Sprite {
@@ -67,6 +72,7 @@ export class FlyingWamdag extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    this.renderFlyingWamdags(canvas);
     // const targetIndicator = circularPath({
     //   cx: this.target.x,
     //   cy: this.target.y,
@@ -86,7 +92,7 @@ export class FlyingWamdag extends Sprite {
     // );
   }
 
-  private renderFlyingWamdags() {
+  private renderFlyingWamdags(canvas: CanvasRenderingContext2D) {
     const {x, y} = this.position;
     const width = 100;
     const height = 100;
@@ -98,6 +104,9 @@ export class FlyingWamdag extends Sprite {
       this.vector.xMomentum < 0
         ? `translate(${x}px,0) scale(-1,1) translate(-${x}px,0)`
         : undefined;
+
+    const image: HTMLImageElement = flyingWamdagImages[this.animationFrame];
+    canvas.drawImage(image, xMin, yMin, width, height);
 
     // return flyingWamdagSvgs.map((flyingWamdagSvg: string, idx: number) => {
     //   const style: React.CSSProperties = {
