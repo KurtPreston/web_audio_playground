@@ -7,6 +7,7 @@ import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {scale} from '../util/scale';
 import {NoteGrid} from './NoteGrid';
 import {circularPath} from './renderHelpers/circularPath';
+import {isSafari} from './renderHelpers/detectBrowser';
 import {Sprite} from './Sprite';
 
 export interface FlyingWamdagParams {
@@ -94,10 +95,13 @@ export class FlyingWamdag extends Sprite {
 
     canvas.globalCompositeOperation = 'normal';
     canvas.save();
-    canvas.shadowOffsetX = 35;
-    canvas.shadowOffsetY = 35;
-    canvas.shadowBlur = 20;
-    canvas.shadowColor = 'black';
+    if (!isSafari) {
+      // Safari renders shadows incorrectly
+      canvas.shadowOffsetX = 35;
+      canvas.shadowOffsetY = 35;
+      canvas.shadowBlur = 20;
+      canvas.shadowColor = 'black';
+    }
     if (this.vector.xMomentum < 0) {
       // Facing left
       canvas.scale(-1, 1);
