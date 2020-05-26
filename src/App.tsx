@@ -158,7 +158,8 @@ export class App extends React.Component<{}, AppState> {
     }
 
     // Get audio
-    const audioContext = new AudioContext();
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const audioContext: AudioContext = new AudioContextClass();
 
     // Get audio from MP3
     // const url = '/moodIndigoRemix.mp3';

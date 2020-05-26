@@ -65,7 +65,23 @@ export class AudioAnalyser implements AudioData {
 
   public get floatWave(): Float32Array {
     if (!this.valuesThisFrame.floatWave) {
-      this.analyser.getFloatTimeDomainData(this._float32Wave);
+      if (this.analyser.getFloatTimeDomainData) {
+        this.analyser.getFloatTimeDomainData(this._float32Wave);
+      } else {
+        // Safari does not have getFloatTimeDomainData so we need to
+        // extract this information from byteTimeDomainData
+        const byteTimeDomainData: Uint8Array = this.uintWave;
+        byteTimeDomainData.forEach((value: number, idx: number) => {
+          this._float32Wave[idx] = scale({
+            input: value,
+            inputMin: 0,
+            inputMax: 255,
+            outputMin: this.analyser.minDecibels,
+            outputMax: this.analyser.maxDecibels
+          });
+        });
+      }
+
       this.valuesThisFrame.floatWave = this._float32Wave;
     }
 
