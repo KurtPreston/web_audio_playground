@@ -17,6 +17,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private readonly keysDown = new Set<string>();
   private readonly keysPressedThisFrame = new Set<string>();
   private gameLoop: NodeJS.Timeout | undefined;
+  private menuOpen: boolean = false;
   private readonly audioAnalyser: AudioAnalyser;
   private deviceOrientation: DeviceOrientation | undefined;
   private frameNum: number = 0;
@@ -47,10 +48,15 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     const world: WorldState = this.world();
 
-    const menu = (
-      <div className='controls'>
+    const menu = this.menuOpen ? (
+      <div className='controls controls-open'>
+        <button onClick={this.closeMenu}>×</button>
         {this.menu(world)}
         {this.renderPauseBtn()}
+      </div>
+    ) : (
+      <div className='controls controls-closed'>
+        <button onClick={this.openMenu}>ⓘ</button>
       </div>
     );
 
@@ -59,6 +65,16 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
         <canvas height={height} width={width} ref={this.canvasRefFn} />;{menu}
       </div>
     );
+  }
+
+  private closeMenu() {
+    this.menuOpen = false;
+    this.forceUpdate();
+  }
+
+  private openMenu() {
+    this.menuOpen = true;
+    this.forceUpdate();
   }
 
   private canvasRefFn(ref: HTMLCanvasElement) {
