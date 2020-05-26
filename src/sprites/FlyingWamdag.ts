@@ -28,6 +28,7 @@ export class FlyingWamdag extends Sprite {
   private readonly maxVelocity = 10;
   private readonly animationFrameRate = 4; // change every 4 frames
   private readonly numPowerUpFrames = 15;
+  private readonly flyingWamdagSize: number;
 
   // State
   public position: IPosition;
@@ -50,8 +51,9 @@ export class FlyingWamdag extends Sprite {
 
   constructor(params: FlyingWamdagParams) {
     super();
-    const xMid = params.dimensions.width / 2;
-    const yMid = params.dimensions.height / 2;
+    const {width, height} = params.dimensions;
+    const xMid = width / 2;
+    const yMid = height / 2;
     this.position = {
       x: xMid,
       y: yMid - 10
@@ -65,6 +67,7 @@ export class FlyingWamdag extends Sprite {
       y: yMid
     };
     this.noteGrid = params.noteGrid;
+    this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 9);
   }
 
   public powerUp() {
@@ -94,8 +97,8 @@ export class FlyingWamdag extends Sprite {
 
   private renderFlyingWamdags(canvas: CanvasRenderingContext2D) {
     const {x, y} = this.position;
-    const width = 100;
-    const height = 100;
+    const width = this.flyingWamdagSize;
+    const height = this.flyingWamdagSize;
 
     const xMin = x - width / 2;
     const yMin = y - height / 2;
