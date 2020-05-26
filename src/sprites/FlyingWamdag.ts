@@ -5,7 +5,6 @@ import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
 import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {scale} from '../util/scale';
-import './FlyingWamdag.scss';
 import {NoteGrid} from './NoteGrid';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
@@ -93,6 +92,7 @@ export class FlyingWamdag extends Sprite {
 
     const image: HTMLImageElement = flyingWamdagImages[this.animationFrame];
 
+    canvas.globalCompositeOperation = 'normal';
     if (this.vector.xMomentum < 0) {
       // Facing left
       canvas.scale(-1, 1);
@@ -105,6 +105,8 @@ export class FlyingWamdag extends Sprite {
   }
 
   private renderTargetIndicator(canvas: CanvasRenderingContext2D, world: WorldState) {
+    canvas.fillStyle = 'rebeccapurple';
+    canvas.globalCompositeOperation = 'color-burn';
     circularPath({
       canvas,
       cx: this.target.x,
@@ -126,6 +128,8 @@ export class FlyingWamdag extends Sprite {
       });
 
       canvas.restore();
+      canvas.fillStyle = 'white';
+      canvas.globalCompositeOperation = 'hard-light';
       canvas.beginPath();
       canvas.arc(this.position.x, this.position.y, size, 0, 2 * Math.PI);
       canvas.fillStyle = 'white';
