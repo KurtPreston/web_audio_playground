@@ -30,6 +30,7 @@ export class FlyingWamdag extends Sprite {
   private readonly animationFrameRate = 4; // change every 4 frames
   private readonly numPowerUpFrames = 15;
   private readonly flyingWamdagSize: number;
+  private readonly powerUpSize: number;
 
   // State
   public position: IPosition;
@@ -69,6 +70,7 @@ export class FlyingWamdag extends Sprite {
     };
     this.noteGrid = params.noteGrid;
     this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 9);
+    this.powerUpSize = this.flyingWamdagSize * 1.5;
   }
 
   public powerUp() {
@@ -76,16 +78,9 @@ export class FlyingWamdag extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    this.renderFlyingWamdag(canvas);
+    this.renderPowerUp(canvas);
     this.renderTargetIndicator(canvas, world);
-    // return (
-    //   <g key={this.id}>
-    //     {this.svgDefs}
-    //     {targetIndicator}
-    //     {this.renderPowerUp()}
-    //     {this.renderFlyingWamdags()}
-    //   </g>
-    // );
+    this.renderFlyingWamdag(canvas);
   }
 
   private renderFlyingWamdag(canvas: CanvasRenderingContext2D) {
@@ -120,23 +115,21 @@ export class FlyingWamdag extends Sprite {
     });
   }
 
-  private renderPowerUp() {
+  private renderPowerUp(canvas: CanvasRenderingContext2D) {
     if (this.framesSincePowerUp < this.numPowerUpFrames) {
-      const value = scale({
+      const size = scale({
         input: this.framesSincePowerUp,
         inputMin: 0,
         inputMax: this.numPowerUpFrames - 1,
         outputMin: 0,
-        outputMax: Math.PI
+        outputMax: this.powerUpSize
       });
 
-      // return (
-      //   className as circle='flying-wamdag-power-up'
-      //     cx={this.position.x}
-      //     cy={this.position.y}
-      //     r={Math.sin(value) * 80}
-      //   />
-      // );
+      canvas.restore();
+      canvas.beginPath();
+      canvas.arc(this.position.x, this.position.y, size, 0, 2 * Math.PI);
+      canvas.fillStyle = 'white';
+      canvas.fill();
     }
   }
 
