@@ -3,6 +3,7 @@ import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
 import {ForestVisualizer} from './games/ForestVisualizer';
+import {GameProps} from './games/Game';
 import {Hadouken} from './games/Hadouken';
 import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
@@ -13,6 +14,35 @@ export interface AppState {
   dimensions: Dimensions;
   audioSource: AudioNode;
 }
+
+interface GameLink {
+  game: React.ComponentType<GameProps>;
+  name: string;
+  url: string;
+}
+
+const games: GameLink[] = [
+  {
+    game: ForestVisualizer,
+    name: 'Demo',
+    url: '/demo'
+  },
+  {
+    game: Hadouken,
+    name: 'Hadouken',
+    url: '/hadouken'
+  },
+  {
+    game: Wamflap,
+    name: 'Wamflap',
+    url: '/wamflap'
+  },
+  {
+    game: Tadpole,
+    name: 'Tadpole',
+    url: '/tadpole'
+  }
+];
 
 @autobind
 export class App extends React.Component<{}, AppState> {
@@ -61,18 +91,11 @@ export class App extends React.Component<{}, AppState> {
         {/* A <Switch> looks through its children <Route>s and
         renders the first one that matches the current URL. */}
         <Switch>
-          <Route path='/demo'>
-            <ForestVisualizer {...this.state} />
-          </Route>
-          <Route path='/hadouken'>
-            <Hadouken {...this.state} />
-          </Route>
-          <Route path='/wamflap'>
-            <Wamflap {...this.state} />
-          </Route>
-          <Route path='/tadpole'>
-            <Tadpole {...this.state} />
-          </Route>
+          {games.map(({game, url}) => (
+            <Route key={url} path={url}>
+              {React.createElement(game, this.state)}
+            </Route>
+          ))}
           <Route path='/'>{this.nav()}</Route>
         </Switch>
       </Router>
@@ -83,18 +106,11 @@ export class App extends React.Component<{}, AppState> {
     return (
       <nav>
         <ul>
-          <li>
-            <Link to='/demo'>Demo</Link>
-          </li>
-          <li>
-            <Link to='/hadouken'>Hadouken</Link>
-          </li>
-          <li>
-            <Link to='/wamflap'>Wamflap</Link>
-          </li>
-          <li>
-            <Link to='/tadpole'>Tadpole</Link>
-          </li>
+          {games.map(({name, url}) => (
+            <li key={url}>
+              <Link to={url}>{name}</Link>
+            </li>
+          ))}
         </ul>
       </nav>
     );
