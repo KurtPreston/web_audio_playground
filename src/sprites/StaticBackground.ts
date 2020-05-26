@@ -1,13 +1,14 @@
+import backgroundDarkWaterColor from '../images/backgroundDarkWatercolor.jpg';
 import {WorldState} from '../types';
 import {Sprite} from './Sprite';
 
 export class StaticBackground extends Sprite {
   private loadedImage: HTMLImageElement;
 
-  constructor(imageSrc: string) {
+  constructor(imageSrc?: string) {
     super();
     this.loadedImage = new Image();
-    this.loadedImage.src = imageSrc;
+    this.loadedImage.src = imageSrc || backgroundDarkWaterColor;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {

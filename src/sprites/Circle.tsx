@@ -1,4 +1,4 @@
-import {random} from 'lodash';
+import {isFinite, random} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {randomColor} from '../util/color';
@@ -9,6 +9,9 @@ export interface CircleParams {
   dimensions: Dimensions;
   bounceOffEdge: boolean;
   destroy: (sprite: Circle) => boolean;
+  minSize?: number;
+  maxSize?: number;
+  mixBlendMode?: string;
 }
 
 interface CircleState extends IWanderer {
@@ -20,19 +23,24 @@ export class Circle extends Sprite {
   public state: CircleState;
 
   // Constants
-  private readonly minSize = 15;
-  private readonly maxSize = 60;
+  private readonly minSize: number;
+  private readonly maxSize: number;
   private readonly color = randomColor();
-  private readonly mixBlendMode = 'color-dodge';
+  private readonly mixBlendMode: string;
   private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
   private readonly destroy: () => boolean;
 
   constructor(params: CircleParams) {
     super();
-    const {dimensions, bounceOffEdge} = params;
-    const {height} = dimensions;
+    const {dimensions, bounceOffEdge, minSize, maxSize, mixBlendMode} = params;
+    const {height, width} = dimensions;
 
+    const pixels = width * height;
+    const avgSideLength = Math.sqrt(pixels);
+    this.minSize = isFinite(minSize) ? (minSize as number) : Math.round(avgSideLength / 80);
+    this.maxSize = isFinite(maxSize) ? (maxSize as number) : Math.round(avgSideLength / 15);
+    this.mixBlendMode = mixBlendMode || 'color-dodge';
     this.walkTicker = randomWalkFactory({
       velocity: random(3, 7),
       jitter: random(0.01, 0.12),

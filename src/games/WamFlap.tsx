@@ -1,7 +1,6 @@
 import {autobind} from 'core-decorators';
 import {times} from 'lodash';
 import React from 'react';
-import backgroundDarkWaterColor from '../images/backgroundDarkWatercolor.jpg';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {NoteGrid} from '../sprites/NoteGrid';
@@ -32,7 +31,7 @@ export class Wamflap extends Game<WamflapState> {
       dimensions,
       noteGrid: this.noteGrid
     });
-    this.bg = new StaticBackground(backgroundDarkWaterColor);
+    this.bg = new StaticBackground();
 
     times(5, () => {
       this.circles.add(

@@ -4,6 +4,7 @@ import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
 import {ForestVisualizer} from './games/ForestVisualizer';
 import {Hadouken} from './games/Hadouken';
+import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
 import {Dimensions} from './types';
 
@@ -69,6 +70,9 @@ export class App extends React.Component<{}, AppState> {
           <Route path='/wamflap'>
             <Wamflap {...this.state} />
           </Route>
+          <Route path='/tadpole'>
+            <Tadpole {...this.state} />
+          </Route>
           <Route path='/'>{this.nav()}</Route>
         </Switch>
       </Router>
@@ -87,6 +91,9 @@ export class App extends React.Component<{}, AppState> {
           </li>
           <li>
             <Link to='/wamflap'>Wamflap</Link>
+          </li>
+          <li>
+            <Link to='/tadpole'>Tadpole</Link>
           </li>
         </ul>
       </nav>

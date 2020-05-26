@@ -113,7 +113,8 @@ export class ForestVisualizer extends Game<ForestVisualizerState> {
           new Circle({
             dimensions,
             bounceOffEdge: true,
-            destroy: this.destroySprite('circles')
+            destroy: this.destroySprite('circles'),
+            mixBlendMode: 'xor'
           })
         );
       }
