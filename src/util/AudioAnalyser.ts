@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import {compact, mean} from 'lodash';
-import {Pitchfinder} from '../pitchfinder/src';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types';
+import {workerPitchDetector} from '../workers/pitchDetectionWorkerProxy';
 import {freqToMidiNote} from './midi';
 import {getNoteFrequencyRange, Note} from './Note';
 import {scale} from './scale';
@@ -35,9 +35,7 @@ export class AudioAnalyser implements AudioData {
     analyser.fftSize = fftSize;
     this.analyser = analyser;
 
-    this.pitchDetector = Pitchfinder.AMDF({
-      sampleRate: audioSource.context.sampleRate
-    });
+    this.pitchDetector = workerPitchDetector(audioSource.context.sampleRate);
 
     // Allocate the memory for the arrays just once
     this._frequencies = new Uint8Array(analyser.frequencyBinCount);
