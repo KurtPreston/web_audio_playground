@@ -28,8 +28,6 @@ export interface IVector {
   yMomentum: number;
 }
 
-export interface INoteGrid {}
-
 // App types
 export interface Dimensions {
   width: number;

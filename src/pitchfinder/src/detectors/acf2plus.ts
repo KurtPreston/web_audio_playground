@@ -1,4 +1,4 @@
-import { PitchDetector } from "./types";
+import {PitchDetector} from './types';
 
 interface ACF2Params {
   sampleRate: number;
@@ -17,7 +17,6 @@ export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): PitchDet
 
   // Implements the ACF2+ algorithm
   return function ACF2PLUSDetector(float32AudioBuffer: Float32Array): number {
-
     const maxShift = float32AudioBuffer.length;
 
     let rms = 0;
@@ -34,11 +33,11 @@ export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): PitchDet
       // not enough signal
       return -1;
 
-    /* Trimming cuts the edges of the signal so that it starts and ends near zero. 
+    /* Trimming cuts the edges of the signal so that it starts and ends near zero.
      This is used to neutralize an inherent instability of the ACF version I use.*/
     let aux1 = 0;
     let aux2 = maxShift - 1;
-    let thres = 0.2;
+    const thres = 0.2;
     for (i = 0; i < maxShift / 2; i++)
       if (Math.abs(float32AudioBuffer[i]) < thres) {
         aux1 = i;
@@ -55,8 +54,7 @@ export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): PitchDet
 
     const calcSub = new Array(framesLength).fill(0);
     for (i = 0; i < framesLength; i++)
-      for (j = 0; j < framesLength - i; j++)
-        calcSub[i] = calcSub[i] + frames[j] * frames[j + i];
+      for (j = 0; j < framesLength - i; j++) calcSub[i] = calcSub[i] + frames[j] * frames[j + i];
 
     u = 0;
     while (calcSub[u] > calcSub[u + 1]) u++;
@@ -71,10 +69,10 @@ export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): PitchDet
 
     let T0 = maxpos;
 
-    /* Interpolation is parabolic interpolation. It helps with precision. 
-     We suppose that a parabola pass through the three points that comprise the peak. 
-     'a' and 'b' are the unknowns from the linear equation system 
-     and b/(2a) is the "error" in the abscissa. 
+    /* Interpolation is parabolic interpolation. It helps with precision.
+     We suppose that a parabola pass through the three points that comprise the peak.
+     'a' and 'b' are the unknowns from the linear equation system
+     and b/(2a) is the "error" in the abscissa.
      y1,y2,y3 are the ordinates.*/
 
     const y1 = calcSub[T0 - 1],
@@ -86,4 +84,4 @@ export function acf2plus(params: Partial<ACF2Params> = DEFAULT_PARAMS): PitchDet
 
     return sampleRate / T0;
   };
-};
+}

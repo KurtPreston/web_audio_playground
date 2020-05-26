@@ -1,10 +1,6 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended",
-    "tslint-eslint-rules",
-    "tslint-react"
-  ],
+  "extends": ["tslint:recommended", "tslint-eslint-rules", "tslint-react"],
   "rules": {
     "array-type": [true, "array"],
     "callable-types": [false],
@@ -17,9 +13,11 @@
     "jsx-no-lambda": false,
     "jsx-no-multiline-js": false,
     "jsx-wrap-multiline": true,
-    "match-default-export-name": true,
+    "match-default-export-name": false,
     "max-classes-per-file": false,
     "no-console": false,
+    "no-empty": false,
+    "no-empty-interface": false,
     "no-invalid-this": true,
     "no-shadowed-variable": true,
     "no-string-literal": false,

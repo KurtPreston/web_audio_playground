@@ -13,7 +13,7 @@
   along with aubio.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { PitchDetector } from "./types";
+import {PitchDetector} from './types';
 
 /* This algorithm was developed by A. de Cheveigné and H. Kawahara and
  * published in:
@@ -23,7 +23,6 @@ import { PitchDetector } from "./types";
  *
  * see http://recherche.ircam.fr/equipes/pcm/pub/people/cheveign.html
  */
-
 
 interface YinParams {
   threshold: number;
@@ -47,18 +46,15 @@ export function YIN(params: Partial<YinParams> = {}): PitchDetector {
   return function YINDetector(float32AudioBuffer: Float32Array): number | null {
     // Set buffer size to the highest power of two below the provided buffer's length.
     let bufferSize;
-    for (
-      bufferSize = 1;
-      bufferSize < float32AudioBuffer.length;
-      bufferSize *= 2
-    );
+    for (bufferSize = 1; bufferSize < float32AudioBuffer.length; bufferSize *= 2);
     bufferSize /= 2;
 
     // Set up the yinBuffer as described in step one of the YIN paper.
     const yinBufferLength = bufferSize / 2;
     const yinBuffer = new Float32Array(yinBufferLength);
 
-    let probability = 0, tau;
+    let probability = 0,
+      tau;
 
     // Compute the difference function as described in step 2 of the YIN paper.
     for (let t = 0; t < yinBufferLength; t++) {
@@ -85,10 +81,7 @@ export function YIN(params: Partial<YinParams> = {}): PitchDetector {
     // we can start at the third position.
     for (tau = 2; tau < yinBufferLength; tau++) {
       if (yinBuffer[tau] < threshold) {
-        while (
-          tau + 1 < yinBufferLength &&
-          yinBuffer[tau + 1] < yinBuffer[tau]
-        ) {
+        while (tau + 1 < yinBufferLength && yinBuffer[tau + 1] < yinBuffer[tau]) {
           tau++;
         }
         // found tau, exit loop and return
@@ -156,4 +149,4 @@ export function YIN(params: Partial<YinParams> = {}): PitchDetector {
 
     return sampleRate / betterTau;
   };
-};
+}

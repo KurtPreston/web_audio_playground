@@ -1,4 +1,4 @@
-import { PitchDetector } from "./types";
+import {PitchDetector} from './types';
 
 interface MacleodConfig {
   /**
@@ -17,7 +17,7 @@ interface MacleodConfig {
    * Sample rate
    */
   sampleRate: number;
-};
+}
 
 const DEFAULT_MACLEOD_PARAMS: MacleodConfig = {
   bufferSize: 1024,
@@ -41,7 +41,7 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
   /**
    * For performance reasons, peaks below this cutoff are not even considered.
    */
-  const SMALL_CUTOFF = 0.5
+  const SMALL_CUTOFF = 0.5;
 
   /**
    * Pitch annotations below this threshold are considered invalid, they are
@@ -93,13 +93,12 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
    * the explanation before) in the MPM article. This calculation can be
    * optimized by using an FFT. The results should remain the same.
    */
-  const normalizedSquareDifference = function(float32AudioBuffer: Float32Array) {
+  const normalizedSquareDifference = function (float32AudioBuffer: Float32Array) {
     let acf;
     let divisorM;
     squaredBufferSum[0] = float32AudioBuffer[0] * float32AudioBuffer[0];
     for (let i = 1; i < float32AudioBuffer.length; i += 1) {
-      squaredBufferSum[i] =
-        float32AudioBuffer[i] * float32AudioBuffer[i] + squaredBufferSum[i - 1];
+      squaredBufferSum[i] = float32AudioBuffer[i] * float32AudioBuffer[i] + squaredBufferSum[i - 1];
     }
     for (let tau = 0; tau < float32AudioBuffer.length; tau++) {
       acf = 0;
@@ -118,7 +117,7 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
    * Finds the x value corresponding with the peak of a parabola.
    * Interpolates between three consecutive points centered on tau.
    */
-  const parabolicInterpolation = function(tau: number) {
+  const parabolicInterpolation = function (tau: number) {
     const nsdfa = nsdf[tau - 1],
       nsdfb = nsdf[tau],
       nsdfc = nsdf[tau + 1],
@@ -135,7 +134,7 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
   };
 
   // Finds the highest value between each pair of positive zero crossings.
-  const peakPicking = function() {
+  const peakPicking = function () {
     let pos = 0;
     let curMaxPos = 0;
 
@@ -183,7 +182,7 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
     }
   };
 
-  return function(float32AudioBuffer: Float32Array): number | null {
+  return function (float32AudioBuffer: Float32Array): number | null {
     // 0. Clear old results.
     let pitch;
     maxPositions = [];
@@ -246,4 +245,4 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
     };
     return result.freq;
   };
-};
+}

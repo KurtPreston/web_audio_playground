@@ -1,4 +1,4 @@
-import { PitchDetector } from "./types";
+import {PitchDetector} from './types';
 
 interface AMDFParams {
   sampleRate: number;
@@ -13,7 +13,7 @@ const DEFAULT_AMDF_PARAMS: AMDFParams = {
   minFrequency: 82,
   maxFrequency: 1000,
   ratio: 5,
-  sensitivity: 0.1,
+  sensitivity: 0.1
 };
 
 export function AMDF(params: Partial<AMDFParams> = {}): PitchDetector {
@@ -28,7 +28,7 @@ export function AMDF(params: Partial<AMDFParams> = {}): PitchDetector {
   const ratio = config.ratio;
   const amd: number[] = [];
 
-  /* Round in such a way that both exact minPeriod as 
+  /* Round in such a way that both exact minPeriod as
    exact maxPeriod lie inside the rounded span minPeriod-maxPeriod,
    thus ensuring that minFrequency and maxFrequency can be found
    even in edge cases */
@@ -95,4 +95,4 @@ export function AMDF(params: Partial<AMDFParams> = {}): PitchDetector {
       return null;
     }
   };
-};
+}
