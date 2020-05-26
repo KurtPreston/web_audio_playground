@@ -1,5 +1,4 @@
 import {random} from 'lodash';
-import React from 'react';
 import {IPosition, WorldState} from '../types';
 import {spin} from '../util/deviceOrientation';
 import {OverflowMode, scale} from '../util/scale';

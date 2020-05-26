@@ -2,7 +2,6 @@ import {random} from 'lodash';
 import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {IWanderer, SpriteTicker, WorldState} from '../types';
-import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface FireballSpriteParams {

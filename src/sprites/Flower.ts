@@ -1,10 +1,6 @@
-import {chunk} from 'lodash';
-import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
-import {scale} from '../util/scale';
 import './Flower.scss';
-import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export class Flower extends Sprite {

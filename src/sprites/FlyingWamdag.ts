@@ -1,5 +1,4 @@
 import {autobind} from 'core-decorators';
-import React from 'react';
 import flyingWamdagSvg1 from '../images/flyingWamdag1.svg';
 import flyingWamdagSvg2 from '../images/flyingWamdag2.svg';
 import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
@@ -8,7 +7,6 @@ import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {scale} from '../util/scale';
 import './FlyingWamdag.scss';
 import {NoteGrid} from './NoteGrid';
-import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface FlyingWamdagParams {
@@ -35,15 +33,15 @@ export class FlyingWamdag extends Sprite {
 
   // Referenced sprites
   private noteGrid: NoteGrid;
-  private svgDefs = (
-    <defs>
-      <filter id='flying-wamdag-shadow' x='0' y='0' width='200%' height='200%'>
-        <feOffset result='offOut' in='SourceAlpha' dx='20' dy='20' />
-        <feGaussianBlur result='blurOut' in='offOut' stdDeviation='10' />
-        <feBlend in='SourceGraphic' in2='blurOut' mode='normal' />
-      </filter>
-    </defs>
-  );
+  // private svgDefs = (
+  //   <defs>
+  //     <filter id='flying-wamdag-shadow' x='0' y='0' width='200%' height='200%'>
+  //       <feOffset result='offOut' in='SourceAlpha' dx='20' dy='20' />
+  //       <feGaussianBlur result='blurOut' in='offOut' stdDeviation='10' />
+  //       <feBlend in='SourceGraphic' in2='blurOut' mode='normal' />
+  //     </filter>
+  //   </defs>
+  // );
 
   constructor(params: FlyingWamdagParams) {
     super();
@@ -101,29 +99,29 @@ export class FlyingWamdag extends Sprite {
         ? `translate(${x}px,0) scale(-1,1) translate(-${x}px,0)`
         : undefined;
 
-    return flyingWamdagSvgs.map((flyingWamdagSvg: string, idx: number) => {
-      const style: React.CSSProperties = {
-        opacity: idx === this.animationFrame ? 1 : 0,
-        transform
-      };
+    // return flyingWamdagSvgs.map((flyingWamdagSvg: string, idx: number) => {
+    //   const style: React.CSSProperties = {
+    //     opacity: idx === this.animationFrame ? 1 : 0,
+    //     transform
+    //   };
 
-      return (
-        <image
-          key={flyingWamdagSvg}
-          x={xMin}
-          y={yMin}
-          style={style}
-          width={width}
-          height={height}
-          preserveAspectRatio='xMaxYMin slice'
-          xlinkHref={flyingWamdagSvgs[idx]}
-          filter='url(#flying-wamdag-shadow)'
-        />
-      );
-    });
+    //   return (
+    //     <image
+    //       key={flyingWamdagSvg}
+    //       x={xMin}
+    //       y={yMin}
+    //       style={style}
+    //       width={width}
+    //       height={height}
+    //       preserveAspectRatio='xMaxYMin slice'
+    //       xlinkHref={flyingWamdagSvgs[idx]}
+    //       filter='url(#flying-wamdag-shadow)'
+    //     />
+    //   );
+    // });
   }
 
-  private renderPowerUp(): React.ReactNode {
+  private renderPowerUp() {
     if (this.framesSincePowerUp < this.numPowerUpFrames) {
       const value = scale({
         input: this.framesSincePowerUp,
@@ -133,14 +131,13 @@ export class FlyingWamdag extends Sprite {
         outputMax: Math.PI
       });
 
-      return (
-        <circle
-          className='flying-wamdag-power-up'
-          cx={this.position.x}
-          cy={this.position.y}
-          r={Math.sin(value) * 80}
-        />
-      );
+      // return (
+      //   className as circle='flying-wamdag-power-up'
+      //     cx={this.position.x}
+      //     cy={this.position.y}
+      //     r={Math.sin(value) * 80}
+      //   />
+      // );
     }
   }
 

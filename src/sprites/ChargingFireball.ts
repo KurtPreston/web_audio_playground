@@ -4,7 +4,6 @@ import tinycolor from 'tinycolor2';
 import {IPosition, WorldState} from '../types';
 import {OverflowMode, scale} from '../util/scale';
 import {FireballSpriteParams} from './Fireball';
-import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 interface ChargingFireballParams {

@@ -1,11 +1,6 @@
-import {times} from 'lodash';
-import React from 'react';
-import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
 
 import {WorldState} from '../types';
-import {freqToMidiNote} from '../util/midi';
-import {getNoteName, Note} from '../util/Note';
 import './Spectrogram.scss';
 
 export class Spectrogram extends Sprite {
