@@ -1,6 +1,8 @@
+import {chunk} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
-import './Flower.scss';
+import {scale} from '../util/scale';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export class Flower extends Sprite {
@@ -28,27 +30,30 @@ export class Flower extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    // const {audio} = world;
-    // const {amplitude, frequencies} = audio;
-    // const maxFlowerSize = scale({
-    //   input: amplitude,
-    //   inputMin: 0,
-    //   inputMax: 1,
-    //   outputMin: this.minSize,
-    //   outputMax: this.maxSize,
-    //   logarithmic: true
-    // });
-    // const frequencyGroups = chunk(frequencies, frequencies.length / this.numFlowers);
+    const {audio} = world;
+    const {amplitude, frequencies} = audio;
+    const maxFlowerSize = scale({
+      input: amplitude,
+      inputMin: 0,
+      inputMax: 1,
+      outputMin: this.minSize,
+      outputMax: this.maxSize,
+      logarithmic: true
+    });
+    const frequencyGroups = chunk(frequencies, frequencies.length / this.numFlowers);
+    frequencyGroups.forEach((group, groupIdx: number) => {
+      canvas.globalCompositeOperation = 'color-dodge';
+      canvas.fillStyle = '#444';
+      circularPath({
+        canvas,
+        cx: this.state.x,
+        cy: this.state.y,
+        minSize: 0,
+        maxSize: maxFlowerSize,
+        wave: group
+      });
+    });
     // const flowerRings = frequencyGroups.map((group, groupIdx) => {
-    //   return circularPath({
-    //     cx: this.state.x,
-    //     cy: this.state.y,
-    //     minSize: 0,
-    //     maxSize: maxFlowerSize,
-    //     className: 'flower',
-    //     key: groupIdx,
-    //     wave: group
-    //   });
     // });
     // return <g key={this.id}>{flowerRings}</g>;
   }

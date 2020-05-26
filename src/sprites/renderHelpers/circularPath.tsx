@@ -1,17 +1,14 @@
-import React from 'react';
 import {ouroboros} from '../../util/ouroboros';
 import {scale} from '../../util/scale';
 
 interface CircularPathParams {
+  canvas: CanvasRenderingContext2D;
   cx: number;
   cy: number;
   wave: Uint8Array | number[];
   minSize: number;
   maxSize: number;
-  key: string | number;
   angle?: number;
-  className?: string;
-  style?: React.CSSProperties;
 
   /**
    * To prevent head from not aligning with tail, tail smoothing removes n items from the tail
@@ -20,8 +17,8 @@ interface CircularPathParams {
   tailSmoothing?: number;
 }
 
-export function circularPath(params: CircularPathParams): React.ReactElement<SVGPathElement> {
-  const {className, cx, cy, key, minSize, maxSize, style, wave} = params;
+export function circularPath(params: CircularPathParams): void {
+  const {canvas, cx, cy, minSize, maxSize, wave} = params;
   const angle = params.angle || 0;
   const tailSmoothing: number = params.tailSmoothing || Math.round(wave.length * 0.1);
   const size = Math.max(wave.length - tailSmoothing, 0);
@@ -63,11 +60,10 @@ export function circularPath(params: CircularPathParams): React.ReactElement<SVG
   });
 
   const last = size >= 1 ? coords[size - 1] : {x: 0, y: 0};
-  const circularFrequencyMeter = [
-    `M${last.x},${last.y}`,
-    ...coords.map(({x, y}) => {
-      return `L${x},${y}`;
-    })
-  ].join(' ');
-  return <path key={key} className={className} d={circularFrequencyMeter} style={style} />;
+  canvas.beginPath();
+  canvas.moveTo(last.x, last.y);
+  coords.forEach(({x, y}) => {
+    canvas.lineTo(x, y);
+  });
+  canvas.fill();
 }
