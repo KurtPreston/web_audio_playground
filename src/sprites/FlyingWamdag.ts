@@ -84,7 +84,7 @@ export class FlyingWamdag extends Sprite {
 
     const image: HTMLImageElement = flyingWamdagImages[this.animationFrame];
 
-    canvas.globalCompositeOperation = 'normal';
+    canvas.globalCompositeOperation = 'source-over';
     canvas.save();
     if (!isSafari) {
       // Safari renders shadows incorrectly
