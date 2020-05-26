@@ -7,6 +7,7 @@ import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {scale} from '../util/scale';
 import './FlyingWamdag.scss';
 import {NoteGrid} from './NoteGrid';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface FlyingWamdagParams {
@@ -76,15 +77,7 @@ export class FlyingWamdag extends Sprite {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     this.renderFlyingWamdag(canvas);
-    // const targetIndicator = circularPath({
-    //   cx: this.target.x,
-    //   cy: this.target.y,
-    //   wave: world.audio.uintWave,
-    //   minSize: 3,
-    //   maxSize: 45 * world.audio.amplitude,
-    //   className: 'flying-wamdag-target',
-    //   key: 'flying-wamdag-target'
-    // });
+    this.renderTargetIndicator(canvas, world);
     // return (
     //   <g key={this.id}>
     //     {this.svgDefs}
@@ -114,27 +107,17 @@ export class FlyingWamdag extends Sprite {
       // Facing right
       canvas.drawImage(image, xMin, yMin, width, height);
     }
+  }
 
-    // return flyingWamdagSvgs.map((flyingWamdagSvg: string, idx: number) => {
-    //   const style: React.CSSProperties = {
-    //     opacity: idx === this.animationFrame ? 1 : 0,
-    //     transform
-    //   };
-
-    //   return (
-    //     <image
-    //       key={flyingWamdagSvg}
-    //       x={xMin}
-    //       y={yMin}
-    //       style={style}
-    //       width={width}
-    //       height={height}
-    //       preserveAspectRatio='xMaxYMin slice'
-    //       xlinkHref={flyingWamdagSvgs[idx]}
-    //       filter='url(#flying-wamdag-shadow)'
-    //     />
-    //   );
-    // });
+  private renderTargetIndicator(canvas: CanvasRenderingContext2D, world: WorldState) {
+    circularPath({
+      canvas,
+      cx: this.target.x,
+      cy: this.target.y,
+      wave: world.audio.uintWave,
+      minSize: 3,
+      maxSize: 45 * world.audio.amplitude
+    });
   }
 
   private renderPowerUp() {
