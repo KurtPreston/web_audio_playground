@@ -66,4 +66,6 @@ export function circularPath(params: CircularPathParams): void {
     canvas.lineTo(x, y);
   });
   canvas.fill();
+  canvas.stroke();
+  canvas.closePath();
 }

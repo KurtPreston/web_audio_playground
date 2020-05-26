@@ -39,11 +39,7 @@ export class Ryu extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    // if (this.fireball) {
-    //   return <g key={this.id}>{this.fireball.render(world)}</g>;
-    // } else {
-    //   return <g key={this.id} />;
-    // }
+    this.fireball.render(canvas, world);
   }
 
   public tick(world: WorldState) {

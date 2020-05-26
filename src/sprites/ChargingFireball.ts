@@ -1,9 +1,9 @@
 import {random} from 'lodash';
-import React from 'react';
 import tinycolor from 'tinycolor2';
 import {IPosition, WorldState} from '../types';
 import {OverflowMode, scale} from '../util/scale';
 import {FireballSpriteParams} from './Fireball';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 interface ChargingFireballParams {
@@ -41,18 +41,18 @@ export class ChargingFireball extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    // const {chargeSize, position, spinAngle} = this;
-    // const {minSize, maxSize} = this.sizeBounds();
-    // return circularPath({
-    //   wave: world.audio.uintWave,
-    //   cx: position.x,
-    //   cy: position.y,
-    //   minSize,
-    //   maxSize,
-    //   key: this.id,
-    //   angle: spinAngle,
-    //   style: this.fireballStyle(chargeSize)
-    // });
+    const {chargeSize, position, spinAngle} = this;
+    const {minSize, maxSize} = this.sizeBounds();
+    this.fireballStyle(chargeSize)(canvas);
+    circularPath({
+      canvas,
+      wave: world.audio.uintWave,
+      cx: position.x,
+      cy: position.y,
+      minSize,
+      maxSize,
+      angle: spinAngle
+    });
   }
 
   public tick(world: WorldState) {
@@ -98,36 +98,35 @@ export class ChargingFireball extends Sprite {
     this.lastAmplitude = soundAmplitude;
   }
 
-  private fireballStyle(chargeSize: number): React.CSSProperties {
-    if (chargeSize < this.chargeMinLaunchSize) {
-      const blend = scale({
-        input: chargeSize,
-        inputMin: this.chargeMinSize,
-        inputMax: this.chargeMinLaunchSize,
-        outputMin: 0,
-        outputMax: 100,
-        overflowMode: OverflowMode.Constrain
-      });
-      return {
-        fill: tinycolor.mix('#000', '#00a', blend).toHexString(),
-        stroke: 'white',
-        strokeWidth: '1px'
-      };
-    } else {
-      const blend = scale({
-        input: chargeSize,
-        inputMin: this.chargeMinLaunchSize,
-        inputMax: this.chargeMaxSize,
-        outputMin: 0,
-        outputMax: 100,
-        overflowMode: OverflowMode.Constrain
-      });
-      return {
-        fill: tinycolor.mix('#00f', '#f00', blend).toHexString(),
-        stroke: tinycolor.mix('#f00', '#000', blend).toHexString(),
-        strokeWidth: blend / 10
-      };
-    }
+  private fireballStyle(chargeSize: number) {
+    return (canvas: CanvasRenderingContext2D) => {
+      if (chargeSize < this.chargeMinLaunchSize) {
+        const blend = scale({
+          input: chargeSize,
+          inputMin: this.chargeMinSize,
+          inputMax: this.chargeMinLaunchSize,
+          outputMin: 0,
+          outputMax: 100,
+          overflowMode: OverflowMode.Constrain
+        });
+        canvas.fillStyle = tinycolor.mix('#000', '#00a', blend).toHexString();
+        canvas.strokeStyle = 'white';
+        canvas.lineWidth = 1;
+      } else {
+        const blend = scale({
+          input: chargeSize,
+          inputMin: this.chargeMinLaunchSize,
+          inputMax: this.chargeMaxSize,
+          outputMin: 0,
+          outputMax: 100,
+          overflowMode: OverflowMode.Constrain
+        });
+
+        canvas.fillStyle = tinycolor.mix('#00f', '#f00', blend).toHexString();
+        canvas.strokeStyle = tinycolor.mix('#f00', '#000', blend).toHexString();
+        canvas.lineWidth = blend / 10;
+      }
+    };
   }
 
   public launchParams(): FireballSpriteParams {
@@ -152,7 +151,7 @@ export class ChargingFireball extends Sprite {
         spinAngle: 0
       },
       spinMomentum: 5,
-      style: this.fireballStyle(chargeSize)
+      prepareCanvas: this.fireballStyle(chargeSize)
     };
   }
 

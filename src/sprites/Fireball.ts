@@ -1,7 +1,7 @@
 import {random} from 'lodash';
-import React from 'react';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {IWanderer, SpriteTicker, WorldState} from '../types';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 export interface FireballSpriteParams {
@@ -11,7 +11,7 @@ export interface FireballSpriteParams {
   maxSize: number;
   spinMomentum: number;
   state: FireballState;
-  style?: React.CSSProperties;
+  prepareCanvas: (canvas: CanvasRenderingContext2D) => void;
 }
 
 export interface FireballState extends IWanderer {
@@ -42,17 +42,17 @@ export class Fireball extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    // const {wave, state, minSize, maxSize, style} = this.params;
-    // return circularPath({
-    //   wave,
-    //   cx: state.x,
-    //   cy: state.y,
-    //   minSize,
-    //   maxSize,
-    //   key: this.id,
-    //   angle: state.spinAngle,
-    //   style
-    // });
+    const {wave, state, minSize, maxSize} = this.params;
+    this.params.prepareCanvas(canvas);
+    circularPath({
+      canvas,
+      wave,
+      cx: state.x,
+      cy: state.y,
+      minSize,
+      maxSize,
+      angle: state.spinAngle
+    });
   }
 
   public tick(world: WorldState) {
