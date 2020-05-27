@@ -42,7 +42,7 @@ export class Wamflap extends Game<WamflapState> {
       const distance = distanceBetween(circlePosition, this.player.position);
       if (distance < size) {
         this.circles.delete(circle);
-        this.player.powerUp();
+        this.player.powerUp(circle);
       }
     });
 

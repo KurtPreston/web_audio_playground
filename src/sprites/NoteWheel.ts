@@ -23,6 +23,7 @@ export class NoteWheel extends Sprite {
   private readonly mixBlendMode: CanvasBlendMode;
   private readonly size: number;
   private readonly fontSize: number = 15;
+  private readonly targetDistance: number = 20;
 
   constructor(params: Partial<NoteWheelParams> = {}) {
     super();
@@ -98,8 +99,8 @@ export class NoteWheel extends Sprite {
       if (noteIdx >= 0) {
         const {angleCenter} = this.noteSlice(noteIdx);
         this.target = {
-          x: x + Math.cos(angleCenter) * this.size,
-          y: y + Math.sin(angleCenter) * this.size
+          x: x + Math.cos(angleCenter) * this.targetDistance,
+          y: y + Math.sin(angleCenter) * this.targetDistance
         };
       } else {
         this.target = null;

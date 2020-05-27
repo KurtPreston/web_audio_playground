@@ -23,10 +23,10 @@ export class Circle extends Sprite {
   public state: CircleState;
 
   // Constants
+  public readonly color = randomColor();
+  public readonly mixBlendMode: CanvasBlendMode;
   private readonly minSize: number;
   private readonly maxSize: number;
-  private readonly color = randomColor();
-  private readonly mixBlendMode: CanvasBlendMode;
   private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
   private readonly destroy: () => boolean;
