@@ -1,7 +1,6 @@
 import {midiNoteToFreq} from './midi';
 
 export type Note = number;
-
 export type NoteLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type NoteAccidental = 'b' | '#' | null;
 

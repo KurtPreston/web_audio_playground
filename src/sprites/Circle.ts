@@ -1,6 +1,6 @@
 import {isFinite, random} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
-import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
+import {CanvasBlendMode, Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {randomColor} from '../util/color';
 import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
@@ -11,7 +11,7 @@ export interface CircleParams {
   destroy: (sprite: Circle) => boolean;
   minSize?: number;
   maxSize?: number;
-  mixBlendMode?: string;
+  mixBlendMode?: CanvasBlendMode;
 }
 
 interface CircleState extends IWanderer {
@@ -26,7 +26,7 @@ export class Circle extends Sprite {
   private readonly minSize: number;
   private readonly maxSize: number;
   private readonly color = randomColor();
-  private readonly mixBlendMode: string;
+  private readonly mixBlendMode: CanvasBlendMode;
   private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
   private readonly destroy: () => boolean;
