@@ -5,15 +5,12 @@ import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
 import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {scale} from '../util/scale';
-import {NoteGrid} from './NoteGrid';
 import {NoteWheel} from './NoteWheel';
-import {circularPath} from './renderHelpers/circularPath';
 import {isSafari} from './renderHelpers/detectBrowser';
 import {Sprite} from './Sprite';
 
 export interface FlyingWamdagParams {
   dimensions: Dimensions;
-  noteGrid: NoteGrid;
 }
 
 const flyingWamdagSvgs = [flyingWamdagSvg1, flyingWamdagSvg2, flyingWamdagSvg3, flyingWamdagSvg4];
@@ -41,7 +38,6 @@ export class FlyingWamdag extends Sprite {
   private framesSincePowerUp: number = Number.POSITIVE_INFINITY;
 
   // Referenced sprites
-  private noteGrid: NoteGrid;
   private noteWheel: NoteWheel;
 
   constructor(params: FlyingWamdagParams) {
@@ -61,7 +57,6 @@ export class FlyingWamdag extends Sprite {
       x: xMid,
       y: yMid
     };
-    this.noteGrid = params.noteGrid;
     this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 8);
     this.powerUpSize = this.flyingWamdagSize * 1.5;
     this.noteWheel = new NoteWheel();
@@ -73,7 +68,6 @@ export class FlyingWamdag extends Sprite {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     this.renderPowerUp(canvas);
-    this.renderTargetIndicator(canvas, world);
     this.renderNoteWheel(canvas, world);
     this.renderFlyingWamdag(canvas);
   }
@@ -113,19 +107,6 @@ export class FlyingWamdag extends Sprite {
     this.noteWheel.render(canvas, world);
   }
 
-  private renderTargetIndicator(canvas: CanvasRenderingContext2D, world: WorldState) {
-    canvas.fillStyle = 'rebeccapurple';
-    canvas.globalCompositeOperation = 'color-burn';
-    circularPath({
-      canvas,
-      cx: this.target.x,
-      cy: this.target.y,
-      wave: world.audio.uintWave,
-      minSize: 3,
-      maxSize: 45 * world.audio.amplitude
-    });
-  }
-
   private renderPowerUp(canvas: CanvasRenderingContext2D) {
     if (this.framesSincePowerUp < this.numPowerUpFrames) {
       const size = scale({
@@ -148,7 +129,7 @@ export class FlyingWamdag extends Sprite {
 
   public tick(world: WorldState) {
     const {width, height} = world.dimensions;
-    const {noteGrid, noteWheel, position, target, vector} = this;
+    const {noteWheel, position, target, vector} = this;
     // Animate
     if (world.frameNum % this.animationFrameRate === 0) {
       this.animationFrame = (this.animationFrame + 1) % flyingWamdagSvgs.length;
@@ -156,10 +137,8 @@ export class FlyingWamdag extends Sprite {
     this.framesSincePowerUp++;
 
     // Adjust target
-    if (noteGrid.peakFreqPosition) {
-      this.target.x = noteGrid.peakFreqPosition.x;
-      this.target.y = noteGrid.peakFreqPosition.y;
-    }
+    noteWheel.tick(world);
+    this.target = noteWheel.target || this.target;
 
     // Adjust momentum towards target
     const xDiff = target.x - position.x;

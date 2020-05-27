@@ -16,6 +16,7 @@ export class NoteWheel extends Sprite {
     x: -1000,
     y: -1000
   };
+  public target: IPosition | null = null;
 
   // Constants
   private readonly notes: Note[];
@@ -37,10 +38,7 @@ export class NoteWheel extends Sprite {
     const {x, y} = this.position;
 
     const numNotes = this.notes.length;
-    const circleTop = (3 * Math.PI) / 2;
-    const radiansPerSlice = (2 * Math.PI) / numNotes;
 
-    canvas.globalCompositeOperation = this.mixBlendMode;
     this.notes.forEach((note: Note, idx: number) => {
       // Note slice
       const color = tinycolor({
@@ -48,9 +46,14 @@ export class NoteWheel extends Sprite {
         s: 1,
         l: 0.7
       });
-      const angleCenter = circleTop + idx * radiansPerSlice;
-      const angleStart = angleCenter - radiansPerSlice / 2;
-      const angleStop = angleCenter + radiansPerSlice / 2;
+      const {angleStart, angleCenter, angleStop} = this.noteSlice(idx);
+      const noteIsSelected = world.audio.notes.map((note) => note % 12).includes(note);
+      if (noteIsSelected) {
+        canvas.globalCompositeOperation = 'source-over';
+      } else {
+        canvas.globalCompositeOperation = this.mixBlendMode;
+      }
+
       canvas.beginPath();
       canvas.fillStyle = color.toHexString();
       canvas.moveTo(x, y);
@@ -71,5 +74,33 @@ export class NoteWheel extends Sprite {
     });
   }
 
-  public tick(world: WorldState) {}
+  private noteSlice(noteIdx: number) {
+    const numNotes = this.notes.length;
+    const circleTop = (3 * Math.PI) / 2;
+    const radiansPerSlice = (2 * Math.PI) / numNotes;
+    const angleCenter = circleTop + noteIdx * radiansPerSlice;
+    const angleStart = angleCenter - radiansPerSlice / 2;
+    const angleStop = angleCenter + radiansPerSlice / 2;
+    return {angleCenter, angleStart, angleStop};
+  }
+
+  public tick(world: WorldState) {
+    const {x, y} = this.position;
+    const notes: Note[] = world.audio.notes;
+    if (notes.length) {
+      const note: Note = notes[0] % 12;
+      const noteIdx: number = this.notes.findIndex((n) => n === note);
+      if (noteIdx >= 0) {
+        const {angleCenter} = this.noteSlice(noteIdx);
+        this.target = {
+          x: x + Math.cos(angleCenter) * this.size,
+          y: y + Math.sin(angleCenter) * this.size
+        };
+      } else {
+        this.target = null;
+      }
+    } else {
+      this.target = null;
+    }
+  }
 }

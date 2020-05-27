@@ -3,7 +3,6 @@ import {times} from 'lodash';
 import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
-import {NoteGrid} from '../sprites/NoteGrid';
 import {distanceBetween} from '../sprites/renderHelpers/distanceBetween';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
@@ -15,23 +14,14 @@ interface WamflapState {}
 @autobind
 export class Wamflap extends Game<WamflapState> {
   private readonly player: FlyingWamdag;
-  private readonly noteGrid: NoteGrid;
   private readonly bg: StaticBackground;
   private readonly circles: Set<Circle> = new Set<Circle>();
 
   constructor(props: GameProps) {
     super(props);
     const {dimensions} = props;
-    this.noteGrid = new NoteGrid({
-      lowOctave: 2,
-      highOctave: 4,
-      showPitchIndicator: false,
-      showFrequency: false,
-      showNoteAmplitude: false
-    });
     this.player = new FlyingWamdag({
-      dimensions,
-      noteGrid: this.noteGrid
+      dimensions
     });
     this.bg = new StaticBackground();
 
@@ -73,6 +63,6 @@ export class Wamflap extends Game<WamflapState> {
 
   protected sprites(): Sprite[] {
     const circles: Circle[] = Array.from(this.circles.values());
-    return [this.bg, this.noteGrid, ...circles, this.player];
+    return [this.bg, ...circles, this.player];
   }
 }
