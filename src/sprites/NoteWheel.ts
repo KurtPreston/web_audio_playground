@@ -22,6 +22,7 @@ export class NoteWheel extends Sprite {
   private readonly notes: Note[];
   private readonly mixBlendMode: CanvasBlendMode;
   private readonly size: number;
+  private readonly fontSize: number = 15;
 
   constructor(params: Partial<NoteWheelParams> = {}) {
     super();
@@ -66,6 +67,10 @@ export class NoteWheel extends Sprite {
       const labelDistance = this.size * 0.8;
       const {letter, accidental} = getNoteInfo(note);
       canvas.fillStyle = 'white';
+      canvas.font = noteIsSelected
+        ? `bold ${this.fontSize * 1.25}px sans-serif`
+        : `${this.fontSize}px sans-serif`;
+      canvas.textAlign = 'center';
       canvas.fillText(
         `${letter}${accidental ? '♯' : ''}`,
         x + Math.cos(angleCenter) * labelDistance,
