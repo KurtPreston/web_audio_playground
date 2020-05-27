@@ -11,7 +11,7 @@ import {scale} from './scale';
 
 export type FftSize = 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 | 32768;
 
-export const NOTE_FRAMES_TO_AVG = 10;
+export const NOTE_FRAMES_TO_AVG = 5;
 
 @autobind
 export class AudioAnalyser implements AudioData {
