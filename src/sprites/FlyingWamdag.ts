@@ -57,7 +57,9 @@ export class FlyingWamdag extends Sprite {
       y: yMid
     };
     this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 8);
-    this.noteWheel = new NoteWheel();
+    this.noteWheel = new NoteWheel({
+      size: this.flyingWamdagSize * 1.5
+    });
     this.powerUps = new Set<PowerUp>();
   }
 
@@ -99,7 +101,7 @@ export class FlyingWamdag extends Sprite {
       canvas.shadowOffsetX = 35;
       canvas.shadowOffsetY = 35;
       canvas.shadowBlur = 20;
-      canvas.shadowColor = 'black';
+      canvas.shadowColor = 'rgba(0, 0, 0, 0.5)';
     }
     if (this.vector.xMomentum < 0) {
       // Facing left
