@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import {times} from 'lodash';
+import {sample, times} from 'lodash';
 import React from 'react';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
@@ -45,10 +45,29 @@ export class Wamflap extends Game<WamflapState> {
         this.player.powerUp();
       }
     });
+
+    if (this.circles.size === 0) {
+      this.nextLevel(world);
+    }
   }
 
   private destroyCircle(circle: Circle) {
     return this.circles.delete(circle);
+  }
+
+  private nextLevel(world: WorldState) {
+    times(200, (idx) => {
+      setTimeout(() => {
+        this.circles.add(
+          new Circle({
+            dimensions: world.dimensions,
+            bounceOffEdge: true,
+            destroy: this.destroyCircle,
+            mixBlendMode: sample(['color-dodge', 'soft-light', 'xor', 'multiply'])
+          })
+        );
+      }, idx * 50);
+    });
   }
 
   protected menu(world: WorldState) {
