@@ -6,6 +6,7 @@ import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {scale} from '../util/scale';
 import {NoteGrid} from './NoteGrid';
+import {NoteWheel} from './NoteWheel';
 import {circularPath} from './renderHelpers/circularPath';
 import {isSafari} from './renderHelpers/detectBrowser';
 import {Sprite} from './Sprite';
@@ -41,6 +42,7 @@ export class FlyingWamdag extends Sprite {
 
   // Referenced sprites
   private noteGrid: NoteGrid;
+  private noteWheel: NoteWheel;
 
   constructor(params: FlyingWamdagParams) {
     super();
@@ -62,6 +64,7 @@ export class FlyingWamdag extends Sprite {
     this.noteGrid = params.noteGrid;
     this.flyingWamdagSize = Math.round(Math.sqrt(width * height) / 8);
     this.powerUpSize = this.flyingWamdagSize * 1.5;
+    this.noteWheel = new NoteWheel();
   }
 
   public powerUp() {
@@ -71,6 +74,7 @@ export class FlyingWamdag extends Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     this.renderPowerUp(canvas);
     this.renderTargetIndicator(canvas, world);
+    this.renderNoteWheel(canvas, world);
     this.renderFlyingWamdag(canvas);
   }
 
@@ -103,6 +107,10 @@ export class FlyingWamdag extends Sprite {
       canvas.drawImage(image, xMin, yMin, width, height);
     }
     canvas.restore();
+  }
+
+  private renderNoteWheel(canvas: CanvasRenderingContext2D, world: WorldState) {
+    this.noteWheel.render(canvas, world);
   }
 
   private renderTargetIndicator(canvas: CanvasRenderingContext2D, world: WorldState) {
@@ -140,7 +148,7 @@ export class FlyingWamdag extends Sprite {
 
   public tick(world: WorldState) {
     const {width, height} = world.dimensions;
-    const {noteGrid, position, target, vector} = this;
+    const {noteGrid, noteWheel, position, target, vector} = this;
     // Animate
     if (world.frameNum % this.animationFrameRate === 0) {
       this.animationFrame = (this.animationFrame + 1) % flyingWamdagSvgs.length;
@@ -195,7 +203,11 @@ export class FlyingWamdag extends Sprite {
       vector.yMomentum *= ratio;
     }
 
+    // Update position
     position.x += vector.xMomentum;
     position.y += vector.yMomentum;
+
+    // Update notwheel position
+    noteWheel.setPosition(position);
   }
 }
