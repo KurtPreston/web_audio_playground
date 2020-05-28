@@ -3,6 +3,7 @@ import flyingWamdagSvg1 from '../images/flyingWamdag1.svg';
 import flyingWamdagSvg2 from '../images/flyingWamdag2.svg';
 import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
 import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
+import {angleBetween} from '../math/trig/angleBetween';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {Circle} from './Circle';
 import {NoteWheel} from './NoteWheel';
@@ -141,21 +142,12 @@ export class FlyingWamdag extends Sprite {
     this.target = noteWheel.target || this.target;
 
     // Adjust momentum towards target
-    const xDiff = target.x - position.x;
-    const yDiff = target.y - position.y;
-    let angle = Math.atan(yDiff / xDiff);
+    const angle = angleBetween(position, target);
+    const xMomentumDelta = this.force * Math.cos(angle);
+    const yMomentumDelta = this.force * Math.sin(angle);
 
-    if (isFinite(angle)) {
-      if (xDiff < 0) {
-        angle += Math.PI;
-      }
-
-      const xMomentumDelta = this.force * Math.cos(angle);
-      const yMomentumDelta = this.force * Math.sin(angle);
-
-      vector.xMomentum += xMomentumDelta;
-      vector.yMomentum += yMomentumDelta;
-    }
+    vector.xMomentum += xMomentumDelta;
+    vector.yMomentum += yMomentumDelta;
 
     // Bounce off edges
     if (position.x > width && vector.xMomentum > 0) {
