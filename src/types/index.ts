@@ -28,6 +28,11 @@ export interface IVector {
   yMomentum: number;
 }
 
+export interface IAcceleration {
+  xForce: number;
+  yForce: number;
+}
+
 // App types
 export interface Dimensions {
   width: number;
