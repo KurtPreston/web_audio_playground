@@ -149,7 +149,8 @@ export class NoteGraph extends Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          coefficient: -1000 // repel
+          coefficient: -10000, // repel,
+          exponent: 1.5
         });
 
         node1.vector.xMomentum += xForce;
@@ -176,40 +177,50 @@ export class NoteGraph extends Sprite {
       node1.vector.yMomentum += yForce;
     });
 
-    // Ease momentum
+    // Apply damping
     const dampingCoefficient = 0.8;
-    const maxVelocity = 20;
     this.nodes.forEach(({vector}) => {
       // Apply damping
       vector.xMomentum *= dampingCoefficient;
       vector.yMomentum *= dampingCoefficient;
-
-      // Apply max velocity
-      const velocity = Math.sqrt(Math.pow(vector.xMomentum, 2) + Math.pow(vector.yMomentum, 2));
-      const ratio = maxVelocity / velocity;
-      if (ratio < 1) {
-        vector.xMomentum *= ratio;
-        vector.yMomentum *= ratio;
-      }
     });
+
+    // Limit to max velocity
+    // const maxVelocity = 20;
+    // this.nodes.forEach(({vector}) => {
+    //   // Apply damping
+    //   vector.xMomentum *= dampingCoefficient;
+    //   vector.yMomentum *= dampingCoefficient;
+
+    //   // Apply max velocity
+    //   const velocity = Math.sqrt(Math.pow(vector.xMomentum, 2) + Math.pow(vector.yMomentum, 2));
+    //   const ratio = maxVelocity / velocity;
+    //   if (ratio < 1) {
+    //     vector.xMomentum *= ratio;
+    //     vector.yMomentum *= ratio;
+    //   }
+    // });
 
     // Adjust positions
     this.nodes.forEach(({position, vector}: NoteNode) => {
       position.x += vector.xMomentum;
       position.y += vector.yMomentum;
-
-      if (position.x < 0) {
-        position.x = 0;
-      }
-      if (position.x > world.dimensions.width) {
-        position.x = world.dimensions.width;
-      }
-      if (position.y < 0) {
-        position.y = 0;
-      }
-      if (position.y > world.dimensions.height) {
-        position.y = world.dimensions.height;
-      }
     });
+
+    // Enforce boundaries
+    // this.nodes.forEach(({position, vector}: NoteNode) => {
+    //   if (position.x < 0) {
+    //     position.x = 0;
+    //   }
+    //   if (position.x > world.dimensions.width) {
+    //     position.x = world.dimensions.width;
+    //   }
+    //   if (position.y < 0) {
+    //     position.y = 0;
+    //   }
+    //   if (position.y > world.dimensions.height) {
+    //     position.y = world.dimensions.height;
+    //   }
+    // });
   }
 }
