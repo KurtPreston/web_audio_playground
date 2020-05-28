@@ -1,4 +1,5 @@
 import {random, sample, times} from 'lodash';
+import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {getNoteInfo, Note} from '../util/Note';
@@ -36,7 +37,7 @@ export class NoteGraph extends Sprite {
     ];
 
     // Create nodes
-    const numNodes = params.numNodes || 25;
+    const numNodes = params.numNodes || 10;
     times(numNodes, () => {
       const node: NoteNode = {
         note: sample(notes) as Note,
@@ -54,10 +55,12 @@ export class NoteGraph extends Sprite {
     });
 
     // Create edges
+    const connectedNodes = new Set<NoteNode>();
     const unconnectedNodes = new Set<NoteNode>(this.nodes);
     const allNodes: NoteNode[] = Array.from(this.nodes);
     while (unconnectedNodes.size > 0) {
-      const node1: NoteNode = sample(allNodes) as NoteNode;
+      const node1Bucket = connectedNodes.size ? Array.from(connectedNodes) : allNodes;
+      const node1: NoteNode = sample(node1Bucket) as NoteNode;
       const node2: NoteNode = sample(allNodes) as NoteNode;
       if (
         node1.connectedNodes.has(node2) ||
@@ -72,16 +75,32 @@ export class NoteGraph extends Sprite {
       });
       node1.connectedNodes.add(node2);
       node2.connectedNodes.add(node1);
+      connectedNodes.add(node1);
+      connectedNodes.add(node2);
       unconnectedNodes.delete(node1);
       unconnectedNodes.delete(node2);
     }
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    // Draw edges
+    canvas.strokeStyle = 'white';
+    canvas.lineWidth = 3;
+    this.edges.forEach((edge: NoteEdge) => {
+      const {node1, node2} = edge;
+      canvas.beginPath();
+      canvas.moveTo(node1.position.x, node1.position.y);
+      canvas.lineTo(node2.position.x, node2.position.y);
+      canvas.stroke();
+      canvas.closePath();
+    });
+
     this.nodes.forEach((node: NoteNode) => {
       const {position, note} = node;
       const {x, y} = position;
       const {letter, accidental} = getNoteInfo(note);
+
+      // Draw nodes
       const nodeSize = 25;
       const fontSize = 20;
       const noteIsSelected = false;
@@ -89,6 +108,9 @@ export class NoteGraph extends Sprite {
       canvas.arc(x, y, nodeSize, 0, 2 * Math.PI);
       canvas.fillStyle = noteColor(note);
       canvas.fill();
+      canvas.closePath();
+
+      // Draw letters
       canvas.font = noteIsSelected
         ? `bold ${fontSize * 1.25}px sans-serif`
         : `${fontSize}px sans-serif`;
@@ -96,7 +118,6 @@ export class NoteGraph extends Sprite {
       canvas.textAlign = 'center';
       canvas.textBaseline = 'middle';
       canvas.fillText(`${letter}${accidental ? '♯' : ''}`, x, y);
-      canvas.closePath();
     });
   }
 
@@ -106,8 +127,8 @@ export class NoteGraph extends Sprite {
       const {xForce, yForce} = springForce({
         point1: node1.position,
         point2: node2.position,
-        springConstant: 0.5,
-        targetDistance: 200
+        springConstant: 20,
+        targetDistance: 150
       });
 
       node1.vector.xMomentum += xForce;
@@ -122,6 +143,17 @@ export class NoteGraph extends Sprite {
         if (node1 === node2) {
           return;
         }
+
+        const {xForce, yForce} = electricalForce({
+          point1: node1.position,
+          point2: node2.position,
+          repulsionCoefficient: -100
+        });
+
+        node1.vector.xMomentum += xForce;
+        node1.vector.yMomentum += yForce;
+        node2.vector.yMomentum -= xForce;
+        node2.vector.yMomentum -= yForce;
       });
     });
 
