@@ -1,7 +1,7 @@
 import {range} from 'lodash';
-import tinycolor from 'tinycolor2';
 import {CanvasBlendMode, IPosition, WorldState} from '../types';
 import {getNoteInfo, Note} from '../util/Note';
+import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 
 export interface NoteWheelParams {
@@ -39,15 +39,10 @@ export class NoteWheel extends Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {x, y} = this.position;
 
-    const numNotes = this.notes.length;
-
     this.notes.forEach((note: Note, idx: number) => {
       // Note slice
-      const color = tinycolor({
-        h: (idx / numNotes) * 360,
-        s: 1,
-        l: 0.7
-      });
+      const color = noteColor(note);
+
       const {angleStart, angleCenter, angleStop} = this.noteSlice(idx);
       const noteIsSelected = world.audio.notes.map((note) => note % 12).includes(note);
       if (noteIsSelected) {
@@ -57,7 +52,7 @@ export class NoteWheel extends Sprite {
       }
 
       canvas.beginPath();
-      canvas.fillStyle = color.toHexString();
+      canvas.fillStyle = color;
       canvas.moveTo(x, y);
       canvas.arc(x, y, this.size, angleStart, angleStop);
       canvas.lineTo(x, y);

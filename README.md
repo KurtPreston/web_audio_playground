@@ -3,6 +3,7 @@
 ## Notes
 
 ### Super-Saiyan
+
 Character at bottom
 Evil floating thing at top, that goes back and forth between notes laid out on x-axis
 Player yells with Super-Saiyan charge up. The longer + louder, the larger their ball.
@@ -10,6 +11,7 @@ When they release, the ball shoots towards the note board.
 Player tries to hit the villain by using volume to create more powerful balls
 
 ### Wamdag Game
+
 Overhead view
 One player controls wamdag
 One person plays violin
@@ -20,6 +22,12 @@ Each instrument will be rendered as a circle whose size is based on amplitude an
 At first, the instrument sprites will move forward at a constant pace, randomly going straight, or rotating their direction (ideally leaving a trail?)
 (maybe the drums will be bullets fired from the guitar)
 (maybe the velocity of everything will be the song BPM?)
+
+### Chordblob
+
+With credit to the bubble android game + puyo
+Blob of notes (graph of notes)
+Sing a chord of adjacent notes to pop them
 
 ## Ideas
 

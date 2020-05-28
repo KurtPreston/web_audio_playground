@@ -66,6 +66,7 @@ export class Circle extends Sprite {
     canvas.arc(x, y, size, 0, 2 * Math.PI);
     canvas.fillStyle = this.color;
     canvas.fill();
+    canvas.closePath();
   }
 
   public tick(world: WorldState) {
