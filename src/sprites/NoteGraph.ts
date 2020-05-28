@@ -37,7 +37,7 @@ export class NoteGraph extends Sprite {
     ];
 
     // Create nodes
-    const numNodes = params.numNodes || 12;
+    const numNodes = params.numNodes || 2;
     times(numNodes, () => {
       const node: NoteNode = {
         note: sample(notes) as Note,
@@ -122,6 +122,8 @@ export class NoteGraph extends Sprite {
   }
 
   public tick(world: WorldState) {
+    const {dimensions} = world;
+
     // Adjust momentum by applying spring force between connected nodes
     this.edges.forEach(({node1, node2}) => {
       const {xForce, yForce} = springForce({
@@ -147,18 +149,31 @@ export class NoteGraph extends Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          repulsionCoefficient: -1000
+          coefficient: -1000 // repel
         });
-
-        if (!isFinite(xForce) || !isFinite(yForce)) {
-          debugger;
-        }
 
         node1.vector.xMomentum += xForce;
         node1.vector.yMomentum += yForce;
         node2.vector.yMomentum -= xForce;
         node2.vector.yMomentum -= yForce;
       });
+    });
+
+    // Gravitate towards center
+    const center = {
+      x: dimensions.width / 2,
+      y: dimensions.height / 2
+    };
+    this.nodes.forEach((node1) => {
+      const {xForce, yForce} = electricalForce({
+        point1: node1.position,
+        point2: center,
+        coefficient: 1,
+        exponent: 0
+      });
+
+      node1.vector.xMomentum += xForce;
+      node1.vector.yMomentum += yForce;
     });
 
     // Ease momentum
