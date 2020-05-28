@@ -37,7 +37,7 @@ export class NoteGraph extends Sprite {
     ];
 
     // Create nodes
-    const numNodes = params.numNodes || 2;
+    const numNodes = params.numNodes || 15;
     times(numNodes, () => {
       const node: NoteNode = {
         note: sample(notes) as Note,
@@ -135,7 +135,7 @@ export class NoteGraph extends Sprite {
 
       node1.vector.xMomentum += xForce;
       node1.vector.yMomentum += yForce;
-      node2.vector.yMomentum -= xForce;
+      node2.vector.xMomentum -= xForce;
       node2.vector.yMomentum -= yForce;
     });
 
