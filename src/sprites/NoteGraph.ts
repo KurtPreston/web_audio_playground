@@ -37,7 +37,7 @@ export class NoteGraph extends Sprite {
     ];
 
     // Create nodes
-    const numNodes = params.numNodes || 10;
+    const numNodes = params.numNodes || 12;
     times(numNodes, () => {
       const node: NoteNode = {
         note: sample(notes) as Note,
@@ -127,8 +127,8 @@ export class NoteGraph extends Sprite {
       const {xForce, yForce} = springForce({
         point1: node1.position,
         point2: node2.position,
-        springConstant: 20,
-        targetDistance: 150
+        springConstant: 0.1,
+        targetDistance: 200
       });
 
       node1.vector.xMomentum += xForce;
@@ -147,8 +147,12 @@ export class NoteGraph extends Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          repulsionCoefficient: -100
+          repulsionCoefficient: -1000
         });
+
+        if (!isFinite(xForce) || !isFinite(yForce)) {
+          debugger;
+        }
 
         node1.vector.xMomentum += xForce;
         node1.vector.yMomentum += yForce;
@@ -158,8 +162,8 @@ export class NoteGraph extends Sprite {
     });
 
     // Ease momentum
-    const dampingCoefficient = 0.9;
-    const maxVelocity = 10;
+    const dampingCoefficient = 0.8;
+    const maxVelocity = 20;
     this.nodes.forEach(({vector}) => {
       // Apply damping
       vector.xMomentum *= dampingCoefficient;
