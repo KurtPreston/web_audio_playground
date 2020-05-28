@@ -1,8 +1,8 @@
 import {random, sample, times} from 'lodash';
+import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
 import {getNoteInfo, Note} from '../util/Note';
 import {noteColor} from './renderHelpers/noteColor';
-import {springForce} from './renderHelpers/physics';
 import {Sprite} from './Sprite';
 
 export interface NoteGraphParams {
@@ -36,7 +36,7 @@ export class NoteGraph extends Sprite {
     ];
 
     // Create nodes
-    const numNodes = params.numNodes || 2;
+    const numNodes = params.numNodes || 25;
     times(numNodes, () => {
       const node: NoteNode = {
         note: sample(notes) as Note,

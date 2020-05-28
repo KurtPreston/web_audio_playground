@@ -1,4 +1,4 @@
-import {angleBetween} from './physics';
+import {angleBetween} from './angleBetween';
 
 describe('angleBetween', () => {
   it('calculates the angle between two points', () => {
@@ -107,5 +107,3 @@ describe('angleBetween', () => {
     ).toEqual((7 * Math.PI) / 4);
   });
 });
-
-describe('springForce', () => {});
