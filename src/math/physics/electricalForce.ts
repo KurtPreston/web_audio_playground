@@ -5,14 +5,16 @@ export interface ElectricalForceParams {
   point1: IPosition;
   point2: IPosition;
   repulsionCoefficient: number;
+  exponent?: number;
 }
 
 export function electricalForce(params: ElectricalForceParams): IAcceleration {
-  const {point1, point2, repulsionCoefficient} = params;
+  const {exponent = 2, point1, point2, repulsionCoefficient} = params;
   const xDiff = point1.x - point2.x;
   const yDiff = point1.y - point2.y;
   const angle = angleBetween(point1, point2);
-  const force = repulsionCoefficient / (xDiff * xDiff + yDiff * yDiff);
+  const distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+  const force = repulsionCoefficient / Math.pow(distance, exponent);
   const xForce = Math.cos(angle) * force;
   const yForce = Math.sin(angle) * force;
   return {
