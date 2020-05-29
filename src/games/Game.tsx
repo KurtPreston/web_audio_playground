@@ -23,6 +23,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private mouseClickLocation: IPosition | undefined;
   private frameNum: number = 0;
   private canvasCtx: CanvasRenderingContext2D | null = null;
+  private mouseDragging: boolean = false;
 
   constructor(props: GameProps) {
     super(props);
@@ -70,6 +71,8 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
           width={width}
           ref={this.canvasRefFn}
           onMouseDown={this.onMouseDown}
+          onMouseMove={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
         />
         {menu}
       </div>
@@ -95,11 +98,21 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   }
 
   private onMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
+    if (event.type === 'mousemove' && !this.mouseDragging) {
+      return;
+    }
+    if (event.type === 'mousedown') {
+      this.mouseDragging = true;
+    }
     const canvas: HTMLCanvasElement = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     this.mouseClickLocation = {x, y};
+  }
+
+  private onMouseUp(event: React.MouseEvent<HTMLCanvasElement>) {
+    this.mouseDragging = false;
   }
 
   // Override in subclasses
