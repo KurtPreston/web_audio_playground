@@ -1,3 +1,4 @@
+import {random} from 'lodash';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
 import {IPosition, WorldState} from '../types';
@@ -18,7 +19,10 @@ export class Microphone extends Sprite {
   private readonly noteNodes = new Set<NoteNode>();
   private readonly color = 'white';
   private readonly maxDistance = 600;
-  private readonly speedOfSound = 500;
+
+  // Doppler settings
+  private speedOfSound: number = Math.pow(2, random(2, 16));
+  private invertDoppler = Math.random() < 0.3;
 
   constructor(params: MicrophoneParams) {
     super();
@@ -52,8 +56,15 @@ export class Microphone extends Sprite {
       const angleDiff = trajectoryAngle - angleToNode;
       const velocity = Math.sqrt(Math.pow(xMomentum, 2) + Math.pow(yMomentum, 2));
       const velocityTowardNode = Math.cos(angleDiff) * velocity;
-      const adjustedFreq =
-        (freq * Math.max(this.speedOfSound - velocityTowardNode, 0)) / this.speedOfSound;
+      let adjustedFreq = this.invertDoppler
+        ? (freq * this.speedOfSound) / Math.max(this.speedOfSound - velocityTowardNode, 0)
+        : (freq * Math.max(this.speedOfSound - velocityTowardNode, 1)) / this.speedOfSound;
+      if (adjustedFreq < 0) {
+        adjustedFreq = 0;
+      } else if (adjustedFreq > world.audio.sampleRate) {
+        adjustedFreq = world.audio.sampleRate;
+      }
+
       const volume = scale({
         input: distanceToNode,
         inputMin: 0,
