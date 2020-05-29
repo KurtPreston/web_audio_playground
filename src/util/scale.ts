@@ -4,7 +4,7 @@ export interface ScaleProps {
   inputMax: number;
   outputMin: number;
   outputMax: number;
-  logarithmic?: boolean;
+  logarithmic?: true | number;
   overflowMode?: OverflowMode;
 }
 
@@ -45,7 +45,8 @@ export function scale(props: ScaleProps): number {
 
   // Amount is scale 0 - 1
   const amount = logarithmic
-    ? Math.log2((input - inputMin) / inputRange + 1)
+    ? Math.log((input - inputMin) / inputRange + 1) /
+      Math.log(logarithmic === true ? 2 : logarithmic)
     : (input - inputMin) / inputRange;
 
   const outputRange = outputMax - outputMin;
