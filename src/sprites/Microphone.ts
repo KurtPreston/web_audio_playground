@@ -18,7 +18,7 @@ export class Microphone extends Sprite {
   private readonly noteNodes = new Set<NoteNode>();
   private readonly color = 'white';
   private readonly maxDistance = 600;
-  private readonly speedOfSound = 700;
+  private readonly speedOfSound = 500;
 
   constructor(params: MicrophoneParams) {
     super();
@@ -52,7 +52,8 @@ export class Microphone extends Sprite {
       const angleDiff = trajectoryAngle - angleToNode;
       const velocity = Math.sqrt(Math.pow(xMomentum, 2) + Math.pow(yMomentum, 2));
       const velocityTowardNode = Math.cos(angleDiff) * velocity;
-      const adjustedFreq = (freq * (this.speedOfSound - velocityTowardNode)) / this.speedOfSound;
+      const adjustedFreq =
+        (freq * Math.max(this.speedOfSound - velocityTowardNode, 0)) / this.speedOfSound;
       const volume = scale({
         input: distanceToNode,
         inputMin: 0,
