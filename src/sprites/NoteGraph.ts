@@ -110,7 +110,7 @@ export class NoteGraph extends Sprite {
       const noteIsSelected = false;
       canvas.beginPath();
       canvas.arc(x, y, nodeSize, 0, 2 * Math.PI);
-      canvas.fillStyle = noteColor(note);
+      canvas.fillStyle = noteColor(note, 0.5);
       canvas.fill();
       canvas.closePath();
 
