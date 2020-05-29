@@ -32,17 +32,15 @@ export class NoteGraph extends Sprite {
 
   constructor(params: NoteGraphParams) {
     super();
-    const notes: Note[] = params.notes || [
-      48, // C
-      52, // E
-      55 // G
-    ];
+    const notes: Note[] = params.notes || times(random(3, 5), () => random(48, 60));
 
     // Create nodes
     const numNodes = params.numNodes || 12;
     times(numNodes, (idx: number) => {
       const note: Note = sample(notes) as Note;
-      const synth = new Synth();
+      const synth = new Synth({
+        oscillator: sample(['sine', 'square', 'triangle', 'sawtooth']) as any
+      });
       synth.toMaster();
       const node: NoteNode = {
         note,
