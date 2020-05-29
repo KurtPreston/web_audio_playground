@@ -43,10 +43,18 @@ export class Microphone extends Sprite {
     }
 
     const {x, y} = position;
-    const size = 80;
 
     // Draw the circle
-    canvas.drawImage(headphoneWamdagImage, x - size / 2, y - size / 2, size, size);
+    const circleSize = 80;
+    canvas.beginPath();
+    canvas.arc(x, y, circleSize, 0, 2 * Math.PI);
+    canvas.fillStyle = this.color;
+    canvas.fill();
+    canvas.closePath();
+
+    // Draw the wamdag
+    const wamSize = 100;
+    canvas.drawImage(headphoneWamdagImage, x - wamSize / 2, y - wamSize / 2, wamSize, wamSize);
 
     // Play the audio
     this.noteNodes.forEach((noteNode: NoteNode) => {
