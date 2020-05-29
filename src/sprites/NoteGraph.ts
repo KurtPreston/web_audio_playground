@@ -1,4 +1,5 @@
 import {random, sample, times} from 'lodash';
+import {Synth} from 'tone';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
@@ -16,6 +17,7 @@ interface NoteNode {
   note: Note;
   position: IPosition;
   vector: IVector;
+  synth: Synth;
   connectedNodes: Set<NoteNode>;
 }
 
@@ -31,16 +33,19 @@ export class NoteGraph extends Sprite {
   constructor(params: NoteGraphParams) {
     super();
     const notes: Note[] = params.notes || [
-      0, // C
-      4, // E
-      7 // G
+      48, // C
+      52, // E
+      55 // G
     ];
 
     // Create nodes
     const numNodes = params.numNodes || 15;
-    times(numNodes, () => {
+    times(numNodes, (idx: number) => {
+      const note: Note = sample(notes) as Note;
+      const synth = new Synth();
+      synth.toMaster();
       const node: NoteNode = {
-        note: sample(notes) as Note,
+        note,
         vector: {
           xMomentum: 0,
           yMomentum: 0
@@ -49,7 +54,8 @@ export class NoteGraph extends Sprite {
           x: random(0, params.dimensions.width),
           y: random(0, params.dimensions.height)
         },
-        connectedNodes: new Set<NoteNode>()
+        connectedNodes: new Set<NoteNode>(),
+        synth
       };
       this.nodes.add(node);
     });
@@ -170,7 +176,7 @@ export class NoteGraph extends Sprite {
         point1: node1.position,
         point2: center,
         coefficient: 1,
-        exponent: 0
+        exponent: -0.3
       });
 
       node1.vector.xMomentum += xForce;

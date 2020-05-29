@@ -12,6 +12,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "tinycolor2": "^1.4.1",
+    "tone": "^14.7.3",
     "typescript": "~3.7.2",
     "workerize-loader": "^1.2.1"
   },
