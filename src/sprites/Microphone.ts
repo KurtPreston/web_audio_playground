@@ -15,6 +15,8 @@ interface MicrophoneParams {
 const headphoneWamdagImage = new Image();
 headphoneWamdagImage.src = headphoneWamdag;
 
+type DopplerType = 'none' | 'doppler' | 'invert';
+
 export class Microphone extends Sprite {
   // Variables
   private position: IPosition | undefined;
@@ -26,7 +28,8 @@ export class Microphone extends Sprite {
 
   // Doppler settings
   private speedOfSound: number = Math.pow(2, random(2, 16));
-  private invertDoppler = Math.random() < 0.3;
+  private doppler: DopplerType =
+    Math.random() < 0.4 ? 'none' : Math.random() < 0.7 ? 'doppler' : 'invert';
 
   constructor(params: MicrophoneParams) {
     super();
@@ -56,14 +59,21 @@ export class Microphone extends Sprite {
       const angleDiff = trajectoryAngle - angleToNode;
       const velocity = Math.sqrt(Math.pow(xMomentum, 2) + Math.pow(yMomentum, 2));
       const velocityTowardNode = Math.cos(angleDiff) * velocity;
-      let adjustedFreq = this.invertDoppler
-        ? (freq * this.speedOfSound) / Math.max(this.speedOfSound - velocityTowardNode, 0)
-        : (freq * Math.max(this.speedOfSound - velocityTowardNode, 1)) / this.speedOfSound;
+      let adjustedFreq =
+        this.doppler === 'invert'
+          ? (freq * this.speedOfSound) / Math.max(this.speedOfSound - velocityTowardNode, 1)
+          : this.doppler === 'doppler'
+          ? (freq * Math.max(this.speedOfSound - velocityTowardNode, 0)) / this.speedOfSound
+          : freq;
+
+      // Apply freq bounds
       if (adjustedFreq < 0) {
         adjustedFreq = 0;
       } else if (adjustedFreq > world.audio.sampleRate) {
         adjustedFreq = world.audio.sampleRate;
       }
+
+      adjustedFreq = freq;
 
       const volume = scale({
         input: distanceToNode,
