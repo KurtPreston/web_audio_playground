@@ -35,7 +35,7 @@ export class NoteGraph extends Sprite {
     const notes: Note[] = params.notes || times(random(3, 5), () => random(36, 60));
 
     // Create nodes
-    const numNodes = params.numNodes || 12;
+    const numNodes = params.numNodes || random(8, 16);
     times(numNodes, (idx: number) => {
       const note: Note = sample(notes) as Note;
       const synth = new Synth({
