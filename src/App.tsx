@@ -2,8 +2,8 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
-import {ChordBlob} from './games/ChordBlob';
 import {Demo} from './games/Demo';
+import {DopplerSynth} from './games/DopplerSynth';
 import {GameProps} from './games/Game';
 import {Hadouken} from './games/Hadouken';
 import {Tadpole} from './games/Tadpole';
@@ -44,9 +44,9 @@ const games: GameLink[] = [
     url: '/tadpole'
   },
   {
-    game: ChordBlob,
-    name: 'Chord Bubbles',
-    url: '/bubbles'
+    game: DopplerSynth,
+    name: 'Doppler Synth',
+    url: '/doppler'
   }
 ];
 

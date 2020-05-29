@@ -7,10 +7,10 @@ import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
 import {Game, GameProps} from './Game';
 
-interface ChordBlobState {}
+interface DopplerSynthState {}
 
 @autobind
-export class ChordBlob extends Game<ChordBlobState> {
+export class DopplerSynth extends Game<DopplerSynthState> {
   private readonly bg = new StaticBackground();
   private readonly noteGraph: NoteGraph;
   private readonly microphone: Microphone;
@@ -30,7 +30,7 @@ export class ChordBlob extends Game<ChordBlobState> {
   protected menu(world: WorldState) {
     return (
       <div>
-        <h1>ChordBlob</h1>
+        <h1>DopplerSynth</h1>
         <p>Pop the bubbles by singing chords</p>
       </div>
     );
