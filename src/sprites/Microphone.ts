@@ -58,7 +58,7 @@ export class Microphone extends Sprite {
 
     // Play the audio
     this.noteNodes.forEach((noteNode: NoteNode) => {
-      const {note, position: nodePosition, synth, vector} = noteNode;
+      const {note, position: nodePosition, synth, panVol, vector} = noteNode;
       const {xMomentum, yMomentum} = vector;
       const freq = midiNoteToFreq(note);
       const distanceToNode = distanceBetween(position, nodePosition);
@@ -87,12 +87,13 @@ export class Microphone extends Sprite {
         input: distanceToNode,
         inputMin: 0,
         inputMax: this.maxDistance,
-        outputMin: 0,
+        outputMin: -3,
         outputMax: -75,
         logarithmic: true,
         overflowMode: OverflowMode.Constrain
       });
-      synth.volume.value = volume;
+      panVol.volume.value = volume;
+      panVol.pan.value = Math.cos(angleToNode) * -1;
       synth.triggerAttack(adjustedFreq);
     });
   }

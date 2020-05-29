@@ -1,5 +1,5 @@
 import {random, sample, times} from 'lodash';
-import {Synth} from 'tone';
+import {PanVol, Synth} from 'tone';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
@@ -18,6 +18,7 @@ export interface NoteNode {
   position: IPosition;
   vector: IVector;
   synth: Synth;
+  panVol: PanVol;
   connectedNodes: Set<NoteNode>;
 }
 
@@ -43,7 +44,8 @@ export class NoteGraph extends Sprite {
           type: sample(['sawtooth', 'sine', 'square', 'triangle'])
         }
       });
-      synth.toDestination();
+      const panVol = new PanVol();
+      synth.connect(panVol);
       const node: NoteNode = {
         note,
         vector: {
@@ -55,9 +57,11 @@ export class NoteGraph extends Sprite {
           y: random(0, params.dimensions.height)
         },
         connectedNodes: new Set<NoteNode>(),
-        synth
+        synth,
+        panVol
       };
       this.nodes.add(node);
+      panVol.toDestination();
     });
 
     // Create edges
