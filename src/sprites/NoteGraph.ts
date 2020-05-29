@@ -39,7 +39,7 @@ export class NoteGraph extends Sprite {
     ];
 
     // Create nodes
-    const numNodes = params.numNodes || 20;
+    const numNodes = params.numNodes || 12;
     times(numNodes, (idx: number) => {
       const note: Note = sample(notes) as Note;
       const synth = new Synth();
