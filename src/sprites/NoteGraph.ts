@@ -32,7 +32,7 @@ export class NoteGraph extends Sprite {
 
   constructor(params: NoteGraphParams) {
     super();
-    const notes: Note[] = params.notes || times(random(3, 5), () => random(48, 60));
+    const notes: Note[] = params.notes || times(random(3, 5), () => random(36, 60));
 
     // Create nodes
     const numNodes = params.numNodes || 12;
