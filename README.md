@@ -23,6 +23,14 @@ At first, the instrument sprites will move forward at a constant pace, randomly 
 (maybe the drums will be bullets fired from the guitar)
 (maybe the velocity of everything will be the song BPM?)
 
+### Doppler synth
+
+Options:
+
+- Toggle doppler
+- Toggle notes and number
+- Toggle physics
+
 ### Chordblob
 
 With credit to the bubble android game + puyo

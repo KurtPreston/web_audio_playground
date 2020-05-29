@@ -1,4 +1,5 @@
 import {random} from 'lodash';
+import headphoneWamdag from '../images/headphoneWamdag.svg';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
 import {IPosition, WorldState} from '../types';
@@ -10,6 +11,9 @@ import {Sprite} from './Sprite';
 interface MicrophoneParams {
   noteNodes: Set<NoteNode>;
 }
+
+const headphoneWamdagImage = new Image();
+headphoneWamdagImage.src = headphoneWamdag;
 
 export class Microphone extends Sprite {
   // Variables
@@ -36,14 +40,10 @@ export class Microphone extends Sprite {
     }
 
     const {x, y} = position;
-    const size = 20;
+    const size = 80;
 
     // Draw the circle
-    canvas.beginPath();
-    canvas.arc(x, y, size, 0, 2 * Math.PI);
-    canvas.fillStyle = this.color;
-    canvas.fill();
-    canvas.closePath();
+    canvas.drawImage(headphoneWamdagImage, x - size / 2, y - size / 2, size, size);
 
     // Play the audio
     this.noteNodes.forEach((noteNode: NoteNode) => {

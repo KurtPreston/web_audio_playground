@@ -41,7 +41,7 @@ export class NoteGraph extends Sprite {
       const synth = new Synth({
         oscillator: sample(['sine', 'square', 'triangle', 'sawtooth']) as any
       });
-      synth.toMaster();
+      synth.toDestination();
       const node: NoteNode = {
         note,
         vector: {
