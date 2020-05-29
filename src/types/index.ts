@@ -6,6 +6,7 @@ export interface WorldState {
   keysDown: Set<string>;
   keysPressedThisFrame: Set<string>;
   deviceOrientation: DeviceOrientation | undefined;
+  mouseClickLocation: IPosition | undefined;
   frameNum: number;
 }
 

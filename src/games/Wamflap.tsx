@@ -1,9 +1,9 @@
 import {autobind} from 'core-decorators';
 import {sample, times} from 'lodash';
 import React from 'react';
+import {distanceBetween} from '../math/trig/distanceBetween';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
-import {distanceBetween} from '../sprites/renderHelpers/distanceBetween';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';

@@ -13,7 +13,7 @@ export interface NoteGraphParams {
   numNodes?: number;
 }
 
-interface NoteNode {
+export interface NoteNode {
   note: Note;
   position: IPosition;
   vector: IVector;
@@ -27,7 +27,7 @@ interface NoteEdge {
 }
 
 export class NoteGraph extends Sprite {
-  private nodes = new Set<NoteNode>();
+  public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
 
   constructor(params: NoteGraphParams) {

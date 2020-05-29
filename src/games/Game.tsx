@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Sprite} from '../sprites/Sprite';
-import {DeviceOrientation, Dimensions, WorldState} from '../types';
+import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types';
 import {AudioAnalyser} from '../util/AudioAnalyser';
 
 export interface GameProps {
@@ -20,6 +20,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private menuOpen: boolean = false;
   private readonly audioAnalyser: AudioAnalyser;
   private deviceOrientation: DeviceOrientation | undefined;
+  private mouseClickLocation: IPosition | undefined;
   private frameNum: number = 0;
   private canvasCtx: CanvasRenderingContext2D | null = null;
 
@@ -64,7 +65,13 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
 
     return (
       <div className='game'>
-        <canvas height={height} width={width} ref={this.canvasRefFn} />;{menu}
+        <canvas
+          height={height}
+          width={width}
+          ref={this.canvasRefFn}
+          onMouseDown={this.onMouseDown}
+        />
+        {menu}
       </div>
     );
   }
@@ -85,6 +92,14 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
       this.canvasCtx.globalCompositeOperation = 'source-over';
       this.canvasCtx.save();
     }
+  }
+
+  private onMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
+    const canvas: HTMLCanvasElement = event.currentTarget;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    this.mouseClickLocation = {x, y};
   }
 
   // Override in subclasses
@@ -123,8 +138,9 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
     this.gameTick(world);
     sprites.forEach((sprite) => sprite.tick(world));
 
-    // Clear out key presses
+    // Clear out user input
     this.keysPressedThisFrame.clear();
+    this.mouseClickLocation = undefined;
 
     // Re-render
     const {canvasCtx} = this;
@@ -149,7 +165,8 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
       keysDown: this.keysDown,
       keysPressedThisFrame: this.keysPressedThisFrame,
       deviceOrientation: this.deviceOrientation,
-      frameNum: this.frameNum
+      frameNum: this.frameNum,
+      mouseClickLocation: this.mouseClickLocation
     };
   }
 

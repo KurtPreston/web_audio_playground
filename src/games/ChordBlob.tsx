@@ -1,5 +1,6 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
+import {Microphone} from '../sprites/Microphone';
 import {NoteGraph} from '../sprites/NoteGraph';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
@@ -12,6 +13,7 @@ interface ChordBlobState {}
 export class ChordBlob extends Game<ChordBlobState> {
   private readonly bg = new StaticBackground();
   private readonly noteGraph: NoteGraph;
+  private readonly microphone: Microphone;
 
   constructor(props: GameProps) {
     super(props);
@@ -19,6 +21,9 @@ export class ChordBlob extends Game<ChordBlobState> {
 
     this.noteGraph = new NoteGraph({
       dimensions
+    });
+    this.microphone = new Microphone({
+      noteNodes: this.noteGraph.nodes
     });
   }
 
@@ -32,6 +37,6 @@ export class ChordBlob extends Game<ChordBlobState> {
   }
 
   protected sprites(): Sprite[] {
-    return [this.bg, this.noteGraph];
+    return [this.bg, this.microphone, this.noteGraph];
   }
 }
