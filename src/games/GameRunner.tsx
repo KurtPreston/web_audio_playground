@@ -15,6 +15,12 @@ export interface GameRunnerState {
   requireClickToStart: boolean;
 }
 
+interface AudioNodes {
+  audioContext: AudioContext;
+  analyserNode: AnalyserNode;
+  audioAnalyser: AudioAnalyser;
+}
+
 @autobind
 export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState> {
   // Game instance
@@ -24,7 +30,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   public state: GameRunnerState = {
     gameLoop: undefined,
     menuOpen: false,
-    requireClickToStart: false
+    requireClickToStart: true
   };
 
   // World state
@@ -37,31 +43,49 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private mouseDragging: boolean = false;
 
   // Audio
-  private readonly audioContext: AudioContext;
-  private readonly analyserNode: AnalyserNode;
-  private readonly audioAnalyser: AudioAnalyser;
-
-  constructor(props: GameRunnerProps) {
-    super(props);
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    this.audioContext = new AudioContextClass();
-    this.analyserNode = this.audioContext.createAnalyser();
-    this.audioAnalyser = new AudioAnalyser(this.analyserNode);
-  }
+  private audio: AudioNodes | undefined;
 
   public componentDidMount() {
-    const Game = this.props.gameInfo.game;
-    this.game = new Game(this.world(), {
-      mic: this.requestMic,
-      analyserNode: this.analyserNode,
-      audioContext: this.audioContext
-    });
-    this.runGame();
     window.document.addEventListener('keydown', this.onKeyDown);
     window.document.addEventListener('keyup', this.onKeyUp);
     window.document.addEventListener('keypress', this.onKeyPress);
     window.addEventListener('deviceorientation', this.onDeviceOrientation, false);
-    document.title = `KurtPreston.com | ${this.game.info.title}`;
+    document.title = `KurtPreston.com | ${this.props.gameInfo.title}`;
+
+    this.initializeGame();
+  }
+
+  private initializeGame() {
+    // Create audio first
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const audioContext = new AudioContextClass();
+    const analyserNode = audioContext.createAnalyser();
+    const audioAnalyser = new AudioAnalyser(analyserNode);
+
+    if (audioContext.state !== 'running') {
+      console.warn('AudioContext could not be initialized. Click first');
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
+
+    this.audio = {
+      audioContext,
+      analyserNode,
+      audioAnalyser
+    };
+    const Game = this.props.gameInfo.game;
+    this.game = new Game(this.world(), {
+      mic: this.requestMic,
+      analyserNode,
+      audioContext
+    });
+    this.runGame();
+
+    this.setState({
+      requireClickToStart: false
+    });
   }
 
   public componentWillUnmount() {
@@ -96,7 +120,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private renderTitle() {
     const {gameInfo} = this.props;
     return (
-      <div className='title-container'>
+      <div className='title-container' onClick={this.initializeGame}>
         <div className='title'>
           <h1>{gameInfo.title}</h1>
           <p>{gameInfo.description}</p>
@@ -201,11 +225,16 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       return;
     }
 
+    if (this.audio?.audioContext.state !== 'running') {
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
+
     // Reset frame
     this.frameNum++;
-    if (this.audioAnalyser) {
-      this.audioAnalyser.reset();
-    }
+    this.audio?.audioAnalyser.reset();
 
     // Next game frame
     const world = this.world();
@@ -234,7 +263,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   protected world(): WorldState {
     return {
       dimensions: this.props.dimensions,
-      audio: this.audioAnalyser || emptyAudioData,
+      audio: this.audio?.audioAnalyser || emptyAudioData,
       keysDown: this.keysDown,
       keysPressedThisFrame: this.keysPressedThisFrame,
       deviceOrientation: this.deviceOrientation,
@@ -269,12 +298,22 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       return;
     }
 
+    if (!this.audio) {
+      console.warn('No audio context initialized');
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
+
+    const {audioContext, analyserNode} = this.audio;
+
     // Get from mic
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true
     });
-    const audioSource: AudioNode = this.audioContext.createMediaStreamSource(stream);
-    audioSource.connect(this.analyserNode);
+    const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
+    audioSource.connect(analyserNode);
     const audioState: AudioContextState = audioSource.context.state;
 
     this.setState({
