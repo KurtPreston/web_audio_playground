@@ -3,8 +3,8 @@ import React from 'react';
 import {Channel, setContext} from 'tone';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph} from '../sprites/NoteGraph';
+import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
-import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
@@ -12,7 +12,7 @@ import {Game, GameInfo, ResourceInitializers} from './Game';
 export class DopplerSynthGame implements Game {
   public info = DopplerSynth;
 
-  private readonly bg = new StaticBackground();
+  private readonly bg: Sprite;
   private readonly noteGraph: NoteGraph;
   private readonly microphone: Microphone;
 
@@ -23,6 +23,7 @@ export class DopplerSynthGame implements Game {
     channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
+    this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
       dimensions,
       channel
