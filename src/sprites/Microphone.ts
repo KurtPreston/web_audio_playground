@@ -4,7 +4,7 @@ import headphoneWamdag from '../images/headphoneWamdag.svg';
 import {OverflowMode, scale} from '../math/scale';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
-import {IPosition, WorldState} from '../types';
+import {IPosition, IVector, WorldState} from '../types';
 import {NoteNode} from './NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
@@ -20,7 +20,8 @@ type DopplerType = 'none' | 'doppler' | 'invert';
 
 export class Microphone extends Sprite {
   // Variables
-  private position: IPosition | undefined;
+  private position: IPosition;
+  private vector: IVector | undefined;
 
   // Constants
   private readonly noteNodes = new Set<NoteNode>();
@@ -34,6 +35,14 @@ export class Microphone extends Sprite {
 
   constructor(params: MicrophoneParams) {
     super();
+    this.position = {
+      x: 0,
+      y: 0
+    };
+    this.vector = {
+      xMomentum: 1,
+      yMomentum: 1
+    };
     this.noteNodes = params.noteNodes;
   }
 
@@ -106,6 +115,12 @@ export class Microphone extends Sprite {
     const {mouseClickLocation} = world;
     if (mouseClickLocation) {
       this.position = mouseClickLocation;
+      this.vector = undefined;
+    }
+
+    if (this.vector) {
+      this.position.x += this.vector.xMomentum;
+      this.position.y += this.vector.yMomentum;
     }
   }
 }
