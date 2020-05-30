@@ -6,6 +6,7 @@ import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
 import {IPosition, WorldState} from '../types';
 import {NoteNode} from './NoteGraph';
+import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
 interface MicrophoneParams {
@@ -45,12 +46,15 @@ export class Microphone extends Sprite {
     const {x, y} = position;
 
     // Draw the circle
-    const circleSize = 80;
-    canvas.beginPath();
-    canvas.arc(x, y, circleSize, 0, 2 * Math.PI);
-    canvas.fillStyle = this.color;
-    canvas.fill();
-    canvas.closePath();
+    canvas.fillStyle = 'white';
+    circularPath({
+      canvas,
+      wave: world.audio.uintWave,
+      cx: x,
+      cy: y,
+      minSize: 40,
+      maxSize: 100
+    });
 
     // Draw the wamdag
     const wamSize = 100;

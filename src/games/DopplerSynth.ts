@@ -1,10 +1,11 @@
 import {autobind} from 'core-decorators';
+import {Channel, setContext} from 'tone';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph} from '../sprites/NoteGraph';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameInfo} from './Game';
+import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class DopplerSynthGame implements Game {
@@ -14,11 +15,16 @@ export class DopplerSynthGame implements Game {
   private readonly noteGraph: NoteGraph;
   private readonly microphone: Microphone;
 
-  constructor(world: WorldState) {
+  constructor(world: WorldState, initializers: ResourceInitializers) {
+    setContext(initializers.audioContext);
+    const channel = new Channel();
+    channel.toMaster();
+    channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
     this.noteGraph = new NoteGraph({
-      dimensions
+      dimensions,
+      channel
     });
     this.microphone = new Microphone({
       noteNodes: this.noteGraph.nodes

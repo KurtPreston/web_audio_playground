@@ -16,6 +16,8 @@ export interface GameClass {
 
 export interface ResourceInitializers {
   mic: () => void;
+  audioContext: AudioContext;
+  analyserNode: AnalyserNode;
 }
 
 // Instance of a game

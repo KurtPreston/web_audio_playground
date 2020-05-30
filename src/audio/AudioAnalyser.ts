@@ -27,15 +27,13 @@ export class AudioAnalyser implements AudioData {
   private valuesThisFrame: Partial<AudioData> = {};
   private lastDetectedNotes: (Note | null)[] = new Array<Note | null>(NOTE_FRAMES_TO_AVG);
 
-  constructor(audioSource: AudioNode) {
-    const audioContext: BaseAudioContext = audioSource.context;
-    const analyser = audioContext.createAnalyser();
-    audioSource.connect(analyser);
+  constructor(analyser: AnalyserNode) {
+    const audioContext = analyser.context;
     const fftSize: FftSize = 2048;
     analyser.fftSize = fftSize;
     this.analyser = analyser;
 
-    this.pitchDetector = workerPitchDetector(audioSource.context.sampleRate);
+    this.pitchDetector = workerPitchDetector(audioContext.sampleRate);
 
     // Allocate the memory for the arrays just once
     this._frequencies = new Uint8Array(analyser.frequencyBinCount);

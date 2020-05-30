@@ -36,13 +36,25 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private canvasCtx: CanvasRenderingContext2D | null = null;
   private mouseDragging: boolean = false;
 
-  // Optional resources
-  private audioAnalyser: AudioAnalyser | undefined;
+  // Audio
+  private readonly audioContext: AudioContext;
+  private readonly analyserNode: AnalyserNode;
+  private readonly audioAnalyser: AudioAnalyser;
+
+  constructor(props: GameRunnerProps) {
+    super(props);
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    this.audioContext = new AudioContextClass();
+    this.analyserNode = this.audioContext.createAnalyser();
+    this.audioAnalyser = new AudioAnalyser(this.analyserNode);
+  }
 
   public componentDidMount() {
     const Game = this.props.gameInfo.game;
     this.game = new Game(this.world(), {
-      mic: this.requestMic
+      mic: this.requestMic,
+      analyserNode: this.analyserNode,
+      audioContext: this.audioContext
     });
     this.runGame();
     window.document.addEventListener('keydown', this.onKeyDown);
@@ -252,17 +264,12 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       return;
     }
 
-    // Get audio
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    const audioContext: AudioContext = new AudioContextClass();
-
     // Get from mic
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true
     });
-    const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
-
-    this.audioAnalyser = new AudioAnalyser(audioSource);
+    const audioSource: AudioNode = this.audioContext.createMediaStreamSource(stream);
+    audioSource.connect(this.analyserNode);
     const audioState: AudioContextState = audioSource.context.state;
 
     this.setState({

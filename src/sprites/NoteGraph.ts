@@ -1,5 +1,5 @@
 import {random, sample, times} from 'lodash';
-import {PanVol, Synth} from 'tone';
+import {Channel, PanVol, Synth} from 'tone';
 import {randomChord} from '../audio/chords';
 import {getNoteInfo, Note} from '../audio/Note';
 import {electricalForce} from '../math/physics/electricalForce';
@@ -10,6 +10,7 @@ import {Sprite} from './Sprite';
 
 export interface NoteGraphParams {
   dimensions: Dimensions;
+  channel: Channel;
   notes?: Note[];
   numNodes?: number;
 }
@@ -62,7 +63,7 @@ export class NoteGraph extends Sprite {
         panVol
       };
       this.nodes.add(node);
-      panVol.toDestination();
+      panVol.connect(params.channel);
     });
 
     // Create edges
