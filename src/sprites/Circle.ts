@@ -1,8 +1,8 @@
 import {isFinite, random} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
+import {scale} from '../math/scale';
 import {CanvasBlendMode, Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {randomColor} from '../util/color';
-import {scale} from '../util/scale';
 import {Sprite} from './Sprite';
 
 export interface CircleParams {

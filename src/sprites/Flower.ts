@@ -1,7 +1,7 @@
 import {chunk} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
+import {scale} from '../math/scale';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
-import {scale} from '../util/scale';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 

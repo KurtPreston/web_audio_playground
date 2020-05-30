@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
+import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {Sprite} from '../sprites/Sprite';
 import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types';
-import {AudioAnalyser} from '../util/AudioAnalyser';
 
 export interface GameProps {
   dimensions: Dimensions;

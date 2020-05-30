@@ -1,6 +1,6 @@
 import {range} from 'lodash';
+import {getNoteInfo, Note} from '../audio/Note';
 import {CanvasBlendMode, IPosition, WorldState} from '../types';
-import {getNoteInfo, Note} from '../util/Note';
 import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 

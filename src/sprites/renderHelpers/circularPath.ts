@@ -1,5 +1,5 @@
-import {ouroboros} from '../../util/ouroboros';
-import {scale} from '../../util/scale';
+import {scale} from '../../math/scale';
+import {ouroboros} from './ouroboros';
 
 interface CircularPathParams {
   canvas: CanvasRenderingContext2D;

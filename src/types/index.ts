@@ -1,4 +1,4 @@
-import {Note} from '../util/Note';
+import {Note} from '../audio/Note';
 
 export interface WorldState {
   dimensions: Dimensions;

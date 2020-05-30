@@ -1,9 +1,9 @@
 import {random, sample, times} from 'lodash';
 import {PanVol, Synth} from 'tone';
+import {getNoteInfo, Note} from '../audio/Note';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
-import {getNoteInfo, Note} from '../util/Note';
 import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 

@@ -1,10 +1,10 @@
 import {Sprite} from './Sprite';
 
 import {times} from 'lodash';
+import {freqToMidiNote} from '../audio/midi';
+import {getNoteName, Note} from '../audio/Note';
+import {scale} from '../math/scale';
 import {WorldState} from '../types';
-import {freqToMidiNote} from '../util/midi';
-import {getNoteName, Note} from '../util/Note';
-import {scale} from '../util/scale';
 
 export class Spectrogram extends Sprite {
   public tick() {}

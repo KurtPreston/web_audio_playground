@@ -1,10 +1,10 @@
 import {random} from 'lodash';
+import {midiNoteToFreq} from '../audio/midi';
 import headphoneWamdag from '../images/headphoneWamdag.svg';
+import {OverflowMode, scale} from '../math/scale';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
 import {IPosition, WorldState} from '../types';
-import {midiNoteToFreq} from '../util/midi';
-import {OverflowMode, scale} from '../util/scale';
 import {NoteNode} from './NoteGraph';
 import {Sprite} from './Sprite';
 

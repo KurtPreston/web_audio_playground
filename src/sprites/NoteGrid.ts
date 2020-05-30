@@ -1,9 +1,9 @@
 import {range} from 'lodash';
 import {AudioData, IPosition, WorldState} from '../types';
 
-import {midiNoteToFreq} from '../util/midi';
-import {getNoteFrequencyRange, getNoteName, Note} from '../util/Note';
-import {OverflowMode, scale} from '../util/scale';
+import {midiNoteToFreq} from '../audio/midi';
+import {getNoteFrequencyRange, getNoteName, Note} from '../audio/Note';
+import {OverflowMode, scale} from '../math/scale';
 import {Sprite} from './Sprite';
 
 export interface NoteGridParams {

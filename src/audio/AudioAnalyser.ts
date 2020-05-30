@@ -1,11 +1,11 @@
 import {autobind} from 'core-decorators';
 import {compact, mean} from 'lodash';
+import {scale} from '../math/scale';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types';
 import {workerPitchDetector} from '../workers/pitchDetectionWorkerProxy';
 import {freqToMidiNote} from './midi';
 import {getNoteFrequencyRange, Note} from './Note';
-import {scale} from './scale';
 
 // Modifies AudioData rather than returning a new one
 

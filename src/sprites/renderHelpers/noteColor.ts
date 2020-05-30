@@ -1,5 +1,5 @@
 import tinycolor from 'tinycolor2';
-import {Note} from '../../util/Note';
+import {Note} from '../../audio/Note';
 
 export function noteColor(note: Note, lum: number = 0.7): string {
   const color = tinycolor({
