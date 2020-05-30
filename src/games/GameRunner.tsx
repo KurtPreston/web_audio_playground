@@ -127,7 +127,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       <div className='title-container' onClick={this.initializeGame}>
         <div className='title'>
           <h1>{gameInfo.title}</h1>
-          <p>{gameInfo.description}</p>
+          <div>{gameInfo.description}</div>
         </div>
       </div>
     );

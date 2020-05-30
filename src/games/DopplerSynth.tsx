@@ -19,7 +19,7 @@ export class DopplerSynthGame implements Game {
   constructor(world: WorldState, initializers: ResourceInitializers) {
     setContext(initializers.audioContext);
     const channel = new Channel();
-    channel.toMaster();
+    channel.toDestination();
     channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
