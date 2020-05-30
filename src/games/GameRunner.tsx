@@ -66,14 +66,12 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const {dimensions} = this.props;
     const {height, width} = dimensions;
 
-    const world: WorldState = this.world();
-
     const menu = game.menu ? (
       menuOpen ? (
         <div className='controls controls-open'>
           <button onClick={this.closeMenu}>×</button>
-          {game.menu(world)}
-          {this.renderPauseBtn()}
+          {game.menu}
+          {this.renderPauseBtn(true)}
         </div>
       ) : (
         <div className='controls controls-closed'>
@@ -81,7 +79,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
         </div>
       )
     ) : (
-      this.renderPauseBtn()
+      <div className='controls controls-closed'>{this.renderPauseBtn(false)}</div>
     );
 
     return (
@@ -150,11 +148,11 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     this.deviceOrientation = event;
   }
 
-  private renderPauseBtn() {
+  private renderPauseBtn(text: boolean) {
     if (!this.state.gameLoop) {
-      return <button onClick={this.runGame}>Start</button>;
+      return <button onClick={this.runGame}>▶ {text ? 'Start' : ''}</button>;
     } else {
-      return <button onClick={this.pauseGame}>Pause</button>;
+      return <button onClick={this.pauseGame}>❚❚ {text ? 'Pause' : ''}</button>;
     }
   }
 

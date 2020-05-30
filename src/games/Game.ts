@@ -13,8 +13,8 @@ export interface GameInfo {
 }
 
 // Instance of a game
-export interface Game {
-  menu?: (world: WorldState) => React.ReactNode;
+export interface Game<T = any> {
+  menu?: React.ReactNode;
   gameTick?: (world: WorldState) => void;
   sprites: () => Sprite[];
   info: GameInfo;

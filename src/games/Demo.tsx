@@ -29,14 +29,17 @@ interface Options {
   spectrogram: boolean;
 }
 
+const defaultOptions: Options = {
+  flower: false,
+  circles: 0,
+  noteGrid: true,
+  spectrogram: false
+};
+
 @autobind
-export class DemoGame implements Game {
-  private options: Options = {
-    flower: false,
-    circles: 0,
-    noteGrid: true,
-    spectrogram: false
-  };
+export class DemoGame implements Game<Options> {
+  private options: Options = defaultOptions;
+  private nextOptions: Options | undefined;
   private activeSprites: ActiveSprites = {
     background: [
       new Background({}, 0),
@@ -58,6 +61,7 @@ export class DemoGame implements Game {
     noteGrid: [],
     spectrogram: []
   };
+  private menuRef: DemoMenu | undefined;
 
   constructor(world: WorldState) {
     this.updateSprites(world.dimensions);
@@ -137,11 +141,46 @@ export class DemoGame implements Game {
     };
   }
 
-  public gameTick() {
+  public gameTick(world: WorldState) {
     // If options have changed, regenerate sprites
+    if (this.nextOptions) {
+      this.options = this.nextOptions;
+      this.nextOptions = undefined;
+      this.updateSprites(world.dimensions);
+    }
   }
 
-  public menu() {
+  public menu = (<DemoMenu options={this.options} updateOptions={this.updateOptions} />);
+
+  private menuRefFn(ref: DemoMenu) {
+    this.menuRef = ref;
+  }
+
+  private updateOptions(options: Options) {
+    this.nextOptions = options;
+  }
+
+  public info = Demo;
+}
+
+interface DemoMenuProps {
+  options: Options;
+  updateOptions: (options: Options) => void;
+}
+
+interface DemoMenuState {
+  options: Options;
+}
+
+class DemoMenu extends React.PureComponent<DemoMenuProps, DemoMenuState> {
+  constructor(props: DemoMenuProps) {
+    super(props);
+    this.state = {
+      options: props.options
+    };
+  }
+
+  public render() {
     return (
       <div>
         {this.toggleSprite('flower')}
@@ -153,12 +192,18 @@ export class DemoGame implements Game {
   }
 
   private toggleSprite(spriteType: keyof Options) {
-    const value = this.options[spriteType];
+    const {options} = this.state;
+    const {updateOptions} = this.props;
+    const value = options[spriteType];
     const setValue = (newValue: typeof value) => {
-      this.options = {
-        ...this.options,
+      const newOptions: Options = {
+        ...options,
         [spriteType]: newValue
       };
+      updateOptions(newOptions);
+      this.setState({
+        options: newOptions
+      });
     };
 
     if (isBoolean(value)) {
@@ -184,8 +229,6 @@ export class DemoGame implements Game {
       );
     }
   }
-
-  public info = Demo;
 }
 
 export const Demo: GameInfo = {

@@ -1,6 +1,5 @@
 import {autobind} from 'core-decorators';
 import {sample, times} from 'lodash';
-import React from 'react';
 import {distanceBetween} from '../math/trig/distanceBetween';
 import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
@@ -65,16 +64,6 @@ export class WamflapGame implements Game {
         );
       }, idx * 50);
     });
-  }
-
-  public menu(world: WorldState) {
-    return (
-      <div>
-        <h1>Wamflap</h1>
-        <p>Guide the wamdag by singing or playing an instrument</p>
-        <p>Try to collect all the circles</p>
-      </div>
-    );
   }
 
   public sprites(): Sprite[] {
