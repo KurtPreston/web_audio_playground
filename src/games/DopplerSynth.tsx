@@ -1,4 +1,5 @@
 import {autobind} from 'core-decorators';
+import React from 'react';
 import {Channel, setContext} from 'tone';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph} from '../sprites/NoteGraph';
@@ -39,7 +40,12 @@ export class DopplerSynthGame implements Game {
 export const DopplerSynth: GameInfo = {
   title: 'DopplerSynth',
   url: '/doppler',
-  description: 'a synthesizier orbits in outer space.',
+  description: (
+    <div>
+      <p>if a synth orbits in outer space and no one's there to hear it, does it make a sound?</p>
+      <p>place the wamdag so we don't have to find out.</p>
+    </div>
+  ),
   dataSources: [],
   game: DopplerSynthGame
 };
