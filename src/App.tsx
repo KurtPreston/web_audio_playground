@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
 import {Demo} from './games/Demo';
 import {DopplerSynth} from './games/DopplerSynth';
-import {GameProps} from './games/Game';
+import {GameRunnerProps} from './games/GameRunner';
 import {Hadouken} from './games/Hadouken';
 import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
@@ -17,7 +17,7 @@ export interface AppState {
 }
 
 interface GameLink {
-  game: React.ComponentType<GameProps>;
+  game: React.ComponentType<GameRunnerProps>;
   name: string;
   url: string;
 }

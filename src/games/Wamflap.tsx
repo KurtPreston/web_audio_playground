@@ -7,17 +7,17 @@ import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameProps} from './Game';
+import {GameRunner, GameRunnerProps} from './GameRunner';
 
 interface WamflapState {}
 
 @autobind
-export class Wamflap extends Game<WamflapState> {
+export class Wamflap extends GameRunner<WamflapState> {
   private readonly player: FlyingWamdag;
   private readonly bg: StaticBackground;
   private readonly circles: Set<Circle> = new Set<Circle>();
 
-  constructor(props: GameProps) {
+  constructor(props: GameRunnerProps) {
     super(props);
     const {dimensions} = props;
     this.player = new FlyingWamdag({

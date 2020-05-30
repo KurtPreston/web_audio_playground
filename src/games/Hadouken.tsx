@@ -4,7 +4,7 @@ import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
 import {inputPositionController, randomPositionController, Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
 import {Dimensions, WorldState} from '../types';
-import {Game} from './Game';
+import {GameRunner} from './GameRunner';
 
 export interface HadoukenProps {
   dimensions: Dimensions;
@@ -14,7 +14,7 @@ export interface HadoukenProps {
 export interface HadoukenState {}
 
 @autobind
-export class Hadouken extends Game<HadoukenState> {
+export class Hadouken extends GameRunner<HadoukenState> {
   private readonly player1: Ryu;
   private readonly player2: Ryu;
   private readonly fireballs: Set<Fireball>;

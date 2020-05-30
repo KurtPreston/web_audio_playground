@@ -5,17 +5,17 @@ import {NoteGraph} from '../sprites/NoteGraph';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameProps} from './Game';
+import {GameRunner, GameRunnerProps} from './GameRunner';
 
 interface DopplerSynthState {}
 
 @autobind
-export class DopplerSynth extends Game<DopplerSynthState> {
+export class DopplerSynth extends GameRunner<DopplerSynthState> {
   private readonly bg = new StaticBackground();
   private readonly noteGraph: NoteGraph;
   private readonly microphone: Microphone;
 
-  constructor(props: GameProps) {
+  constructor(props: GameRunnerProps) {
     super(props);
     const {dimensions} = props;
 

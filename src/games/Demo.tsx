@@ -7,7 +7,7 @@ import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
-import {Game, GameProps} from './Game';
+import {GameRunner, GameRunnerProps} from './GameRunner';
 
 export interface DemoState {
   options: Options;
@@ -30,7 +30,7 @@ interface Options {
 }
 
 @autobind
-export class Demo extends Game<DemoState> {
+export class Demo extends GameRunner<DemoState> {
   public state: DemoState = {
     options: {
       flower: false,
@@ -61,7 +61,7 @@ export class Demo extends Game<DemoState> {
     }
   };
 
-  public componentDidUpdate(prevProps: GameProps, prevState: DemoState) {
+  public componentDidUpdate(prevProps: GameRunnerProps, prevState: DemoState) {
     if (!isEqual(this.state.options, prevState.options)) {
       this.updateSprites();
     }

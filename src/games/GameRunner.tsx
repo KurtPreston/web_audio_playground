@@ -4,13 +4,13 @@ import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {Sprite} from '../sprites/Sprite';
 import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types';
 
-export interface GameProps {
+export interface GameRunnerProps {
   dimensions: Dimensions;
   audioSource: AudioNode;
 }
 
 @autobind
-export abstract class Game<TState> extends React.Component<GameProps, TState> {
+export abstract class GameRunner<TState> extends React.Component<GameRunnerProps, TState> {
   protected abstract menu(world: WorldState): React.ReactNode;
   protected abstract sprites(): Sprite[];
 
@@ -25,7 +25,7 @@ export abstract class Game<TState> extends React.Component<GameProps, TState> {
   private canvasCtx: CanvasRenderingContext2D | null = null;
   private mouseDragging: boolean = false;
 
-  constructor(props: GameProps) {
+  constructor(props: GameRunnerProps) {
     super(props);
     this.audioAnalyser = new AudioAnalyser(props.audioSource);
   }

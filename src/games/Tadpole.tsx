@@ -5,16 +5,16 @@ import {Circle} from '../sprites/Circle';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameProps} from './Game';
+import {GameRunner, GameRunnerProps} from './GameRunner';
 
 interface TadpoleState {}
 
 @autobind
-export class Tadpole extends Game<TadpoleState> {
+export class Tadpole extends GameRunner<TadpoleState> {
   private readonly bg = new StaticBackground();
   private readonly circles: Set<Circle> = new Set<Circle>();
 
-  constructor(props: GameProps) {
+  constructor(props: GameRunnerProps) {
     super(props);
     const {dimensions} = props;
 
