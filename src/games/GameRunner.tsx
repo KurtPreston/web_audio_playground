@@ -55,7 +55,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     this.initializeGame();
   }
 
-  private initializeGame() {
+  private async initializeGame() {
     // Create audio first
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     const audioContext = new AudioContextClass();
@@ -63,7 +63,10 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const audioAnalyser = new AudioAnalyser(analyserNode);
 
     if (audioContext.state !== 'running') {
-      console.warn('AudioContext could not be initialized. Click first');
+      await audioContext.resume();
+    }
+    if (audioContext.state !== 'running') {
+      console.warn(`AudioContext is ${audioContext.state}. Cannot create game.`);
       this.setState({
         requireClickToStart: true
       });
