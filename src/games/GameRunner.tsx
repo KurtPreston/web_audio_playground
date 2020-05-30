@@ -40,7 +40,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     super(props);
     this.audioAnalyser = new AudioAnalyser(props.audioSource);
     const Game = props.gameInfo.game;
-    this.game = new Game(props);
+    this.game = new Game(this.world());
   }
 
   public componentDidMount() {
@@ -61,21 +61,27 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   public render(): React.ReactNode {
+    const {game} = this;
     const {menuOpen} = this.state;
-    const {height, width} = this.props.dimensions;
+    const {dimensions} = this.props;
+    const {height, width} = dimensions;
 
     const world: WorldState = this.world();
 
-    const menu = menuOpen ? (
-      <div className='controls controls-open'>
-        <button onClick={this.closeMenu}>×</button>
-        {this.game.menu(world)}
-        {this.renderPauseBtn()}
-      </div>
+    const menu = game.menu ? (
+      menuOpen ? (
+        <div className='controls controls-open'>
+          <button onClick={this.closeMenu}>×</button>
+          {game.menu(world)}
+          {this.renderPauseBtn()}
+        </div>
+      ) : (
+        <div className='controls controls-closed'>
+          <button onClick={this.openMenu}>ⓘ</button>
+        </div>
+      )
     ) : (
-      <div className='controls controls-closed'>
-        <button onClick={this.openMenu}>ⓘ</button>
-      </div>
+      this.renderPauseBtn()
     );
 
     return (
@@ -159,7 +165,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
 
     // Next game frame
     const world = this.world();
-    this.game.gameTick(world);
+    if (this.game.gameTick) {
+      this.game.gameTick(world);
+    }
     const sprites = this.game.sprites();
     sprites.forEach((sprite) => sprite.tick(world));
 

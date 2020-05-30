@@ -1,197 +1,197 @@
-// import {autobind} from 'core-decorators';
-// import {flatten, isBoolean, isEqual, times, values, without} from 'lodash';
-// import React from 'react';
-// import {Background} from '../sprites/Background';
-// import {Circle} from '../sprites/Circle';
-// import {Flower} from '../sprites/Flower';
-// import {NoteGrid} from '../sprites/NoteGrid';
-// import {Spectrogram} from '../sprites/Sprectrogram';
-// import {Sprite} from '../sprites/Sprite';
-// import {GameRunner, GameRunnerProps} from './GameRunner';
+import {autobind} from 'core-decorators';
+import {flatten, isBoolean, times, values, without} from 'lodash';
+import React from 'react';
+import {Background} from '../sprites/Background';
+import {Circle} from '../sprites/Circle';
+import {Flower} from '../sprites/Flower';
+import {NoteGrid} from '../sprites/NoteGrid';
+import {Spectrogram} from '../sprites/Sprectrogram';
+import {Sprite} from '../sprites/Sprite';
+import {Dimensions, WorldState} from '../types';
+import {Game, GameInfo} from './Game';
 
-// export interface DemoState {
-//   options: Options;
-//   sprites: ActiveSprites;
-// }
+export interface DemoState {
+  sprites: ActiveSprites;
+}
 
-// type ActiveSprites = {
-//   flower: Sprite[];
-//   circles: Sprite[];
-//   noteGrid: Sprite[];
-//   spectrogram: Sprite[];
-//   background: Sprite[];
-// };
+type ActiveSprites = {
+  flower: Sprite[];
+  circles: Sprite[];
+  noteGrid: Sprite[];
+  spectrogram: Sprite[];
+  background: Sprite[];
+};
 
-// interface Options {
-//   flower: boolean;
-//   circles: number;
-//   noteGrid: boolean;
-//   spectrogram: boolean;
-// }
+interface Options {
+  flower: boolean;
+  circles: number;
+  noteGrid: boolean;
+  spectrogram: boolean;
+}
 
-// @autobind
-// export class Demo extends GameRunner<DemoState> {
-//   public state: DemoState = {
-//     options: {
-//       flower: false,
-//       circles: 0,
-//       noteGrid: true,
-//       spectrogram: false
-//     },
-//     sprites: {
-//       background: [
-//         new Background({}, 0),
-//         new Background(
-//           {
-//             mixBlendMode: 'soft-light'
-//           },
-//           0.4
-//         ),
-//         new Background(
-//           {
-//             mixBlendMode: 'exclusion'
-//           },
-//           -0.8
-//         )
-//       ],
-//       flower: [],
-//       circles: [],
-//       noteGrid: [],
-//       spectrogram: []
-//     }
-//   };
+@autobind
+export class DemoGame implements Game {
+  private options: Options = {
+    flower: false,
+    circles: 0,
+    noteGrid: true,
+    spectrogram: false
+  };
+  private activeSprites: ActiveSprites = {
+    background: [
+      new Background({}, 0),
+      new Background(
+        {
+          mixBlendMode: 'soft-light'
+        },
+        0.4
+      ),
+      new Background(
+        {
+          mixBlendMode: 'exclusion'
+        },
+        -0.8
+      )
+    ],
+    flower: [],
+    circles: [],
+    noteGrid: [],
+    spectrogram: []
+  };
 
-//   public componentDidUpdate(prevProps: GameRunnerProps, prevState: DemoState) {
-//     if (!isEqual(this.state.options, prevState.options)) {
-//       this.updateSprites();
-//     }
-//   }
+  constructor(world: WorldState) {
+    this.updateSprites(world.dimensions);
+  }
 
-//   protected sprites(): Sprite[] {
-//     return flatten(values(this.state.sprites));
-//   }
+  public sprites(): Sprite[] {
+    return flatten(values(this.activeSprites));
+  }
 
-//   private updateSprites() {
-//     const {sprites, options} = this.state;
-//     const {dimensions} = this.props;
+  private updateSprites(dimensions: Dimensions) {
+    const {activeSprites, options} = this;
+    const newSprites: ActiveSprites = {
+      background: [],
+      flower: [],
+      circles: [],
+      noteGrid: [],
+      spectrogram: []
+    };
 
-//     const newSprites: ActiveSprites = {
-//       background: [],
-//       flower: [],
-//       circles: [],
-//       noteGrid: [],
-//       spectrogram: []
-//     };
+    if (options.flower) {
+      newSprites.flower = activeSprites.flower.length
+        ? activeSprites.flower
+        : [new Flower(dimensions)];
+    }
 
-//     if (options.flower) {
-//       newSprites.flower = sprites.flower.length ? sprites.flower : [new Flower(dimensions)];
-//     }
+    if (options.noteGrid) {
+      newSprites.noteGrid = activeSprites.noteGrid.length
+        ? activeSprites.noteGrid
+        : [
+            new NoteGrid({
+              lowOctave: 2,
+              highOctave: 6,
+              showPitchIndicator: true
+            })
+          ];
+    }
 
-//     if (options.noteGrid) {
-//       newSprites.noteGrid = sprites.noteGrid.length
-//         ? sprites.noteGrid
-//         : [
-//             new NoteGrid({
-//               lowOctave: 2,
-//               highOctave: 6,
-//               showPitchIndicator: true
-//             })
-//           ];
-//     }
+    if (options.spectrogram) {
+      newSprites.spectrogram = activeSprites.spectrogram.length
+        ? activeSprites.spectrogram
+        : [new Spectrogram()];
+    }
 
-//     if (options.spectrogram) {
-//       newSprites.spectrogram = sprites.spectrogram.length
-//         ? sprites.spectrogram
-//         : [new Spectrogram()];
-//     }
+    newSprites.circles = times(
+      options.circles,
+      (circleNum: number): Sprite => {
+        return (
+          (activeSprites.circles || [])[circleNum] ||
+          new Circle({
+            dimensions,
+            bounceOffEdge: true,
+            destroy: this.destroySprite('circles'),
+            mixBlendMode: 'color-dodge'
+          })
+        );
+      }
+    );
 
-//     newSprites.circles = times(
-//       options.circles,
-//       (circleNum: number): Sprite => {
-//         return (
-//           (sprites.circles || [])[circleNum] ||
-//           new Circle({
-//             dimensions,
-//             bounceOffEdge: true,
-//             destroy: this.destroySprite('circles'),
-//             mixBlendMode: 'color-dodge'
-//           })
-//         );
-//       }
-//     );
+    newSprites.background = activeSprites.background;
 
-//     newSprites.background = sprites.background;
+    this.activeSprites = newSprites;
+  }
 
-//     this.setState({
-//       sprites: newSprites
-//     });
-//   }
+  private destroySprite(category: keyof ActiveSprites) {
+    return (sprite: Sprite): boolean => {
+      const {activeSprites} = this;
+      const spritesInCategory: Sprite[] = activeSprites[category];
+      if (spritesInCategory.includes(sprite)) {
+        this.activeSprites = {
+          ...activeSprites,
+          [category]: without(spritesInCategory, sprite)
+        };
+        return true;
+      } else {
+        return false;
+      }
+    };
+  }
 
-//   private destroySprite(category: keyof ActiveSprites) {
-//     return (sprite: Sprite): boolean => {
-//       const {sprites} = this.state;
-//       const spritesInCategory: Sprite[] = sprites[category];
-//       if (spritesInCategory.includes(sprite)) {
-//         this.setState({
-//           sprites: {
-//             ...sprites,
-//             [category]: without(spritesInCategory, sprite)
-//           }
-//         });
-//         return true;
-//       } else {
-//         return false;
-//       }
-//     };
-//   }
+  public gameTick() {
+    // If options have changed, regenerate sprites
+  }
 
-//   public componentDidMount() {
-//     this.updateSprites();
-//     super.componentDidMount();
-//   }
+  public menu() {
+    return (
+      <div>
+        {this.toggleSprite('flower')}
+        {this.toggleSprite('circles')}
+        {this.toggleSprite('noteGrid')}
+        {this.toggleSprite('spectrogram')}
+      </div>
+    );
+  }
 
-//   public menu() {
-//     return (
-//       <div>
-//         {this.toggleSprite('flower')}
-//         {this.toggleSprite('circles')}
-//         {this.toggleSprite('noteGrid')}
-//         {this.toggleSprite('spectrogram')}
-//       </div>
-//     );
-//   }
+  private toggleSprite(spriteType: keyof Options) {
+    const value = this.options[spriteType];
+    const setValue = (newValue: typeof value) => {
+      this.options = {
+        ...this.options,
+        [spriteType]: newValue
+      };
+    };
 
-//   private toggleSprite(spriteType: keyof Options) {
-//     const value = this.state.options[spriteType];
-//     const setValue = (newValue: typeof value) => {
-//       this.setState({
-//         options: {
-//           ...this.state.options,
-//           [spriteType]: newValue
-//         }
-//       });
-//     };
-//     if (isBoolean(value)) {
-//       return (
-//         <label>
-//           {spriteType}
-//           <input type='checkbox' checked={value} onChange={() => setValue(!value)} />
-//         </label>
-//       );
-//     } else if (isFinite(value)) {
-//       return (
-//         <label>
-//           {spriteType}
-//           <input
-//             type='number'
-//             value={value}
-//             min={0}
-//             max={99}
-//             size={2}
-//             onChange={(e) => setValue(parseInt(e.target.value))}
-//           />
-//         </label>
-//       );
-//     }
-//   }
-// }
+    if (isBoolean(value)) {
+      return (
+        <label>
+          {spriteType}
+          <input type='checkbox' checked={value} onChange={() => setValue(!value)} />
+        </label>
+      );
+    } else if (isFinite(value)) {
+      return (
+        <label>
+          {spriteType}
+          <input
+            type='number'
+            value={value}
+            min={0}
+            max={99}
+            size={2}
+            onChange={(e) => setValue(parseInt(e.target.value))}
+          />
+        </label>
+      );
+    }
+  }
+
+  public info = Demo;
+}
+
+export const Demo: GameInfo = {
+  title: 'Demo',
+  url: '/demo',
+  description: 'Space for testing new sprites and visualizations',
+  dataSources: ['mic'],
+  game: DemoGame
+};

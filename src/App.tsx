@@ -2,12 +2,12 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
-// import {Demo} from './games/Demo';
-// import {DopplerSynth} from './games/DopplerSynth';
+import {Demo} from './games/Demo';
+import {DopplerSynth} from './games/DopplerSynth';
 import {GameInfo} from './games/Game';
-import {GameRunner, GameRunnerProps} from './games/GameRunner';
-// import {Hadouken} from './games/Hadouken';
-// import {Tadpole} from './games/Tadpole';
+import {GameRunner} from './games/GameRunner';
+import {Hadouken} from './games/Hadouken';
+import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
 import {Dimensions} from './types';
 
@@ -17,13 +17,7 @@ export interface AppState {
   audioSource: AudioNode;
 }
 
-interface GameLink {
-  game: React.ComponentType<GameRunnerProps>;
-  name: string;
-  url: string;
-}
-
-const games: GameInfo[] = [Wamflap];
+const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo];
 
 @autobind
 export class App extends React.Component<{}, AppState> {

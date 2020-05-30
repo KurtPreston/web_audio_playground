@@ -7,7 +7,7 @@ import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameInfo, GameParams} from './Game';
+import {Game, GameInfo} from './Game';
 
 @autobind
 export class WamflapGame implements Game {
@@ -15,8 +15,8 @@ export class WamflapGame implements Game {
   private readonly bg: StaticBackground;
   private readonly circles: Set<Circle> = new Set<Circle>();
 
-  constructor(props: GameParams) {
-    const {dimensions} = props;
+  constructor(world: WorldState) {
+    const {dimensions} = world;
     this.player = new FlyingWamdag({
       dimensions
     });
@@ -86,7 +86,7 @@ export class WamflapGame implements Game {
 }
 
 export const Wamflap: GameInfo = {
-  title: 'wamflap',
+  title: 'Wamflap',
   description: 'Move the wambird by singing notes to collect the wisps',
   url: '/wamflap',
   dataSources: ['mic'],

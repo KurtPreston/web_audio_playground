@@ -1,23 +1,21 @@
 import {autobind} from 'core-decorators';
-import React from 'react';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph} from '../sprites/NoteGraph';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {GameRunner, GameRunnerProps} from './GameRunner';
-
-interface DopplerSynthState {}
+import {Game, GameInfo} from './Game';
 
 @autobind
-export class DopplerSynth extends GameRunner<DopplerSynthState> {
+export class DopplerSynthGame implements Game {
+  public info = DopplerSynth;
+
   private readonly bg = new StaticBackground();
   private readonly noteGraph: NoteGraph;
   private readonly microphone: Microphone;
 
-  constructor(props: GameRunnerProps) {
-    super(props);
-    const {dimensions} = props;
+  constructor(world: WorldState) {
+    const {dimensions} = world;
 
     this.noteGraph = new NoteGraph({
       dimensions
@@ -27,16 +25,15 @@ export class DopplerSynth extends GameRunner<DopplerSynthState> {
     });
   }
 
-  protected menu(world: WorldState) {
-    return (
-      <div>
-        <h1>DopplerSynth</h1>
-        <p>Pop the bubbles by singing chords</p>
-      </div>
-    );
-  }
-
-  protected sprites(): Sprite[] {
+  public sprites(): Sprite[] {
     return [this.bg, this.microphone, this.noteGraph];
   }
 }
+
+export const DopplerSynth: GameInfo = {
+  title: 'DopplerSynth',
+  url: '/doppler',
+  description: 'a synthesizier orbits in outer space.',
+  dataSources: [],
+  game: DopplerSynthGame
+};

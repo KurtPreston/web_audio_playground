@@ -1,30 +1,23 @@
 import {autobind} from 'core-decorators';
-import React from 'react';
 import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
 import {inputPositionController, randomPositionController, Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions, WorldState} from '../types';
-import {GameRunner} from './GameRunner';
-
-export interface HadoukenProps {
-  dimensions: Dimensions;
-  audioSource: AudioNode;
-}
-
-export interface HadoukenState {}
+import {WorldState} from '../types';
+import {Game, GameInfo} from './Game';
 
 @autobind
-export class Hadouken extends GameRunner<HadoukenState> {
+export class HadoukenGame implements Game {
+  public info = Hadouken;
+
   private readonly player1: Ryu;
   private readonly player2: Ryu;
   private readonly fireballs: Set<Fireball>;
 
-  constructor(props: HadoukenProps) {
-    super(props);
-    const {dimensions} = props;
+  constructor(world: WorldState) {
+    const {dimensions} = world;
 
     this.player1 = new Ryu({
-      world: this.world(),
+      world,
       launchFireball: this.launchFireball,
       position: {
         x: dimensions.width / 2,
@@ -35,7 +28,7 @@ export class Hadouken extends GameRunner<HadoukenState> {
     });
 
     this.player2 = new Ryu({
-      world: this.world(),
+      world,
       launchFireball: this.launchFireball,
       position: {
         x: dimensions.width / 2,
@@ -47,16 +40,7 @@ export class Hadouken extends GameRunner<HadoukenState> {
     this.fireballs = new Set<Fireball>();
   }
 
-  protected menu(world: WorldState) {
-    return (
-      <div>
-        <h1>Hadouken</h1>
-        <p>Charge your fireball like a super-saiyan</p>
-      </div>
-    );
-  }
-
-  protected sprites(): Sprite[] {
+  public sprites(): Sprite[] {
     const fireballs: Fireball[] = Array.from(this.fireballs.values());
     return [this.player1, this.player2, ...fireballs];
   }
@@ -74,3 +58,11 @@ export class Hadouken extends GameRunner<HadoukenState> {
     return this.fireballs.delete(fireball);
   }
 }
+
+export const Hadouken: GameInfo = {
+  title: 'Hadouken',
+  url: '/hadouken',
+  description: 'Charge your fireball like a super-saiyan',
+  dataSources: ['mic'],
+  game: HadoukenGame
+};
