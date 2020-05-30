@@ -1,5 +1,6 @@
 import {random, sample, times} from 'lodash';
 import {PanVol, Synth} from 'tone';
+import {randomChord} from '../audio/chords';
 import {getNoteInfo, Note} from '../audio/Note';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
@@ -33,7 +34,7 @@ export class NoteGraph extends Sprite {
 
   constructor(params: NoteGraphParams) {
     super();
-    const notes: Note[] = params.notes || times(random(2, 5), () => random(36, 60));
+    const notes: Note[] = params.notes || randomChord();
 
     // Create nodes
     const numNodes = params.numNodes || random(8, 16);
