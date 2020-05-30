@@ -91,6 +91,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
           onMouseDown={this.onMouseDown}
           onMouseMove={this.onMouseDown}
           onMouseUp={this.onMouseUp}
+          onMouseOut={this.onMouseUp}
         />
         {menu}
       </div>
