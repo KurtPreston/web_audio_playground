@@ -30,50 +30,54 @@ main {
     }
   }
 
-  .start-btn {
-    color: white;
-    text-shadow: 0 0 1px black;
-    font-size: 5rem;
-    width: 100%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-  }
+  .game {
+    .title-container {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      justify-content: center;
+      align-items: center;
 
-  svg {
-    flex: 1 1;
-  }
-
-  .controls {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    top: 0;
-    right: 0;
-    color: white;
-
-    &.controls-open {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      background: transparentize(black, 0.3);
-    }
-
-    &.controls-closed {
-      button {
+      .title {
         color: white;
-        background: none;
-        border: none;
-        font-size: 2rem;
-        font-weight: bold;
-
-        &:focus {
-          outline: 0;
-        }
       }
     }
 
-    label {
-      margin: 0.25rem 0.125rem;
+    .controls {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      top: 0;
+      right: 0;
+      color: white;
+
+      &.controls-open {
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background: transparentize(black, 0.3);
+      }
+
+      &.controls-closed {
+        button {
+          color: white;
+          background: none;
+          border: none;
+          font-size: 2rem;
+          font-weight: bold;
+
+          &:focus {
+            outline: 0;
+          }
+        }
+      }
+
+      label {
+        margin: 0.25rem 0.125rem;
+      }
     }
   }
 }

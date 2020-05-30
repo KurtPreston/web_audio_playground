@@ -80,14 +80,28 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     );
   }
 
+  private renderTitle() {
+    const {gameInfo} = this.props;
+    return (
+      <div className='title-container'>
+        <div className='title'>
+          <h1>{gameInfo.title}</h1>
+          <p>{gameInfo.description}</p>
+        </div>
+      </div>
+    );
+  }
+
   private renderMenu() {
     const {game} = this;
-    const {menuOpen} = this.state;
+    const {menuOpen, requireClickToStart} = this.state;
     if (!game) {
       return null;
     }
 
-    if (game.menu) {
+    if (requireClickToStart) {
+      return this.renderTitle();
+    } else if (game.menu) {
       if (menuOpen) {
         return (
           <div className='controls controls-open'>
@@ -230,8 +244,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private async requestMic() {
-    this.pauseGame();
-
     if (!navigator.mediaDevices) {
       console.warn('No media devices available');
       this.setState({
@@ -249,10 +261,12 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       audio: true
     });
     const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
+
     this.audioAnalyser = new AudioAnalyser(audioSource);
+    const audioState: AudioContextState = audioSource.context.state;
 
     this.setState({
-      requireClickToStart: false
+      requireClickToStart: audioState === 'suspended'
     });
   }
 }
