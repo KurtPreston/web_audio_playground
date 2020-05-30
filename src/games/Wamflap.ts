@@ -6,7 +6,7 @@ import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameInfo} from './Game';
+import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class WamflapGame implements Game {
@@ -14,7 +14,9 @@ export class WamflapGame implements Game {
   private readonly bg: StaticBackground;
   private readonly circles: Set<Circle> = new Set<Circle>();
 
-  constructor(world: WorldState) {
+  constructor(world: WorldState, initializers: ResourceInitializers) {
+    initializers.mic();
+
     const {dimensions} = world;
     this.player = new FlyingWamdag({
       dimensions

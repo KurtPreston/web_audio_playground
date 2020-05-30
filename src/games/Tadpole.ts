@@ -4,7 +4,7 @@ import {Circle} from '../sprites/Circle';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {Game, GameInfo} from './Game';
+import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class TadpoleGame implements Game {
@@ -13,7 +13,8 @@ export class TadpoleGame implements Game {
   private readonly bg = new StaticBackground();
   private readonly circles: Set<Circle> = new Set<Circle>();
 
-  constructor(world: WorldState) {
+  constructor(world: WorldState, initializers: ResourceInitializers) {
+    initializers.mic();
     const {dimensions} = world;
 
     times(100, () => {

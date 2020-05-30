@@ -8,7 +8,7 @@ import {NoteGrid} from '../sprites/NoteGrid';
 import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
 import {Dimensions, WorldState} from '../types';
-import {Game, GameInfo} from './Game';
+import {Game, GameInfo, ResourceInitializers} from './Game';
 
 export interface DemoState {
   sprites: ActiveSprites;
@@ -37,7 +37,7 @@ const defaultOptions: Options = {
 };
 
 @autobind
-export class DemoGame implements Game<Options> {
+export class DemoGame implements Game {
   private options: Options = defaultOptions;
   private nextOptions: Options | undefined;
   private activeSprites: ActiveSprites = {
@@ -63,7 +63,8 @@ export class DemoGame implements Game<Options> {
   };
   private menuRef: DemoMenu | undefined;
 
-  constructor(world: WorldState) {
+  constructor(world: WorldState, initializers: ResourceInitializers) {
+    initializers.mic();
     this.updateSprites(world.dimensions);
   }
 

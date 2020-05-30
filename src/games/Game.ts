@@ -7,13 +7,19 @@ export interface GameInfo {
   description: React.ReactNode;
   url: string;
   dataSources: GameDataSource[];
-  game: {
-    new (world: WorldState): Game;
-  };
+  game: GameClass;
+}
+
+export interface GameClass {
+  new (world: WorldState, initializers: ResourceInitializers): Game;
+}
+
+export interface ResourceInitializers {
+  mic: () => void;
 }
 
 // Instance of a game
-export interface Game<T = any> {
+export interface Game {
   menu?: React.ReactNode;
   gameTick?: (world: WorldState) => void;
   sprites: () => Sprite[];

@@ -1,49 +1,49 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
-import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types';
+import {DeviceOrientation, Dimensions, emptyAudioData, IPosition, WorldState} from '../types';
 import {Game, GameInfo} from './Game';
 
 export interface GameRunnerProps {
   dimensions: Dimensions;
-  audioSource: AudioNode;
   gameInfo: GameInfo;
 }
 
 export interface GameRunnerState {
   gameLoop: NodeJS.Timeout | undefined;
   menuOpen: boolean;
+  requireClickToStart: boolean;
 }
 
 @autobind
 export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState> {
   // Game instance
-  private readonly game: Game;
+  private game: Game | undefined;
 
   // React state
   public state: GameRunnerState = {
     gameLoop: undefined,
-    menuOpen: false
+    menuOpen: false,
+    requireClickToStart: false
   };
 
   // World state
   private readonly keysDown = new Set<string>();
   private readonly keysPressedThisFrame = new Set<string>();
-  private readonly audioAnalyser: AudioAnalyser;
   private deviceOrientation: DeviceOrientation | undefined;
   private mouseClickLocation: IPosition | undefined;
   private frameNum: number = 0;
   private canvasCtx: CanvasRenderingContext2D | null = null;
   private mouseDragging: boolean = false;
 
-  constructor(props: GameRunnerProps) {
-    super(props);
-    this.audioAnalyser = new AudioAnalyser(props.audioSource);
-    const Game = props.gameInfo.game;
-    this.game = new Game(this.world());
-  }
+  // Optional resources
+  private audioAnalyser: AudioAnalyser | undefined;
 
   public componentDidMount() {
+    const Game = this.props.gameInfo.game;
+    this.game = new Game(this.world(), {
+      mic: this.requestMic
+    });
     this.runGame();
     window.document.addEventListener('keydown', this.onKeyDown);
     window.document.addEventListener('keyup', this.onKeyUp);
@@ -61,26 +61,8 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   public render(): React.ReactNode {
-    const {game} = this;
-    const {menuOpen} = this.state;
     const {dimensions} = this.props;
     const {height, width} = dimensions;
-
-    const menu = game.menu ? (
-      menuOpen ? (
-        <div className='controls controls-open'>
-          <button onClick={this.closeMenu}>×</button>
-          {game.menu}
-          {this.renderPauseBtn(true)}
-        </div>
-      ) : (
-        <div className='controls controls-closed'>
-          <button onClick={this.openMenu}>ⓘ</button>
-        </div>
-      )
-    ) : (
-      <div className='controls controls-closed'>{this.renderPauseBtn(false)}</div>
-    );
 
     return (
       <div className='game'>
@@ -93,9 +75,35 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
           onMouseUp={this.onMouseUp}
           onMouseOut={this.onMouseUp}
         />
-        {menu}
+        {this.renderMenu()}
       </div>
     );
+  }
+
+  private renderMenu() {
+    const {game} = this;
+    const {menuOpen} = this.state;
+    if (!game) {
+      return null;
+    }
+
+    if (game.menu) {
+      if (menuOpen) {
+        return (
+          <div className='controls controls-open'>
+            <button onClick={this.closeMenu}>×</button>
+            {game.menu}
+            {this.renderPauseBtn(true)}
+          </div>
+        );
+      } else {
+        return (
+          <div className='controls controls-closed'>
+            <button onClick={this.openMenu}>ⓘ</button>
+          </div>
+        );
+      }
+    }
   }
 
   private closeMenu() {
@@ -158,9 +166,15 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private tick() {
+    if (!this.game) {
+      return;
+    }
+
     // Reset frame
     this.frameNum++;
-    this.audioAnalyser.reset();
+    if (this.audioAnalyser) {
+      this.audioAnalyser.reset();
+    }
 
     // Next game frame
     const world = this.world();
@@ -189,7 +203,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   protected world(): WorldState {
     return {
       dimensions: this.props.dimensions,
-      audio: this.audioAnalyser,
+      audio: this.audioAnalyser || emptyAudioData,
       keysDown: this.keysDown,
       keysPressedThisFrame: this.keysPressedThisFrame,
       deviceOrientation: this.deviceOrientation,
@@ -213,5 +227,32 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       clearInterval(gameLoop);
       this.setState({gameLoop: undefined});
     }
+  }
+
+  private async requestMic() {
+    this.pauseGame();
+
+    if (!navigator.mediaDevices) {
+      console.warn('No media devices available');
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
+
+    // Get audio
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const audioContext: AudioContext = new AudioContextClass();
+
+    // Get from mic
+    const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: true
+    });
+    const audioSource: AudioNode = audioContext.createMediaStreamSource(stream);
+    this.audioAnalyser = new AudioAnalyser(audioSource);
+
+    this.setState({
+      requireClickToStart: false
+    });
   }
 }

@@ -3,7 +3,7 @@ import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
 import {inputPositionController, randomPositionController, Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
 import {WorldState} from '../types';
-import {Game, GameInfo} from './Game';
+import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class HadoukenGame implements Game {
@@ -13,7 +13,8 @@ export class HadoukenGame implements Game {
   private readonly player2: Ryu;
   private readonly fireballs: Set<Fireball>;
 
-  constructor(world: WorldState) {
+  constructor(world: WorldState, initializers: ResourceInitializers) {
+    initializers.mic();
     const {dimensions} = world;
 
     this.player1 = new Ryu({

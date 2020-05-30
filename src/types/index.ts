@@ -60,6 +60,19 @@ export interface AudioData {
   notes: Note[];
 }
 
+export const emptyAudioData: AudioData = {
+  frequencies: new Uint8Array(),
+  uintWave: new Uint8Array(),
+  floatWave: new Float32Array(),
+  sampleRate: 44100,
+  hzPerIdx: 0,
+  amplitude: 0,
+  rms: 0,
+  amplitudeAtNote: () => 0,
+  peakFreq: null,
+  notes: []
+};
+
 export interface DeviceOrientation {
   absolute: boolean;
   alpha: number | null;
