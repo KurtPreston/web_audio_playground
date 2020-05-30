@@ -133,11 +133,8 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private renderMenu() {
     const {game} = this;
     const {menuOpen, requireClickToStart} = this.state;
-    if (!game) {
-      return null;
-    }
 
-    if (requireClickToStart) {
+    if (!game || requireClickToStart) {
       return this.renderTitle();
     } else if (game.menu) {
       if (menuOpen) {
@@ -222,11 +219,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private tick() {
-    if (!this.game) {
-      return;
-    }
-
-    if (this.audio?.audioContext.state !== 'running') {
+    if (!this.game || this.audio?.audioContext.state !== 'running') {
       this.setState({
         requireClickToStart: true
       });
