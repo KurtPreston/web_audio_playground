@@ -44,10 +44,13 @@ export function scale(props: ScaleProps): number {
   const inputRange = inputMax - inputMin;
 
   // Amount is scale 0 - 1
-  const amount = logarithmic
-    ? Math.log((input - inputMin) / inputRange + 1) /
-      Math.log(logarithmic === true ? 2 : logarithmic)
-    : (input - inputMin) / inputRange;
+  const amount =
+    inputRange === 0
+      ? 0.5
+      : logarithmic
+      ? Math.log((input - inputMin) / inputRange + 1) /
+        Math.log(logarithmic === true ? 2 : logarithmic)
+      : (input - inputMin) / inputRange;
 
   const outputRange = outputMax - outputMin;
   return outputMin + amount * outputRange;
