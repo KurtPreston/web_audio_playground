@@ -89,7 +89,7 @@ export class Microphone extends Sprite {
         inputMax: this.maxDistance,
         outputMin: -10,
         outputMax: -75,
-        logarithmic: 6,
+        logarithmic: 4,
         overflowMode: OverflowMode.Constrain
       });
       panVol.volume.value = volume;
