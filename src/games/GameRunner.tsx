@@ -94,6 +94,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     window.document.removeEventListener('keypress', this.onKeyPress);
     window.removeEventListener('deviceorientation', this.onDeviceOrientation);
     this.pauseGame();
+    this.audio?.audioContext.close();
   }
 
   public render(): React.ReactNode {
