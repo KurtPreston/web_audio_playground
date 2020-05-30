@@ -1,23 +1,34 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
-import {Sprite} from '../sprites/Sprite';
 import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types';
+import {Game, GameInfo} from './Game';
 
 export interface GameRunnerProps {
   dimensions: Dimensions;
   audioSource: AudioNode;
+  gameInfo: GameInfo;
+}
+
+export interface GameRunnerState {
+  gameLoop: NodeJS.Timeout | undefined;
+  menuOpen: boolean;
 }
 
 @autobind
-export abstract class GameRunner<TState> extends React.Component<GameRunnerProps, TState> {
-  protected abstract menu(world: WorldState): React.ReactNode;
-  protected abstract sprites(): Sprite[];
+export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState> {
+  // Game instance
+  private readonly game: Game;
 
+  // React state
+  public state: GameRunnerState = {
+    gameLoop: undefined,
+    menuOpen: false
+  };
+
+  // World state
   private readonly keysDown = new Set<string>();
   private readonly keysPressedThisFrame = new Set<string>();
-  private gameLoop: NodeJS.Timeout | undefined;
-  private menuOpen: boolean = false;
   private readonly audioAnalyser: AudioAnalyser;
   private deviceOrientation: DeviceOrientation | undefined;
   private mouseClickLocation: IPosition | undefined;
@@ -28,6 +39,8 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
   constructor(props: GameRunnerProps) {
     super(props);
     this.audioAnalyser = new AudioAnalyser(props.audioSource);
+    const Game = props.gameInfo.game;
+    this.game = new Game(props);
   }
 
   public componentDidMount() {
@@ -36,7 +49,7 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
     window.document.addEventListener('keyup', this.onKeyUp);
     window.document.addEventListener('keypress', this.onKeyPress);
     window.addEventListener('deviceorientation', this.onDeviceOrientation, false);
-    document.title = `KurtPreston.com | ${this.constructor.name}`;
+    document.title = `KurtPreston.com | ${this.game.info.title}`;
   }
 
   public componentWillUnmount() {
@@ -48,14 +61,15 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
   }
 
   public render(): React.ReactNode {
+    const {menuOpen} = this.state;
     const {height, width} = this.props.dimensions;
 
     const world: WorldState = this.world();
 
-    const menu = this.menuOpen ? (
+    const menu = menuOpen ? (
       <div className='controls controls-open'>
         <button onClick={this.closeMenu}>×</button>
-        {this.menu(world)}
+        {this.game.menu(world)}
         {this.renderPauseBtn()}
       </div>
     ) : (
@@ -80,13 +94,11 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
   }
 
   private closeMenu() {
-    this.menuOpen = false;
-    this.forceUpdate();
+    this.setState({menuOpen: false});
   }
 
   private openMenu() {
-    this.menuOpen = true;
-    this.forceUpdate();
+    this.setState({menuOpen: true});
   }
 
   private canvasRefFn(ref: HTMLCanvasElement) {
@@ -133,7 +145,7 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
   }
 
   private renderPauseBtn() {
-    if (!this.gameLoop) {
+    if (!this.state.gameLoop) {
       return <button onClick={this.runGame}>Start</button>;
     } else {
       return <button onClick={this.pauseGame}>Pause</button>;
@@ -145,10 +157,10 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
     this.frameNum++;
     this.audioAnalyser.reset();
 
-    // Update sprites
-    const sprites = this.sprites();
+    // Next game frame
     const world = this.world();
-    this.gameTick(world);
+    this.game.gameTick(world);
+    const sprites = this.game.sprites();
     sprites.forEach((sprite) => sprite.tick(world));
 
     // Clear out user input
@@ -160,15 +172,11 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
     if (canvasCtx) {
       canvasCtx.clearRect(0, 0, world.dimensions.width, world.dimensions.height);
       sprites.forEach((sprite) => {
-        canvasCtx.restore();
-        canvasCtx.globalCompositeOperation = 'normal';
+        canvasCtx.save();
         sprite.render(canvasCtx, world);
+        canvasCtx.restore();
       });
     }
-  }
-
-  protected gameTick(world: WorldState) {
-    // Override in subclasses
   }
 
   protected world(): WorldState {
@@ -184,17 +192,19 @@ export abstract class GameRunner<TState> extends React.Component<GameRunnerProps
   }
 
   private runGame() {
-    if (!this.gameLoop) {
-      this.gameLoop = setInterval(this.tick, 25);
-      this.forceUpdate();
+    const {gameLoop} = this.state;
+    if (!gameLoop) {
+      this.setState({
+        gameLoop: setInterval(this.tick, 25)
+      });
     }
   }
 
   private pauseGame() {
-    if (this.gameLoop) {
-      clearInterval(this.gameLoop);
-      this.gameLoop = undefined;
-      this.forceUpdate();
+    const {gameLoop} = this.state;
+    if (gameLoop) {
+      clearInterval(gameLoop);
+      this.setState({gameLoop: undefined});
     }
   }
 }

@@ -2,11 +2,12 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
-import {Demo} from './games/Demo';
-import {DopplerSynth} from './games/DopplerSynth';
-import {GameRunnerProps} from './games/GameRunner';
-import {Hadouken} from './games/Hadouken';
-import {Tadpole} from './games/Tadpole';
+// import {Demo} from './games/Demo';
+// import {DopplerSynth} from './games/DopplerSynth';
+import {GameInfo} from './games/Game';
+import {GameRunner, GameRunnerProps} from './games/GameRunner';
+// import {Hadouken} from './games/Hadouken';
+// import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
 import {Dimensions} from './types';
 
@@ -22,33 +23,7 @@ interface GameLink {
   url: string;
 }
 
-const games: GameLink[] = [
-  {
-    game: Demo,
-    name: 'Demo',
-    url: '/demo'
-  },
-  {
-    game: Hadouken,
-    name: 'Hadouken',
-    url: '/hadouken'
-  },
-  {
-    game: Wamflap,
-    name: 'Wamflap',
-    url: '/wamflap'
-  },
-  {
-    game: Tadpole,
-    name: 'Tadpole',
-    url: '/tadpole'
-  },
-  {
-    game: DopplerSynth,
-    name: 'Doppler Synth',
-    url: '/doppler'
-  }
-];
+const games: GameInfo[] = [Wamflap];
 
 @autobind
 export class App extends React.Component<{}, AppState> {
@@ -97,9 +72,9 @@ export class App extends React.Component<{}, AppState> {
         {/* A <Switch> looks through its children <Route>s and
         renders the first one that matches the current URL. */}
         <Switch>
-          {games.map(({game, url}) => (
-            <Route key={url} path={url}>
-              {React.createElement(game, this.state)}
+          {games.map((game: GameInfo) => (
+            <Route key={game.url} path={game.url}>
+              <GameRunner gameInfo={game} {...this.state} />
             </Route>
           ))}
           <Route path='/'>{this.nav()}</Route>
@@ -112,9 +87,9 @@ export class App extends React.Component<{}, AppState> {
     return (
       <nav>
         <ul>
-          {games.map(({name, url}) => (
+          {games.map(({title, url}) => (
             <li key={url}>
-              <Link to={url}>{name}</Link>
+              <Link to={url}>{title}</Link>
             </li>
           ))}
         </ul>

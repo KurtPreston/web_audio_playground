@@ -7,18 +7,15 @@ import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {WorldState} from '../types';
-import {GameRunner, GameRunnerProps} from './GameRunner';
-
-interface WamflapState {}
+import {Game, GameInfo, GameParams} from './Game';
 
 @autobind
-export class Wamflap extends GameRunner<WamflapState> {
+export class WamflapGame implements Game {
   private readonly player: FlyingWamdag;
   private readonly bg: StaticBackground;
   private readonly circles: Set<Circle> = new Set<Circle>();
 
-  constructor(props: GameRunnerProps) {
-    super(props);
+  constructor(props: GameParams) {
     const {dimensions} = props;
     this.player = new FlyingWamdag({
       dimensions
@@ -36,7 +33,7 @@ export class Wamflap extends GameRunner<WamflapState> {
     });
   }
 
-  protected gameTick(world: WorldState) {
+  public gameTick(world: WorldState) {
     this.circles.forEach((circle: Circle) => {
       const {size, ...circlePosition} = circle.state;
       const distance = distanceBetween(circlePosition, this.player.position);
@@ -70,7 +67,7 @@ export class Wamflap extends GameRunner<WamflapState> {
     });
   }
 
-  protected menu(world: WorldState) {
+  public menu(world: WorldState) {
     return (
       <div>
         <h1>Wamflap</h1>
@@ -80,8 +77,18 @@ export class Wamflap extends GameRunner<WamflapState> {
     );
   }
 
-  protected sprites(): Sprite[] {
+  public sprites(): Sprite[] {
     const circles: Circle[] = Array.from(this.circles.values());
     return [this.bg, ...circles, this.player];
   }
+
+  public info = Wamflap;
 }
+
+export const Wamflap: GameInfo = {
+  title: 'wamflap',
+  description: 'Move the wambird by singing notes to collect the wisps',
+  url: '/wamflap',
+  dataSources: ['mic'],
+  game: WamflapGame
+};
