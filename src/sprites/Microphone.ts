@@ -86,7 +86,7 @@ export class Microphone implements Sprite {
     // Play the audio
     const noteNodes = this.getNoteNodes();
     noteNodes.forEach((noteNode: NoteNode) => {
-      const {note, synth, panVol, vector} = noteNode;
+      const {note, synth, panVol} = noteNode;
       const freq = midiNoteToFreq(note);
       const angleToNode = angleBetween(noteNode.position, position);
       const distanceToNode = distanceBetween(position, noteNode.position);
@@ -100,8 +100,8 @@ export class Microphone implements Sprite {
             vector: noteNode.vector
           },
           target: {
-            position,
-            vector
+            position: this.traveler.position,
+            vector: this.traveler.vector
           },
           speedOfSound: this.speedOfSound
         });
@@ -113,8 +113,6 @@ export class Microphone implements Sprite {
       } else if (adjustedFreq > world.audio.sampleRate) {
         adjustedFreq = world.audio.sampleRate;
       }
-
-      adjustedFreq = freq;
 
       const volume = scale({
         input: distanceToNode,
