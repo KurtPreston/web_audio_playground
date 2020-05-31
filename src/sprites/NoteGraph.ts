@@ -44,7 +44,7 @@ export class NoteGraph implements Sprite {
     this.dimensions = params.dimensions;
 
     // Define the synths that will be used
-    const numSynths = random(1, 4);
+    const numSynths = random(1, 5);
     this.synthPresets = times(numSynths, randomSustainSynth);
 
     // Create nodes

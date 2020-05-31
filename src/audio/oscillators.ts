@@ -7,7 +7,15 @@ export type SynthPreset = RecursivePartial<SynthOptions>;
 export function randomSustainSynth(): RecursivePartial<SynthOptions> {
   return {
     oscillator: {
-      type: sample(['sine', 'sine', 'sine', 'triangle', 'triangle', 'square', 'sawtooth']),
+      type: sample([
+        'sine',
+        'sine',
+        'sine',
+        'triangle',
+        'triangle',
+        'square'
+        // 'saw'
+      ]),
       partialCount: random(0, 10)
     }
   };
