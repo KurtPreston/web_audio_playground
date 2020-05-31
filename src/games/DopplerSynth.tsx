@@ -47,6 +47,14 @@ export class DopplerSynthGame implements Game {
     return this.noteGraph.nodes;
   }
 
+  public addNoteNode() {
+    this.noteGraph.createNode();
+  }
+
+  public deleteNoteNode() {
+    this.noteGraph.deleteNode();
+  }
+
   private regenerateGraph() {
     this.noteGraph.destroy();
     this.noteGraph = new NoteGraph({
@@ -59,17 +67,13 @@ export class DopplerSynthGame implements Game {
     this.lastDimensions = world.dimensions;
   }
 
-  public menu = (<DopplerSynthMenu regenerateGraph={this.regenerateGraph} />);
-}
-
-interface DopplerSynthMenuProps {
-  regenerateGraph: () => void;
-}
-
-class DopplerSynthMenu extends React.Component<DopplerSynthMenuProps> {
-  public render(): React.ReactNode {
-    return <button onClick={this.props.regenerateGraph}>Regenerate</button>;
-  }
+  public menu = (
+    <div>
+      <button onClick={this.regenerateGraph}>Regenerate</button>
+      <button onClick={this.addNoteNode}>Add</button>
+      <button onClick={this.deleteNoteNode}>Delete</button>
+    </div>
+  );
 }
 
 export const DopplerSynth: GameInfo = {

@@ -21,7 +21,6 @@ export interface NoteNode {
   vector: IVector;
   synth: Synth;
   panVol: PanVol;
-  connectedNodes: Set<NoteNode>;
 }
 
 interface NoteEdge {
@@ -34,20 +33,22 @@ export class NoteGraph implements Sprite {
   private edges = new Set<NoteEdge>();
 
   private readonly channel: Channel;
+  private dimensions: Dimensions;
   public notes: Note[];
 
   constructor(params: NoteGraphParams) {
     this.notes = params.notes || randomChord();
     this.channel = params.channel;
+    this.dimensions = params.dimensions;
 
     // Create nodes
     const numNodes = params.numNodes || random(8, 16);
-    times(numNodes, () => {
-      this.createNode(sample(this.notes) as Note, params.dimensions);
-    });
+    times(numNodes, () => this.createNode());
   }
 
-  public createNode(note: Note, dimensions: Dimensions): void {
+  public createNode(note: Note = sample(this.notes) as Note): void {
+    const {width, height} = this.dimensions;
+
     // Create the node
     const synth = new Synth({
       oscillator: {
@@ -63,10 +64,9 @@ export class NoteGraph implements Sprite {
         yMomentum: 0
       },
       position: {
-        x: random(0, dimensions.width),
-        y: random(0, dimensions.height)
+        x: random(0, width),
+        y: random(0, height)
       },
-      connectedNodes: new Set<NoteNode>(),
       synth,
       panVol
     };
@@ -80,15 +80,23 @@ export class NoteGraph implements Sprite {
         node1: node,
         node2
       });
-      node.connectedNodes.add(node2);
-      node2.connectedNodes.add(node);
     });
 
     // Add node
     this.nodes.add(node);
   }
 
-  public connectNode(node: NoteNode) {}
+  public deleteNode() {
+    const node: NoteNode = sample(Array.from(this.nodes)) as NoteNode;
+    node.panVol.dispose();
+    node.synth.dispose();
+    this.nodes.delete(node);
+    this.edges.forEach((edge: NoteEdge) => {
+      if (edge.node1 === node || edge.node2 === node) {
+        this.edges.delete(edge);
+      }
+    });
+  }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Draw edges
@@ -131,6 +139,9 @@ export class NoteGraph implements Sprite {
 
   public tick(world: WorldState) {
     const {dimensions} = world;
+
+    // Cache dimensions so new nodes can be added
+    this.dimensions = dimensions;
 
     // Adjust momentum by applying spring force between connected nodes
     this.edges.forEach(({node1, node2}) => {
