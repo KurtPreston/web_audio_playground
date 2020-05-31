@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import {random, sample} from 'lodash';
+import {sample} from 'lodash';
 import {Channel, Synth} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
 import {Note} from '../audio/Note';
@@ -61,17 +61,6 @@ export class Microphone implements Sprite {
       mode: DopplerMode.Off,
       speedOfSound: 1500
     };
-  }
-
-  public generateRandomDopplerSettings() {
-    if (Math.random() < 0.4) {
-      this.dopplerSettings.mode = DopplerMode.Off;
-    } else {
-      this.dopplerSettings = {
-        speedOfSound: Math.pow(2, random(2, 16)),
-        mode: Math.random() > 0.7 ? DopplerMode.Invert : DopplerMode.On
-      };
-    }
   }
 
   @autobind
