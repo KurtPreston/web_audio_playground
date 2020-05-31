@@ -5,8 +5,21 @@ import {Sprite} from './Sprite';
 
 interface Star {
   position: IPosition;
-  brightness: number; // 0 - 1
   size: number;
+  color: tinycolor.ColorFormats.HSL;
+}
+
+function randomStarColor(): tinycolor.ColorFormats.HSL {
+  const red = '#ffd06d';
+  const white = '#fff';
+  const blue = '#acd0e5';
+
+  const colorPct = Math.random();
+  if (colorPct < 0.5) {
+    return tinycolor.mix(red, white, colorPct * 200).toHsl();
+  } else {
+    return tinycolor.mix(white, blue, (colorPct - 0.5) * 200).toHsl();
+  }
 }
 
 export class OuterSpace extends Sprite {
@@ -19,8 +32,8 @@ export class OuterSpace extends Sprite {
         x: random(0, dimensions.width),
         y: random(0, dimensions.height)
       },
-      brightness: random(0, 1, true),
-      size: random(0.5, 1.5)
+      size: random(0.4, 1),
+      color: randomStarColor()
     }));
   }
 
@@ -28,26 +41,26 @@ export class OuterSpace extends Sprite {
     canvas.fillStyle = 'black';
     canvas.fillRect(0, 0, world.dimensions.width, world.dimensions.height);
 
-    this.stars.forEach(({brightness, position, size}) => {
+    this.stars.forEach(({color, position, size}) => {
       const {x, y} = position;
-      canvas.fillStyle = tinycolor({
-        h: 0,
-        s: 0,
-        l: brightness
-      }).toHexString();
-      canvas.fillRect(x, y, size, size);
+      canvas.beginPath();
+      canvas.fillStyle = tinycolor(color).toHexString();
+      canvas.arc(x, y, size, 0, Math.PI * 2);
+      canvas.fill();
+      canvas.closePath();
     });
   }
 
   public tick(world: WorldState) {
-    this.stars.forEach((star: Star) => {
-      star.brightness += (Math.random() - 0.5) / 10;
-      if (star.brightness > 1) {
-        star.brightness = 1;
+    this.stars.forEach(({color}: Star) => {
+      let brightness = color.l + random(-0.05, 0.05, true);
+      if (brightness < 0.2) {
+        brightness = 0.2;
       }
-      if (star.brightness < 0) {
-        star.brightness = 0;
+      if (brightness > 1) {
+        brightness = 1;
       }
+      color.l = brightness;
     });
   }
 }
