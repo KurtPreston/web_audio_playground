@@ -150,7 +150,9 @@ export class DemoGame implements Game {
     }
   }
 
-  public menu = (<DemoMenu options={this.options} updateOptions={this.updateOptions} />);
+  public menu() {
+    return <DemoMenu options={this.options} updateOptions={this.updateOptions} />;
+  }
 
   private updateOptions(options: Options) {
     this.nextOptions = options;

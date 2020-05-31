@@ -1,3 +1,4 @@
+import {autobind} from 'core-decorators';
 import {random, sample} from 'lodash';
 import {Channel, Synth} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
@@ -37,7 +38,7 @@ export class Microphone implements Sprite {
   private readonly maxDistance = 600;
 
   // Doppler settings
-  private dopplerSettings: DopplerSettings;
+  public dopplerSettings: DopplerSettings;
   private bounceSynth: Synth;
   private bounceFill: number = 0;
 
@@ -58,7 +59,7 @@ export class Microphone implements Sprite {
     this.bounceSynth.volume.value = -5;
     this.dopplerSettings = {
       mode: DopplerMode.Off,
-      speedOfSound: 600
+      speedOfSound: 1500
     };
   }
 
@@ -71,6 +72,11 @@ export class Microphone implements Sprite {
         mode: Math.random() > 0.7 ? DopplerMode.Invert : DopplerMode.On
       };
     }
+  }
+
+  @autobind
+  public updateDopplerSettings(value: DopplerSettings) {
+    this.dopplerSettings = value;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {

@@ -11,7 +11,7 @@ export interface GameInfo {
 }
 
 export interface GameClass {
-  new (world: WorldState, initializers: ResourceInitializers): Game;
+  new (world: WorldState, initializers: ResourceInitializers, refreshMenu: () => void): Game;
 }
 
 export interface ResourceInitializers {
@@ -22,7 +22,7 @@ export interface ResourceInitializers {
 
 // Instance of a game
 export interface Game {
-  menu?: React.ReactNode;
+  menu?: () => React.ReactNode;
   gameTick?: (world: WorldState) => void;
   sprites: () => Sprite[];
   info: GameInfo;

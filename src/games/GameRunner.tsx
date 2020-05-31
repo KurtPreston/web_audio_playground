@@ -80,11 +80,15 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       audioAnalyser
     };
     const Game = this.props.gameInfo.game;
-    this.game = new Game(this.world(), {
-      mic: this.requestMic,
-      analyserNode,
-      audioContext
-    });
+    this.game = new Game(
+      this.world(),
+      {
+        mic: this.requestMic,
+        analyserNode,
+        audioContext
+      },
+      () => this.forceUpdate()
+    );
     this.runGame();
 
     this.setState({
@@ -148,7 +152,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
               {this.renderPauseBtn(true)}
               <button onClick={this.closeMenu}>×</button>
             </div>
-            {game.menu}
+            {game.menu()}
           </div>
         );
       } else {
