@@ -20,3 +20,15 @@ export function randomSustainSynth(): RecursivePartial<SynthOptions> {
     }
   };
 }
+
+export const pingOscillator: SynthPreset = {
+  oscillator: {
+    type: 'triangle'
+  },
+  envelope: {
+    attack: 0.01,
+    decay: 0.01,
+    sustain: 0.4,
+    release: 3.11
+  }
+};

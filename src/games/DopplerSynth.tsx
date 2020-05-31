@@ -34,7 +34,8 @@ export class DopplerSynthGame implements Game {
       channel: this.channel
     });
     this.microphone = new Microphone({
-      getNoteNodes: this.getNoteNodes
+      getNoteNodes: this.getNoteNodes,
+      channel: this.channel
     });
     this.lastDimensions = world.dimensions;
   }

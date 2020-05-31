@@ -1,9 +1,12 @@
-import {random} from 'lodash';
+import {random, sample} from 'lodash';
+import {Channel, Synth} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
+import {Note} from '../audio/Note';
+import {pingOscillator} from '../audio/oscillators';
 import headphoneWamdag from '../images/astroWamdag.svg';
 import {doppler, DopplerSettings} from '../math/physics/doppler';
 import {OverflowMode, scale} from '../math/scale';
-import {BounceOffEdge} from '../math/traveler/forces';
+import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
@@ -15,6 +18,7 @@ import {Sprite} from './Sprite';
 
 interface MicrophoneParams {
   getNoteNodes: () => Set<NoteNode>;
+  channel: Channel;
 }
 
 const headphoneWamdagImage = new Image();
@@ -33,6 +37,8 @@ export class Microphone implements Sprite {
 
   // Doppler settings
   private dopplerSettings: DopplerSettings | undefined;
+  private bounceSynth: Synth;
+  private bounceFill: number = 0;
 
   constructor(params: MicrophoneParams) {
     this.traveler = {
@@ -47,6 +53,9 @@ export class Microphone implements Sprite {
     };
     this.getNoteNodes = params.getNoteNodes;
     this.generateRandomDopplerSettings();
+    this.bounceSynth = new Synth(pingOscillator);
+    this.bounceSynth.connect(params.channel);
+    this.bounceSynth.volume.value = -5;
   }
 
   public generateRandomDopplerSettings() {
@@ -73,7 +82,7 @@ export class Microphone implements Sprite {
       position,
       draw: () => {
         // Draw the circle
-        canvas.fillStyle = 'transparent';
+        canvas.fillStyle = `rgba(255, 255, 255, ${this.bounceFill})`;
         canvas.strokeStyle = this.color;
         canvas.lineWidth = 2;
         circularPath({
@@ -150,8 +159,21 @@ export class Microphone implements Sprite {
       this.angle = 0;
     }
 
-    updateTraveler(this.traveler, [BounceOffEdge], world);
+    updateTraveler(this.traveler, [this.bounceOffEdgeWithSound], world);
 
     this.angle += this.angularMomentum;
+    this.bounceFill *= 0.9;
+  }
+
+  private bounceOffEdgeWithSound: IForce = (traveler: ITraveler, world: WorldState) => {
+    return BounceOffEdge(traveler, world, () => this.onBounce());
+  };
+
+  private onBounce() {
+    this.bounceFill = 1;
+    const node: NoteNode = sample(Array.from(this.getNoteNodes())) as NoteNode;
+    const note: Note = node.note % 12;
+    const freq = midiNoteToFreq(note + 72);
+    this.bounceSynth.triggerAttackRelease(freq, 0.125);
   }
 }
