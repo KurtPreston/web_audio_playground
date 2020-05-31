@@ -27,7 +27,9 @@ describe('doppler', () => {
               yMomentum: 0
             }
           },
-          speedOfSound: 1000
+          settings: {
+            speedOfSound: 1000
+          }
         })
       ).toEqual(100 * (1005 / 1000));
     });
@@ -57,7 +59,9 @@ describe('doppler', () => {
               yMomentum: 0
             }
           },
-          speedOfSound: 1000
+          settings: {
+            speedOfSound: 1000
+          }
         })
       ).toEqual(100 * (1005 / 1000));
     });
@@ -88,7 +92,9 @@ describe('doppler', () => {
               yMomentum: 0
             }
           },
-          speedOfSound: 1000
+          settings: {
+            speedOfSound: 1000
+          }
         })
       ).toEqual((100 * 995) / 1000);
     });
@@ -117,7 +123,9 @@ describe('doppler', () => {
               yMomentum: -5
             }
           },
-          speedOfSound: 1000
+          settings: {
+            speedOfSound: 1000
+          }
         })
       ).toEqual((100 * 995) / 1000);
     });
