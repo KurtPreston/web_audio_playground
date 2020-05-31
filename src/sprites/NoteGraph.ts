@@ -234,4 +234,11 @@ export class NoteGraph implements Sprite {
     //   }
     // });
   }
+
+  public destroy() {
+    this.nodes.forEach((node) => {
+      node.panVol.dispose();
+      node.synth.dispose();
+    });
+  }
 }

@@ -13,7 +13,7 @@ import {drawRotated} from './renderHelpers/drawRotated';
 import {Sprite} from './Sprite';
 
 interface MicrophoneParams {
-  noteNodes: Set<NoteNode>;
+  getNoteNodes: () => Set<NoteNode>;
 }
 
 const headphoneWamdagImage = new Image();
@@ -28,7 +28,7 @@ export class Microphone implements Sprite {
   private angularMomentum: number = 0.01;
 
   // Constants
-  private readonly noteNodes = new Set<NoteNode>();
+  private readonly getNoteNodes: () => Set<NoteNode>;
   private readonly color = 'white';
   private readonly maxDistance = 600;
 
@@ -48,7 +48,7 @@ export class Microphone implements Sprite {
         yMomentum: 1
       }
     };
-    this.noteNodes = params.noteNodes;
+    this.getNoteNodes = params.getNoteNodes;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -83,7 +83,8 @@ export class Microphone implements Sprite {
     });
 
     // Play the audio
-    this.noteNodes.forEach((noteNode: NoteNode) => {
+    const noteNodes = this.getNoteNodes();
+    noteNodes.forEach((noteNode: NoteNode) => {
       const {note, position: nodePosition, synth, panVol, vector} = noteNode;
       const {xMomentum, yMomentum} = vector;
       const freq = midiNoteToFreq(note);

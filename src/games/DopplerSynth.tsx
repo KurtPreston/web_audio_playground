@@ -2,39 +2,73 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {Channel, setContext} from 'tone';
 import {Microphone} from '../sprites/Microphone';
-import {NoteGraph} from '../sprites/NoteGraph';
+import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
-import {WorldState} from '../types';
+import {Dimensions, WorldState} from '../types';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class DopplerSynthGame implements Game {
   public info = DopplerSynth;
 
+  // Sprites
+  private noteGraph: NoteGraph;
   private readonly bg: Sprite;
-  private readonly noteGraph: NoteGraph;
   private readonly microphone: Microphone;
+
+  // Other state
+  private readonly channel: Channel;
+  private lastDimensions: Dimensions;
 
   constructor(world: WorldState, initializers: ResourceInitializers) {
     setContext(initializers.audioContext);
-    const channel = new Channel();
-    channel.toDestination();
-    channel.connect(initializers.analyserNode);
+    this.channel = new Channel();
+    this.channel.toDestination();
+    this.channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
       dimensions,
-      channel
+      channel: this.channel
     });
     this.microphone = new Microphone({
-      noteNodes: this.noteGraph.nodes
+      getNoteNodes: this.getNoteNodes
     });
+    this.lastDimensions = world.dimensions;
   }
 
   public sprites(): Sprite[] {
     return [this.bg, this.microphone, this.noteGraph];
+  }
+
+  public getNoteNodes(): Set<NoteNode> {
+    return this.noteGraph.nodes;
+  }
+
+  private regenerateGraph() {
+    this.noteGraph.destroy();
+    this.noteGraph = new NoteGraph({
+      dimensions: this.lastDimensions,
+      channel: this.channel
+    });
+  }
+
+  public gameTick(world: WorldState) {
+    this.lastDimensions = world.dimensions;
+  }
+
+  public menu = (<DopplerSynthMenu regenerateGraph={this.regenerateGraph} />);
+}
+
+interface DopplerSynthMenuProps {
+  regenerateGraph: () => void;
+}
+
+class DopplerSynthMenu extends React.Component<DopplerSynthMenuProps> {
+  public render(): React.ReactNode {
+    return <button onClick={this.props.regenerateGraph}>Regenerate</button>;
   }
 }
 
