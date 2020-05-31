@@ -1,10 +1,10 @@
 import {autobind} from 'core-decorators';
 import {sample, times} from 'lodash';
 import {distanceBetween} from '../math/trig/distanceBetween';
-import {Circle} from '../sprites/Circle';
 import {FlyingWamdag} from '../sprites/FlyingWamdag';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
+import {Wisp} from '../sprites/Wisp';
 import {WorldState} from '../types';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
@@ -12,7 +12,7 @@ import {Game, GameInfo, ResourceInitializers} from './Game';
 export class WamflapGame implements Game {
   private readonly player: FlyingWamdag;
   private readonly bg: StaticBackground;
-  private readonly circles: Set<Circle> = new Set<Circle>();
+  private readonly wisps: Set<Wisp> = new Set<Wisp>();
 
   constructor(world: WorldState, initializers: ResourceInitializers) {
     initializers.mic();
@@ -24,43 +24,43 @@ export class WamflapGame implements Game {
     this.bg = new StaticBackground();
 
     times(15, () => {
-      this.circles.add(
-        new Circle({
+      this.wisps.add(
+        new Wisp({
           dimensions,
           bounceOffEdge: true,
-          destroy: this.destroyCircle
+          destroy: this.destroyWisp
         })
       );
     });
   }
 
   public gameTick(world: WorldState) {
-    this.circles.forEach((circle: Circle) => {
+    this.wisps.forEach((circle: Wisp) => {
       const {size, ...circlePosition} = circle.state;
       const distance = distanceBetween(circlePosition, this.player.position);
       if (distance < size) {
-        this.circles.delete(circle);
+        this.wisps.delete(circle);
         this.player.powerUp(circle);
       }
     });
 
-    if (this.circles.size === 0) {
+    if (this.wisps.size === 0) {
       this.nextLevel(world);
     }
   }
 
-  private destroyCircle(circle: Circle) {
-    return this.circles.delete(circle);
+  private destroyWisp(circle: Wisp) {
+    return this.wisps.delete(circle);
   }
 
   private nextLevel(world: WorldState) {
     times(200, (idx) => {
       setTimeout(() => {
-        this.circles.add(
-          new Circle({
+        this.wisps.add(
+          new Wisp({
             dimensions: world.dimensions,
             bounceOffEdge: true,
-            destroy: this.destroyCircle,
+            destroy: this.destroyWisp,
             mixBlendMode: sample(['color-dodge', 'soft-light', 'xor', 'multiply'])
           })
         );
@@ -69,8 +69,8 @@ export class WamflapGame implements Game {
   }
 
   public sprites(): Sprite[] {
-    const circles: Circle[] = Array.from(this.circles.values());
-    return [this.bg, ...circles, this.player];
+    const wisps: Wisp[] = Array.from(this.wisps.values());
+    return [this.bg, ...wisps, this.player];
   }
 
   public info = Wamflap;

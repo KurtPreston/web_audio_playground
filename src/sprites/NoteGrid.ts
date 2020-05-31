@@ -160,7 +160,7 @@ export class NoteGrid implements Sprite {
     canvas.beginPath();
     canvas.arc(x, y, 5, 0, 2 * Math.PI);
     canvas.fill();
-    //   peakFreqCircle = (
+    //   peakFreqWisp = (
     //     <g className='peak-freq'>
     //       <circle cx={x} cy={y} r={5} />;
     //       <text x={x} y={y + 40}>
@@ -172,7 +172,7 @@ export class NoteGrid implements Sprite {
     // return (
     //   <g key={this.id} className='note-grid'>
     //     {boxes}
-    //     {peakFreqCircle}
+    //     {peakFreqWisp}
     //   </g>
     // );
   }

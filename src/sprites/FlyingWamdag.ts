@@ -5,11 +5,11 @@ import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
 import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
 import {angleBetween} from '../math/trig/angleBetween';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
-import {Circle} from './Circle';
 import {NoteWheel} from './NoteWheel';
 import {PowerUp} from './PowerUp';
 import {isSafari} from './renderHelpers/detectBrowser';
 import {Sprite} from './Sprite';
+import {Wisp} from './Wisp';
 
 export interface FlyingWamdagParams {
   dimensions: Dimensions;
@@ -63,7 +63,7 @@ export class FlyingWamdag implements Sprite {
     this.powerUps = new Set<PowerUp>();
   }
 
-  public powerUp(circle: Circle) {
+  public powerUp(circle: Wisp) {
     this.powerUps.add(
       new PowerUp({
         position: this.position,

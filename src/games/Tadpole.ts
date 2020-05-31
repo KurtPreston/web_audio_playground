@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import {times} from 'lodash';
-import {Circle} from '../sprites/Circle';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
+import {Wisp} from '../sprites/Wisp';
 import {WorldState} from '../types';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
@@ -11,30 +11,30 @@ export class TadpoleGame implements Game {
   public readonly info = Tadpole;
 
   private readonly bg = new StaticBackground();
-  private readonly circles: Set<Circle> = new Set<Circle>();
+  private readonly wisps: Set<Wisp> = new Set<Wisp>();
 
   constructor(world: WorldState, initializers: ResourceInitializers) {
     initializers.mic();
     const {dimensions} = world;
 
     times(100, () => {
-      this.circles.add(
-        new Circle({
+      this.wisps.add(
+        new Wisp({
           dimensions,
           bounceOffEdge: true,
-          destroy: this.destroyCircle,
+          destroy: this.destroyWisp,
           mixBlendMode: 'xor'
         })
       );
     });
   }
 
-  private destroyCircle(circle: Circle) {
-    return this.circles.delete(circle);
+  private destroyWisp(circle: Wisp) {
+    return this.wisps.delete(circle);
   }
 
   public sprites(): Sprite[] {
-    return [this.bg, ...Array.from(this.circles)];
+    return [this.bg, ...Array.from(this.wisps)];
   }
 }
 

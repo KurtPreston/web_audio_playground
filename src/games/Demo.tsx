@@ -2,11 +2,11 @@ import {autobind} from 'core-decorators';
 import {flatten, isBoolean, times, values, without} from 'lodash';
 import React from 'react';
 import {Background} from '../sprites/Background';
-import {Circle} from '../sprites/Circle';
 import {Flower} from '../sprites/Flower';
 import {NoteGrid} from '../sprites/NoteGrid';
 import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
+import {Wisp} from '../sprites/Wisp';
 import {Dimensions, WorldState} from '../types';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
@@ -16,7 +16,7 @@ export interface DemoState {
 
 type ActiveSprites = {
   flower: Sprite[];
-  circles: Sprite[];
+  wisps: Sprite[];
   noteGrid: Sprite[];
   spectrogram: Sprite[];
   background: Sprite[];
@@ -24,14 +24,14 @@ type ActiveSprites = {
 
 interface Options {
   flower: boolean;
-  circles: number;
+  wisps: number;
   noteGrid: boolean;
   spectrogram: boolean;
 }
 
 const defaultOptions: Options = {
   flower: false,
-  circles: 0,
+  wisps: 0,
   noteGrid: true,
   spectrogram: false
 };
@@ -57,7 +57,7 @@ export class DemoGame implements Game {
       )
     ],
     flower: [],
-    circles: [],
+    wisps: [],
     noteGrid: [],
     spectrogram: []
   };
@@ -76,7 +76,7 @@ export class DemoGame implements Game {
     const newSprites: ActiveSprites = {
       background: [],
       flower: [],
-      circles: [],
+      wisps: [],
       noteGrid: [],
       spectrogram: []
     };
@@ -105,15 +105,15 @@ export class DemoGame implements Game {
         : [new Spectrogram()];
     }
 
-    newSprites.circles = times(
-      options.circles,
+    newSprites.wisps = times(
+      options.wisps,
       (circleNum: number): Sprite => {
         return (
-          (activeSprites.circles || [])[circleNum] ||
-          new Circle({
+          (activeSprites.wisps || [])[circleNum] ||
+          new Wisp({
             dimensions,
             bounceOffEdge: true,
-            destroy: this.destroySprite('circles'),
+            destroy: this.destroySprite('wisps'),
             mixBlendMode: 'color-dodge'
           })
         );
@@ -180,7 +180,7 @@ class DemoMenu extends React.PureComponent<DemoMenuProps, DemoMenuState> {
     return (
       <div>
         {this.toggleSprite('flower')}
-        {this.toggleSprite('circles')}
+        {this.toggleSprite('wisps')}
         {this.toggleSprite('noteGrid')}
         {this.toggleSprite('spectrogram')}
       </div>

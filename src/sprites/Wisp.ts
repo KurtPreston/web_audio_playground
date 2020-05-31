@@ -5,22 +5,22 @@ import {CanvasBlendMode, Dimensions, IWanderer, SpriteTicker, WorldState} from '
 import {randomColor} from '../util/color';
 import {Sprite} from './Sprite';
 
-export interface CircleParams {
+export interface WispParams {
   dimensions: Dimensions;
   bounceOffEdge: boolean;
-  destroy: (sprite: Circle) => boolean;
+  destroy: (sprite: Wisp) => boolean;
   minSize?: number;
   maxSize?: number;
   mixBlendMode?: CanvasBlendMode;
 }
 
-interface CircleState extends IWanderer {
+interface WispState extends IWanderer {
   size: number;
 }
 
-export class Circle implements Sprite {
+export class Wisp implements Sprite {
   // State
-  public state: CircleState;
+  public state: WispState;
 
   // Constants
   public readonly color = randomColor();
@@ -31,7 +31,7 @@ export class Circle implements Sprite {
   private readonly bounceOffEdge: boolean;
   private readonly remove: () => boolean;
 
-  constructor(params: CircleParams) {
+  constructor(params: WispParams) {
     const {dimensions, bounceOffEdge, minSize, maxSize, mixBlendMode} = params;
     const {height, width} = dimensions;
 
