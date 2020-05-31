@@ -35,7 +35,7 @@ export class Microphone implements Sprite {
 
   // Doppler settings
   private speedOfSound: number = Math.pow(2, random(2, 16));
-  private doppler: DopplerType =
+  private dopplerType: DopplerType =
     Math.random() < 0.4 ? 'none' : Math.random() < 0.7 ? 'doppler' : 'invert';
 
   constructor(params: MicrophoneParams) {
@@ -53,7 +53,7 @@ export class Microphone implements Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    const {angle} = this;
+    const {angle, dopplerType} = this;
     const {position} = this.traveler;
     if (!position) {
       return;
@@ -91,18 +91,21 @@ export class Microphone implements Sprite {
       const angleToNode = angleBetween(noteNode.position, position);
       const distanceToNode = distanceBetween(position, noteNode.position);
 
-      let adjustedFreq = doppler({
-        source: {
-          freq,
-          position: noteNode.position,
-          vector: noteNode.vector
-        },
-        target: {
-          position,
-          vector
-        },
-        speedOfSound: this.speedOfSound
-      });
+      let adjustedFreq = freq;
+      if (dopplerType === 'doppler' || this.dopplerType === 'invert') {
+        adjustedFreq = doppler({
+          source: {
+            freq,
+            position: noteNode.position,
+            vector: noteNode.vector
+          },
+          target: {
+            position,
+            vector
+          },
+          speedOfSound: this.speedOfSound
+        });
+      }
 
       // Apply freq bounds
       if (adjustedFreq < 0) {

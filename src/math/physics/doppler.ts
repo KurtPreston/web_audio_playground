@@ -12,11 +12,12 @@ export interface DopplerParams {
     vector: IVector;
   };
   speedOfSound: number;
+  invert?: boolean; // this causes frequency to decrease as the object approaches
 }
 
 // Returns the frequency perceived by the target
 export function doppler(params: DopplerParams): number {
-  const {source, target, speedOfSound} = params;
+  const {invert, source, target, speedOfSound} = params;
   // Calculate relative momentum
   const xMomentum = source.vector.xMomentum - target.vector.xMomentum;
   const yMomentum = source.vector.yMomentum - target.vector.yMomentum;
@@ -31,6 +32,8 @@ export function doppler(params: DopplerParams): number {
   const velocityTowardNode = Math.cos(angleDiff) * velocity;
 
   // Adjust freq
-  const freqRatio = Math.abs(speedOfSound + velocityTowardNode) / speedOfSound;
+  const freqRatio = invert
+    ? Math.abs(speedOfSound - velocityTowardNode) / speedOfSound
+    : Math.abs(speedOfSound + velocityTowardNode) / speedOfSound;
   return source.freq * freqRatio;
 }
