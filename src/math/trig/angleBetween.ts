@@ -1,4 +1,4 @@
-import {IPosition} from '../../types';
+import {IPosition} from '../../types/State';
 
 const tau = Math.PI * 2;
 export function angleBetween(point1: IPosition, point2: IPosition) {

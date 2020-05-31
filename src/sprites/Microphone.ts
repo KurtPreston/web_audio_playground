@@ -4,13 +4,14 @@ import {midiNoteToFreq} from '../audio/midi';
 import {Note} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
 import headphoneWamdag from '../images/astroWamdag.svg';
-import {doppler, DopplerMode, DopplerSettings} from '../math/physics/doppler';
+import {doppler} from '../math/physics/doppler';
 import {OverflowMode, scale} from '../math/scale';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
-import {ITraveler, WorldState} from '../types';
+import {DopplerMode, DopplerSettings} from '../types/DopplerSettings.d';
+import {ITraveler, WorldState} from '../types/State';
 import {NoteNode} from './NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
 import {drawRotated} from './renderHelpers/drawRotated';
@@ -52,7 +53,6 @@ export class Microphone implements Sprite {
       }
     };
     this.getNoteNodes = params.getNoteNodes;
-    this.generateRandomDopplerSettings();
     this.bounceSynth = new Synth(pingOscillator);
     this.bounceSynth.connect(params.channel);
     this.bounceSynth.volume.value = -5;

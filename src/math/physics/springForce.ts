@@ -1,4 +1,4 @@
-import {IAcceleration, IPosition} from '../../types';
+import {IAcceleration, IPosition} from '../../types/State';
 import {angleBetween} from '../trig/angleBetween';
 
 export interface SpringForceParams {

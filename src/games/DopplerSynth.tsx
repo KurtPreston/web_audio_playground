@@ -5,7 +5,7 @@ import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
-import {Dimensions, WorldState} from '../types';
+import {Dimensions, WorldState} from '../types/State';
 import './DopplerSynth.scss';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 

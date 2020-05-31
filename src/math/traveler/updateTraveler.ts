@@ -1,4 +1,4 @@
-import {ITraveler, WorldState} from '../../types';
+import {ITraveler, WorldState} from '../../types/State';
 import {IForce} from './forces';
 
 // Applies all force to traveler and updates position

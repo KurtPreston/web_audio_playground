@@ -7,7 +7,7 @@ import {NoteGrid} from '../sprites/NoteGrid';
 import {Spectrogram} from '../sprites/Sprectrogram';
 import {Sprite} from '../sprites/Sprite';
 import {Wisp} from '../sprites/Wisp';
-import {Dimensions, WorldState} from '../types';
+import {Dimensions, WorldState} from '../types/State';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
 export interface DemoState {

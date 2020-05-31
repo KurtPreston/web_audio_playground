@@ -1,6 +1,6 @@
 import {random} from 'lodash';
 import {OverflowMode, scale} from '../math/scale';
-import {IPosition, WorldState} from '../types';
+import {IPosition, WorldState} from '../types/State';
 import {spin} from '../util/deviceOrientation';
 import {ChargingFireball} from './ChargingFireball';
 import {FireballSpriteParams} from './Fireball';

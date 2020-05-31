@@ -1,6 +1,6 @@
 import React from 'react';
 import BackgroundLayer from '../images/backgroundDarkWatercolor.jpg';
-import {WorldState} from '../types';
+import {WorldState} from '../types/State';
 import {Sprite} from './Sprite';
 
 export class Background implements Sprite {

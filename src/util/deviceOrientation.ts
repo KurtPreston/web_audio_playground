@@ -1,4 +1,4 @@
-import {DeviceOrientation} from '../types';
+import {DeviceOrientation} from '../types/State';
 
 export function spin(orientation: DeviceOrientation): number {
   // those angles are in degrees

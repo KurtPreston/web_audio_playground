@@ -1,4 +1,5 @@
-import {IPosition, IVector} from '../../types';
+import {DopplerMode, DopplerSettings} from '../../types/DopplerSettings.d';
+import {IPosition, IVector} from '../../types/State';
 import {angleBetween} from '../trig/angleBetween';
 
 export interface DopplerParams {
@@ -12,17 +13,6 @@ export interface DopplerParams {
     vector: IVector;
   };
   settings: DopplerSettings;
-}
-
-export enum DopplerMode {
-  Off = 'Of',
-  On = 'On',
-  Invert = 'Invert'
-}
-
-export interface DopplerSettings {
-  speedOfSound: number;
-  mode: DopplerMode;
 }
 
 // Returns the frequency perceived by the target

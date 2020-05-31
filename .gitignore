@@ -25,3 +25,6 @@ yarn-error.log*
 
 # dev tools
 .vscode/
+
+# Generates types
+src/types/*.d.ts

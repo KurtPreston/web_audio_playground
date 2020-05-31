@@ -1,6 +1,6 @@
 import {random} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
-import {IWanderer, SpriteTicker, WorldState} from '../types';
+import {IWanderer, SpriteTicker, WorldState} from '../types/State';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 

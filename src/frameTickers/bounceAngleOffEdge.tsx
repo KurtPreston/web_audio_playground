@@ -1,4 +1,4 @@
-import {Dimensions, IPosition} from '../types';
+import {Dimensions, IPosition} from '../types/State';
 
 interface BounceOffEdgeParams {
   angle: number;

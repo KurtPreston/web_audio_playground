@@ -1,6 +1,6 @@
 import {autobind} from 'core-decorators';
 import {scale} from '../math/scale';
-import {CanvasBlendMode, IPosition, WorldState} from '../types';
+import {CanvasBlendMode, IPosition, WorldState} from '../types/State';
 import {Sprite} from './Sprite';
 
 export interface PowerUpParams {

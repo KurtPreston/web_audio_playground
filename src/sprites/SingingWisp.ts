@@ -4,7 +4,7 @@ import {midiNoteToFreq} from '../audio/midi';
 import {randomSustainSynth} from '../audio/oscillators';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
-import {IPosition, ITraveler, IVector, WorldState} from '../types';
+import {IPosition, ITraveler, IVector, WorldState} from '../types/State';
 import {NoteNode} from './NoteGraph';
 import {Sprite} from './Sprite';
 

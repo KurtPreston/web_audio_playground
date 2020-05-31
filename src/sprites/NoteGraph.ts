@@ -5,7 +5,7 @@ import {getNoteInfo, Note} from '../audio/Note';
 import {randomSustainSynth, SynthPreset} from '../audio/oscillators';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
-import {Dimensions, IPosition, IVector, WorldState} from '../types';
+import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
 import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 

@@ -1,6 +1,6 @@
 import {random, times} from 'lodash';
 import tinycolor from 'tinycolor2';
-import {Dimensions, IPosition, WorldState} from '../types';
+import {Dimensions, IPosition, WorldState} from '../types/State';
 import {Sprite} from './Sprite';
 
 interface Star {

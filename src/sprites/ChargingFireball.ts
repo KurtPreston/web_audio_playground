@@ -1,7 +1,7 @@
 import {random} from 'lodash';
 import tinycolor from 'tinycolor2';
 import {OverflowMode, scale} from '../math/scale';
-import {IPosition, WorldState} from '../types';
+import {IPosition, WorldState} from '../types/State';
 import {FireballSpriteParams} from './Fireball';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';

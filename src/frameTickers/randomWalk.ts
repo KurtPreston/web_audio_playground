@@ -1,4 +1,4 @@
-import {IWanderer, SpriteTicker, WorldState} from '../types';
+import {IWanderer, SpriteTicker, WorldState} from '../types/State';
 import {bounceAngleOffEdge} from './bounceAngleOffEdge';
 export interface RandomWalkProps {
   velocity: number;

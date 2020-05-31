@@ -1,7 +1,8 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
-import {DeviceOrientation, Dimensions, emptyAudioData, IPosition, WorldState} from '../types';
+import {emptyAudioData} from '../types/AudioData';
+import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types/State';
 import {Game, GameInfo} from './Game';
 
 export interface GameRunnerProps {

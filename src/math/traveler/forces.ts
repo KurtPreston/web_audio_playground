@@ -1,5 +1,5 @@
 import {noop} from 'lodash';
-import {ITraveler, IVector, WorldState} from '../../types';
+import {ITraveler, IVector, WorldState} from '../../types/State';
 
 // Applies transformations to an ITraveler
 export type IForce = (traveler: ITraveler, world: WorldState) => IVector;

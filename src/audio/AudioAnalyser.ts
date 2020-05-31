@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import {compact, mean} from 'lodash';
 import {scale} from '../math/scale';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
-import {AudioData} from '../types';
+import {AudioData} from '../types/AudioData';
 import {workerPitchDetector} from '../workers/pitchDetectionWorkerProxy';
 import {freqToMidiNote} from './midi';
 import {getNoteFrequencyRange, Note} from './Note';

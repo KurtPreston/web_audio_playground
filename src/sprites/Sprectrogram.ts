@@ -4,7 +4,7 @@ import {times} from 'lodash';
 import {freqToMidiNote} from '../audio/midi';
 import {getNoteName, Note} from '../audio/Note';
 import {scale} from '../math/scale';
-import {WorldState} from '../types';
+import {WorldState} from '../types/State';
 
 export class Spectrogram implements Sprite {
   public tick() {}

@@ -1,4 +1,4 @@
-import {IPosition} from '../../types';
+import {IPosition} from '../../types/State';
 
 export function distanceBetween(position1: IPosition, position2: IPosition): number {
   const xDiff = position1.x - position2.x;

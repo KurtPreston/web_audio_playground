@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import {Fireball, FireballSpriteParams} from '../sprites/Fireball';
 import {inputPositionController, randomPositionController, Ryu} from '../sprites/Ryu';
 import {Sprite} from '../sprites/Sprite';
-import {WorldState} from '../types';
+import {WorldState} from '../types/State';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind

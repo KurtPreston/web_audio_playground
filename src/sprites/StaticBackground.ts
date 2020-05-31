@@ -1,5 +1,5 @@
 import backgroundDarkWaterColor from '../images/backgroundDarkWatercolor.jpg';
-import {WorldState} from '../types';
+import {WorldState} from '../types/State';
 import {Sprite} from './Sprite';
 
 export class StaticBackground implements Sprite {

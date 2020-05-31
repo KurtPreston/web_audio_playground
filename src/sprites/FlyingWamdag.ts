@@ -4,7 +4,7 @@ import flyingWamdagSvg2 from '../images/flyingWamdag2.svg';
 import flyingWamdagSvg3 from '../images/flyingWamdag3.svg';
 import flyingWamdagSvg4 from '../images/flyingWamdag4.svg';
 import {angleBetween} from '../math/trig/angleBetween';
-import {Dimensions, IPosition, IVector, WorldState} from '../types';
+import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
 import {NoteWheel} from './NoteWheel';
 import {PowerUp} from './PowerUp';
 import {isSafari} from './renderHelpers/detectBrowser';

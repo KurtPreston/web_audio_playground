@@ -3,7 +3,7 @@ import {times} from 'lodash';
 import {Sprite} from '../sprites/Sprite';
 import {StaticBackground} from '../sprites/StaticBackground';
 import {Wisp} from '../sprites/Wisp';
-import {WorldState} from '../types';
+import {WorldState} from '../types/State';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind

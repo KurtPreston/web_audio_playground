@@ -1,0 +1,21 @@
+{
+  "title": "Doppler Settings",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "title": "Doppler Mode",
+      "type": "integer",
+      "enum": ["Off", "On", "Invert"],
+      "enumNames": ["Off", "On", "Invert"],
+      "tsEnumNames": ["Off", "On", "Invert"],
+      "default": "Off"
+    },
+    "speedOfSound": {
+      "type": "number",
+      "minimum": 0,
+      "default": 600
+    }
+  },
+  "required": ["mode", "speedOfSound"],
+  "additionalProperties": false
+}

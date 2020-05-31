@@ -1,4 +1,4 @@
-import {IPosition} from '../../types';
+import {IPosition} from '../../types/State';
 
 export interface DrawRotatedParams {
   canvas: CanvasRenderingContext2D;

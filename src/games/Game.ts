@@ -1,5 +1,5 @@
 import {Sprite} from '../sprites/Sprite';
-import {WorldState} from '../types';
+import {WorldState} from '../types/State';
 
 // Show game on a menu
 export interface GameInfo {

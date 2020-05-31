@@ -9,7 +9,7 @@ import {GameRunner} from './games/GameRunner';
 import {Hadouken} from './games/Hadouken';
 import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
-import {Dimensions} from './types';
+import {Dimensions} from './types/State';
 
 export interface AppState {
   dimensions: Dimensions;
