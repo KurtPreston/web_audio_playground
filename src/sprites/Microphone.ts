@@ -1,6 +1,7 @@
 import {random} from 'lodash';
 import {midiNoteToFreq} from '../audio/midi';
 import headphoneWamdag from '../images/astroWamdag.svg';
+import {doppler} from '../math/physics/doppler';
 import {OverflowMode, scale} from '../math/scale';
 import {BounceOffEdge} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
@@ -85,21 +86,23 @@ export class Microphone implements Sprite {
     // Play the audio
     const noteNodes = this.getNoteNodes();
     noteNodes.forEach((noteNode: NoteNode) => {
-      const {note, position: nodePosition, synth, panVol, vector} = noteNode;
-      const {xMomentum, yMomentum} = vector;
+      const {note, synth, panVol, vector} = noteNode;
       const freq = midiNoteToFreq(note);
-      const distanceToNode = distanceBetween(position, nodePosition);
-      const trajectoryAngle = angleBetween({x: 0, y: 0}, {x: xMomentum, y: yMomentum});
-      const angleToNode = angleBetween(nodePosition, position);
-      const angleDiff = trajectoryAngle - angleToNode;
-      const velocity = Math.sqrt(Math.pow(xMomentum, 2) + Math.pow(yMomentum, 2));
-      const velocityTowardNode = Math.cos(angleDiff) * velocity;
-      let adjustedFreq =
-        this.doppler === 'invert'
-          ? (freq * this.speedOfSound) / Math.max(this.speedOfSound - velocityTowardNode, 1)
-          : this.doppler === 'doppler'
-          ? (freq * Math.max(this.speedOfSound - velocityTowardNode, 0)) / this.speedOfSound
-          : freq;
+      const angleToNode = angleBetween(noteNode.position, position);
+      const distanceToNode = distanceBetween(position, noteNode.position);
+
+      let adjustedFreq = doppler({
+        source: {
+          freq,
+          position: noteNode.position,
+          vector: noteNode.vector
+        },
+        target: {
+          position,
+          vector
+        },
+        speedOfSound: this.speedOfSound
+      });
 
       // Apply freq bounds
       if (adjustedFreq < 0) {
