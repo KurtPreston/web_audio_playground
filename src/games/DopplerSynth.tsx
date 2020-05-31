@@ -6,6 +6,7 @@ import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
 import {Dimensions, WorldState} from '../types';
+import './DopplerSynth.scss';
 import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
@@ -73,15 +74,20 @@ export class DopplerSynthGame implements Game {
   }
 
   public menu = (
-    <div>
-      <div>
+    <div className='doppler-synth-menu'>
+      <fieldset>
+        <label>Notes</label>
+      </fieldset>
+      <fieldset>
+        <label>Constellation</label>
         <button onClick={this.regenerateGraph}>Regenerate</button>
         <button onClick={this.addNoteNode}>Add</button>
         <button onClick={this.deleteNoteNode}>Delete</button>
-      </div>
-      <div>
+      </fieldset>
+      <fieldset>
+        <label>Physics</label>
         <button onClick={this.adjustDoppler}>Re-doppler</button>
-      </div>
+      </fieldset>
     </div>
   );
 }

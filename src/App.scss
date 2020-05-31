@@ -48,7 +48,7 @@ main {
       }
     }
 
-    .controls {
+    .menu {
       position: absolute;
       display: flex;
       flex-direction: column;
@@ -56,13 +56,18 @@ main {
       right: 0;
       color: white;
 
-      &.controls-open {
+      .controls {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      &.menu-open {
         padding: 0.5rem;
         border-radius: 0.5rem;
         background: transparentize(black, 0.3);
       }
 
-      &.controls-closed {
+      &.menu-closed {
         button {
           color: white;
           background: none;

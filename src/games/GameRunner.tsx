@@ -142,15 +142,17 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     } else if (game.menu) {
       if (menuOpen) {
         return (
-          <div className='controls controls-open'>
-            <button onClick={this.closeMenu}>×</button>
+          <div className='menu menu-open'>
+            <div className='controls'>
+              {this.renderPauseBtn(true)}
+              <button onClick={this.closeMenu}>×</button>
+            </div>
             {game.menu}
-            {this.renderPauseBtn(true)}
           </div>
         );
       } else {
         return (
-          <div className='controls controls-closed'>
+          <div className='menu menu-closed'>
             <button onClick={this.openMenu}>ⓘ</button>
           </div>
         );
