@@ -7,6 +7,7 @@ import {distanceBetween} from '../math/trig/distanceBetween';
 import {IPosition, IVector, WorldState} from '../types';
 import {NoteNode} from './NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
+import {drawRotated} from './renderHelpers/drawRotated';
 import {Sprite} from './Sprite';
 
 interface MicrophoneParams {
@@ -22,6 +23,8 @@ export class Microphone extends Sprite {
   // Variables
   private position: IPosition;
   private vector: IVector | undefined;
+  private angle: number = 0;
+  private angularMomentum: number = 0.01;
 
   // Constants
   private readonly noteNodes = new Set<NoteNode>();
@@ -47,28 +50,36 @@ export class Microphone extends Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    const {position} = this;
+    const {angle, position} = this;
     if (!position) {
       return;
     }
 
     const {x, y} = position;
 
-    // Draw the circle
-    canvas.fillStyle = 'transparent';
-    canvas.strokeStyle = 'white';
-    circularPath({
+    drawRotated({
       canvas,
-      wave: world.audio.uintWave,
-      cx: x,
-      cy: y,
-      minSize: 40,
-      maxSize: 100
-    });
+      angle,
+      position,
+      dimensions: world.dimensions,
+      draw: () => {
+        // Draw the circle
+        canvas.fillStyle = 'transparent';
+        canvas.strokeStyle = 'white';
+        circularPath({
+          canvas,
+          wave: world.audio.uintWave,
+          cx: 0,
+          cy: 0,
+          minSize: 40,
+          maxSize: 100
+        });
 
-    // Draw the wamdag
-    const wamSize = 100;
-    canvas.drawImage(headphoneWamdagImage, x - wamSize / 2, y - wamSize / 2, wamSize, wamSize);
+        // Draw the wamdag
+        const wamSize = 100;
+        canvas.drawImage(headphoneWamdagImage, -wamSize / 2, -wamSize / 2, wamSize, wamSize);
+      }
+    });
 
     // Play the audio
     this.noteNodes.forEach((noteNode: NoteNode) => {
@@ -101,7 +112,7 @@ export class Microphone extends Sprite {
         input: distanceToNode,
         inputMin: 0,
         inputMax: this.maxDistance,
-        outputMin: -10,
+        outputMin: -8,
         outputMax: -75,
         logarithmic: 4,
         overflowMode: OverflowMode.Constrain
@@ -116,6 +127,8 @@ export class Microphone extends Sprite {
     const {mouseClickLocation} = world;
     if (mouseClickLocation) {
       this.position = mouseClickLocation;
+      this.angularMomentum = 0;
+      this.angle = 0;
       this.vector = undefined;
     }
 
@@ -123,5 +136,7 @@ export class Microphone extends Sprite {
       this.position.x += this.vector.xMomentum;
       this.position.y += this.vector.yMomentum;
     }
+
+    this.angle += this.angularMomentum;
   }
 }
