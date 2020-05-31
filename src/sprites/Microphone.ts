@@ -62,7 +62,8 @@ export class Microphone extends Sprite {
       draw: () => {
         // Draw the circle
         canvas.fillStyle = 'transparent';
-        canvas.strokeStyle = 'white';
+        canvas.strokeStyle = this.color;
+        canvas.lineWidth = 2;
         circularPath({
           canvas,
           wave: world.audio.uintWave,
