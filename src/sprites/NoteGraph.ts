@@ -1,4 +1,4 @@
-import {random, sample, times} from 'lodash';
+import {random, sample, sampleSize, times} from 'lodash';
 import {Channel, PanVol, Synth} from 'tone';
 import {randomChord} from '../audio/chords';
 import {getNoteInfo, Note} from '../audio/Note';
@@ -33,65 +33,62 @@ export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
 
+  private readonly channel: Channel;
+  public notes: Note[];
+
   constructor(params: NoteGraphParams) {
-    const notes: Note[] = params.notes || randomChord();
+    this.notes = params.notes || randomChord();
+    this.channel = params.channel;
 
     // Create nodes
     const numNodes = params.numNodes || random(8, 16);
-    times(numNodes, (idx: number) => {
-      const note: Note = sample(notes) as Note;
-      const synth = new Synth({
-        oscillator: {
-          type: sample(['sawtooth', 'sine', 'square', 'triangle'])
-        }
-      });
-      const panVol = new PanVol();
-      synth.connect(panVol);
-      const node: NoteNode = {
-        note,
-        vector: {
-          xMomentum: 0,
-          yMomentum: 0
-        },
-        position: {
-          x: random(0, params.dimensions.width),
-          y: random(0, params.dimensions.height)
-        },
-        connectedNodes: new Set<NoteNode>(),
-        synth,
-        panVol
-      };
-      this.nodes.add(node);
-      panVol.connect(params.channel);
+    times(numNodes, () => {
+      this.createNode(sample(this.notes) as Note, params.dimensions);
     });
+  }
 
-    // Create edges
-    const connectedNodes = new Set<NoteNode>();
-    const unconnectedNodes = new Set<NoteNode>(this.nodes);
-    const allNodes: NoteNode[] = Array.from(this.nodes);
-    while (unconnectedNodes.size > 0) {
-      const node1Bucket = connectedNodes.size ? Array.from(connectedNodes) : allNodes;
-      const node1: NoteNode = sample(node1Bucket) as NoteNode;
-      const node2: NoteNode = sample(allNodes) as NoteNode;
-      if (
-        node1.connectedNodes.has(node2) ||
-        node1.connectedNodes.size > 4 ||
-        node2.connectedNodes.size > 4
-      ) {
-        continue;
+  public createNode(note: Note, dimensions: Dimensions): void {
+    // Create the node
+    const synth = new Synth({
+      oscillator: {
+        type: sample(['sawtooth', 'sine', 'square', 'triangle'])
       }
+    });
+    const panVol = new PanVol();
+    synth.connect(panVol);
+    const node: NoteNode = {
+      note,
+      vector: {
+        xMomentum: 0,
+        yMomentum: 0
+      },
+      position: {
+        x: random(0, dimensions.width),
+        y: random(0, dimensions.height)
+      },
+      connectedNodes: new Set<NoteNode>(),
+      synth,
+      panVol
+    };
+    panVol.connect(this.channel);
+
+    // Connect the node to the graph
+    const numNodesToConnectTo = random(1, 4);
+    const nodesToConnectTo: NoteNode[] = sampleSize(Array.from(this.nodes), numNodesToConnectTo);
+    nodesToConnectTo.forEach((node2: NoteNode) => {
       this.edges.add({
-        node1,
+        node1: node,
         node2
       });
-      node1.connectedNodes.add(node2);
-      node2.connectedNodes.add(node1);
-      connectedNodes.add(node1);
-      connectedNodes.add(node2);
-      unconnectedNodes.delete(node1);
-      unconnectedNodes.delete(node2);
-    }
+      node.connectedNodes.add(node2);
+      node2.connectedNodes.add(node);
+    });
+
+    // Add node
+    this.nodes.add(node);
   }
+
+  public connectNode(node: NoteNode) {}
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Draw edges
