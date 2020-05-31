@@ -63,15 +63,24 @@ export class DopplerSynthGame implements Game {
     });
   }
 
+  private adjustDoppler() {
+    this.microphone.generateRandomDopplerSettings();
+  }
+
   public gameTick(world: WorldState) {
     this.lastDimensions = world.dimensions;
   }
 
   public menu = (
     <div>
-      <button onClick={this.regenerateGraph}>Regenerate</button>
-      <button onClick={this.addNoteNode}>Add</button>
-      <button onClick={this.deleteNoteNode}>Delete</button>
+      <div>
+        <button onClick={this.regenerateGraph}>Regenerate</button>
+        <button onClick={this.addNoteNode}>Add</button>
+        <button onClick={this.deleteNoteNode}>Delete</button>
+      </div>
+      <div>
+        <button onClick={this.adjustDoppler}>Re-doppler</button>
+      </div>
     </div>
   );
 }

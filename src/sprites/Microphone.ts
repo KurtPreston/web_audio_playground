@@ -1,7 +1,7 @@
 import {random} from 'lodash';
 import {midiNoteToFreq} from '../audio/midi';
 import headphoneWamdag from '../images/astroWamdag.svg';
-import {doppler} from '../math/physics/doppler';
+import {doppler, DopplerSettings} from '../math/physics/doppler';
 import {OverflowMode, scale} from '../math/scale';
 import {BounceOffEdge} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
@@ -20,8 +20,6 @@ interface MicrophoneParams {
 const headphoneWamdagImage = new Image();
 headphoneWamdagImage.src = headphoneWamdag;
 
-type DopplerType = 'none' | 'doppler' | 'invert';
-
 export class Microphone implements Sprite {
   // Variables
   private traveler: ITraveler;
@@ -34,9 +32,7 @@ export class Microphone implements Sprite {
   private readonly maxDistance = 600;
 
   // Doppler settings
-  private speedOfSound: number = Math.pow(2, random(2, 16));
-  private dopplerType: DopplerType =
-    Math.random() < 0.4 ? 'none' : Math.random() < 0.7 ? 'doppler' : 'invert';
+  private dopplerSettings: DopplerSettings | undefined;
 
   constructor(params: MicrophoneParams) {
     this.traveler = {
@@ -50,10 +46,22 @@ export class Microphone implements Sprite {
       }
     };
     this.getNoteNodes = params.getNoteNodes;
+    this.generateRandomDopplerSettings();
+  }
+
+  public generateRandomDopplerSettings() {
+    if (Math.random() < 0.4) {
+      this.dopplerSettings = undefined;
+    } else {
+      this.dopplerSettings = {
+        speedOfSound: Math.pow(2, random(2, 16)),
+        invert: Math.random() > 0.7
+      };
+    }
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    const {angle, dopplerType} = this;
+    const {angle, dopplerSettings} = this;
     const {position} = this.traveler;
     if (!position) {
       return;
@@ -91,21 +99,20 @@ export class Microphone implements Sprite {
       const angleToNode = angleBetween(noteNode.position, position);
       const distanceToNode = distanceBetween(position, noteNode.position);
 
-      let adjustedFreq = freq;
-      if (dopplerType === 'doppler' || this.dopplerType === 'invert') {
-        adjustedFreq = doppler({
-          source: {
-            freq,
-            position: noteNode.position,
-            vector: noteNode.vector
-          },
-          target: {
-            position: this.traveler.position,
-            vector: this.traveler.vector
-          },
-          speedOfSound: this.speedOfSound
-        });
-      }
+      let adjustedFreq = dopplerSettings
+        ? doppler({
+            source: {
+              freq,
+              position: noteNode.position,
+              vector: noteNode.vector
+            },
+            target: {
+              position: this.traveler.position,
+              vector: this.traveler.vector
+            },
+            settings: dopplerSettings
+          })
+        : freq;
 
       // Apply freq bounds
       if (adjustedFreq < 0) {
