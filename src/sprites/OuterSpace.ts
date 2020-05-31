@@ -6,6 +6,7 @@ import {Sprite} from './Sprite';
 interface Star {
   position: IPosition;
   brightness: number; // 0 - 1
+  size: number;
 }
 
 export class OuterSpace extends Sprite {
@@ -18,7 +19,8 @@ export class OuterSpace extends Sprite {
         x: random(0, dimensions.width),
         y: random(0, dimensions.height)
       },
-      brightness: random(0, 1, true)
+      brightness: random(0, 1, true),
+      size: random(0.5, 1.5)
     }));
   }
 
@@ -26,14 +28,14 @@ export class OuterSpace extends Sprite {
     canvas.fillStyle = 'black';
     canvas.fillRect(0, 0, world.dimensions.width, world.dimensions.height);
 
-    this.stars.forEach(({brightness, position}) => {
+    this.stars.forEach(({brightness, position, size}) => {
       const {x, y} = position;
       canvas.fillStyle = tinycolor({
         h: 0,
         s: 0,
         l: brightness
       }).toHexString();
-      canvas.fillRect(x, y, 1, 1);
+      canvas.fillRect(x, y, size, size);
     });
   }
 

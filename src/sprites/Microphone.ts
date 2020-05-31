@@ -55,13 +55,10 @@ export class Microphone extends Sprite {
       return;
     }
 
-    const {x, y} = position;
-
     drawRotated({
       canvas,
       angle,
       position,
-      dimensions: world.dimensions,
       draw: () => {
         // Draw the circle
         canvas.fillStyle = 'transparent';

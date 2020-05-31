@@ -1,10 +1,9 @@
-import {Dimensions, IPosition} from '../../types';
+import {IPosition} from '../../types';
 
 export interface DrawRotatedParams {
   canvas: CanvasRenderingContext2D;
   angle: number;
   position: IPosition;
-  dimensions: Dimensions;
   draw: () => void;
 }
 
