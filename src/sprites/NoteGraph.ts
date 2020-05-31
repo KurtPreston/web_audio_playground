@@ -1,7 +1,8 @@
 import {random, sample, sampleSize, times} from 'lodash';
-import {Channel, PanVol, Synth} from 'tone';
+import {Channel, PanVol, Synth, SynthOptions} from 'tone';
 import {randomChord} from '../audio/chords';
 import {getNoteInfo, Note} from '../audio/Note';
+import {randomSustainSynth, SynthPreset} from '../audio/oscillators';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types';
@@ -35,11 +36,16 @@ export class NoteGraph implements Sprite {
   private readonly channel: Channel;
   private dimensions: Dimensions;
   public notes: Note[];
+  public synthPresets: SynthPreset[];
 
   constructor(params: NoteGraphParams) {
     this.notes = params.notes || randomChord();
     this.channel = params.channel;
     this.dimensions = params.dimensions;
+
+    // Define the synths that will be used
+    const numSynths = random(1, 4);
+    this.synthPresets = times(numSynths, randomSustainSynth);
 
     // Create nodes
     const numNodes = params.numNodes || random(8, 16);
@@ -50,11 +56,8 @@ export class NoteGraph implements Sprite {
     const {width, height} = this.dimensions;
 
     // Create the node
-    const synth = new Synth({
-      oscillator: {
-        type: sample(['sawtooth', 'sine', 'square', 'triangle'])
-      }
-    });
+    const synthOptions: SynthOptions = sample(this.synthPresets) as SynthOptions;
+    const synth = new Synth(synthOptions);
     const panVol = new PanVol();
     synth.connect(panVol);
     const node: NoteNode = {
