@@ -4,7 +4,7 @@ import {midiNoteToFreq} from '../audio/midi';
 import {Note} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
 import headphoneWamdag from '../images/astroWamdag.svg';
-import {doppler, DopplerSettings} from '../math/physics/doppler';
+import {doppler, DopplerMode, DopplerSettings} from '../math/physics/doppler';
 import {OverflowMode, scale} from '../math/scale';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
@@ -36,7 +36,7 @@ export class Microphone implements Sprite {
   private readonly maxDistance = 600;
 
   // Doppler settings
-  private dopplerSettings: DopplerSettings | undefined;
+  private dopplerSettings: DopplerSettings;
   private bounceSynth: Synth;
   private bounceFill: number = 0;
 
@@ -56,15 +56,19 @@ export class Microphone implements Sprite {
     this.bounceSynth = new Synth(pingOscillator);
     this.bounceSynth.connect(params.channel);
     this.bounceSynth.volume.value = -5;
+    this.dopplerSettings = {
+      mode: DopplerMode.Off,
+      speedOfSound: 600
+    };
   }
 
   public generateRandomDopplerSettings() {
     if (Math.random() < 0.4) {
-      this.dopplerSettings = undefined;
+      this.dopplerSettings.mode = DopplerMode.Off;
     } else {
       this.dopplerSettings = {
         speedOfSound: Math.pow(2, random(2, 16)),
-        invert: Math.random() > 0.7
+        mode: Math.random() > 0.7 ? DopplerMode.Invert : DopplerMode.On
       };
     }
   }

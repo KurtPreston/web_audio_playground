@@ -14,15 +14,25 @@ export interface DopplerParams {
   settings: DopplerSettings;
 }
 
+export enum DopplerMode {
+  Off = 'Of',
+  On = 'On',
+  Invert = 'Invert'
+}
+
 export interface DopplerSettings {
   speedOfSound: number;
-  invert?: boolean; // this causes frequency to decrease as the object approaches
+  mode: DopplerMode;
 }
 
 // Returns the frequency perceived by the target
 export function doppler(params: DopplerParams): number {
   const {settings, source, target} = params;
-  const {speedOfSound, invert} = settings;
+  const {speedOfSound, mode} = settings;
+
+  if (mode === DopplerMode.Off) {
+    return source.freq;
+  }
 
   // Calculate relative momentum
   const xMomentum = source.vector.xMomentum - target.vector.xMomentum;
@@ -38,8 +48,9 @@ export function doppler(params: DopplerParams): number {
   const velocityTowardNode = Math.cos(angleDiff) * velocity;
 
   // Adjust freq
-  const freqRatio = invert
-    ? Math.abs(speedOfSound - velocityTowardNode) / speedOfSound
-    : Math.abs(speedOfSound + velocityTowardNode) / speedOfSound;
+  const freqRatio =
+    mode === DopplerMode.Invert
+      ? Math.abs(speedOfSound - velocityTowardNode) / speedOfSound
+      : Math.abs(speedOfSound + velocityTowardNode) / speedOfSound;
   return source.freq * freqRatio;
 }

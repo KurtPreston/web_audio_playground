@@ -1,4 +1,4 @@
-import {doppler} from './doppler';
+import {doppler, DopplerMode} from './doppler';
 
 describe('doppler', () => {
   describe('increases freq if object is moving toward target', () => {
@@ -28,7 +28,8 @@ describe('doppler', () => {
             }
           },
           settings: {
-            speedOfSound: 1000
+            speedOfSound: 1000,
+            mode: DopplerMode.On
           }
         })
       ).toEqual(100 * (1005 / 1000));
@@ -60,7 +61,8 @@ describe('doppler', () => {
             }
           },
           settings: {
-            speedOfSound: 1000
+            speedOfSound: 1000,
+            mode: DopplerMode.On
           }
         })
       ).toEqual(100 * (1005 / 1000));
@@ -93,7 +95,8 @@ describe('doppler', () => {
             }
           },
           settings: {
-            speedOfSound: 1000
+            speedOfSound: 1000,
+            mode: DopplerMode.On
           }
         })
       ).toEqual((100 * 995) / 1000);
@@ -124,7 +127,8 @@ describe('doppler', () => {
             }
           },
           settings: {
-            speedOfSound: 1000
+            speedOfSound: 1000,
+            mode: DopplerMode.On
           }
         })
       ).toEqual((100 * 995) / 1000);
