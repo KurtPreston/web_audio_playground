@@ -22,7 +22,7 @@ const noteGridParamDefaults: NoteGridParams = {
   showNoteAmplitude: true
 };
 
-export class NoteGrid extends Sprite {
+export class NoteGrid implements Sprite {
   public peakFreqPosition: IPosition | null = null;
   private readonly lowOctave: number;
   private readonly highOctave: number;
@@ -34,7 +34,6 @@ export class NoteGrid extends Sprite {
   private rowHeight: number = 0;
 
   constructor(params: Partial<NoteGridParams>) {
-    super();
     const {lowOctave, highOctave, showPitchIndicator, showFrequency, showNoteAmplitude} = {
       ...noteGridParamDefaults,
       ...params

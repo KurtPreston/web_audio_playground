@@ -18,7 +18,7 @@ interface CircleState extends IWanderer {
   size: number;
 }
 
-export class Circle extends Sprite {
+export class Circle implements Sprite {
   // State
   public state: CircleState;
 
@@ -29,10 +29,9 @@ export class Circle extends Sprite {
   private readonly maxSize: number;
   private readonly walkTicker: SpriteTicker<IWanderer>;
   private readonly bounceOffEdge: boolean;
-  private readonly destroy: () => boolean;
+  private readonly remove: () => boolean;
 
   constructor(params: CircleParams) {
-    super();
     const {dimensions, bounceOffEdge, minSize, maxSize, mixBlendMode} = params;
     const {height, width} = dimensions;
 
@@ -48,7 +47,7 @@ export class Circle extends Sprite {
       bounceOffEdge
     });
     this.bounceOffEdge = bounceOffEdge;
-    this.destroy = () => params.destroy(this);
+    this.remove = () => params.destroy(this);
 
     this.state = {
       // On left, facing right
@@ -91,7 +90,7 @@ export class Circle extends Sprite {
       const offTop = y < -1 * size;
       const offBottom = y > dimensions.height + size;
       if (offLeftSide || offRightSide || offTop || offBottom) {
-        this.destroy();
+        this.remove();
       }
     }
   }

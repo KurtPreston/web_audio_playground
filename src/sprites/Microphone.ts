@@ -21,7 +21,7 @@ headphoneWamdagImage.src = headphoneWamdag;
 
 type DopplerType = 'none' | 'doppler' | 'invert';
 
-export class Microphone extends Sprite {
+export class Microphone implements Sprite {
   // Variables
   private traveler: ITraveler;
   private angle: number = 0;
@@ -38,7 +38,6 @@ export class Microphone extends Sprite {
     Math.random() < 0.4 ? 'none' : Math.random() < 0.7 ? 'doppler' : 'invert';
 
   constructor(params: MicrophoneParams) {
-    super();
     this.traveler = {
       position: {
         x: 0,

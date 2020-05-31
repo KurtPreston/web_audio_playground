@@ -23,7 +23,7 @@ const flyingWamdagImages: HTMLImageElement[] = flyingWamdagSvgs.map((href) => {
 });
 
 @autobind
-export class FlyingWamdag extends Sprite {
+export class FlyingWamdag implements Sprite {
   // Constants
   private readonly force: number = 0.7;
   private readonly maxVelocity = 10;
@@ -41,7 +41,6 @@ export class FlyingWamdag extends Sprite {
   private readonly powerUps: Set<PowerUp>;
 
   constructor(params: FlyingWamdagParams) {
-    super();
     const {width, height} = params.dimensions;
     const xMid = width / 2;
     const yMid = height / 2;

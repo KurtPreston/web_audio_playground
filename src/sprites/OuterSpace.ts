@@ -22,11 +22,10 @@ function randomStarColor(): tinycolor.ColorFormats.HSL {
   }
 }
 
-export class OuterSpace extends Sprite {
+export class OuterSpace implements Sprite {
   private readonly stars: Star[];
 
   constructor(dimensions: Dimensions) {
-    super();
     this.stars = times(500, () => ({
       position: {
         x: random(0, dimensions.width),

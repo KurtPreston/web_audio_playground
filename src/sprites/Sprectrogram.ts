@@ -6,7 +6,7 @@ import {getNoteName, Note} from '../audio/Note';
 import {scale} from '../math/scale';
 import {WorldState} from '../types';
 
-export class Spectrogram extends Sprite {
+export class Spectrogram implements Sprite {
   public tick() {}
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {

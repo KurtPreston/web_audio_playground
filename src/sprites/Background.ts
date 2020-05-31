@@ -3,7 +3,7 @@ import BackgroundLayer from '../images/backgroundDarkWatercolor.jpg';
 import {WorldState} from '../types';
 import {Sprite} from './Sprite';
 
-export class Background extends Sprite {
+export class Background implements Sprite {
   private angle = 0;
   private loadedImage: HTMLImageElement;
 
@@ -11,7 +11,6 @@ export class Background extends Sprite {
     private readonly style: React.CSSProperties,
     private readonly angularVelocity: number
   ) {
-    super();
     this.loadedImage = new Image();
     this.loadedImage.src = BackgroundLayer;
   }

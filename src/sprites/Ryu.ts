@@ -16,7 +16,7 @@ export interface RyuProps {
 
 export type PositionController = (x: number, world: WorldState) => number;
 
-export class Ryu extends Sprite {
+export class Ryu implements Sprite {
   // State
   private readonly launchFireball: (params: FireballSpriteParams) => void;
   private readonly position: IPosition;
@@ -25,7 +25,6 @@ export class Ryu extends Sprite {
   private fireball: ChargingFireball;
 
   constructor(params: RyuProps) {
-    super();
     const {angle, position, positionController, world} = params;
 
     this.positionController = positionController;

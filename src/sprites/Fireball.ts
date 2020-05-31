@@ -22,13 +22,11 @@ export interface FireballParams extends FireballSpriteParams {
   destroy: (fireball: Fireball) => boolean;
 }
 
-export class Fireball extends Sprite {
+export class Fireball implements Sprite {
   private readonly ticker: SpriteTicker<IWanderer>;
-  private readonly destroy: () => boolean;
+  private readonly remove: () => boolean;
 
   constructor(private readonly params: FireballParams) {
-    super();
-
     const {velocity, destroy} = params;
 
     this.ticker = randomWalkFactory({
@@ -38,7 +36,7 @@ export class Fireball extends Sprite {
       bounceOffEdge: false
     });
 
-    this.destroy = () => destroy(this);
+    this.remove = () => destroy(this);
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -72,7 +70,7 @@ export class Fireball extends Sprite {
     const offTop = y < -1 * size;
     const offBottom = y > dimensions.height + size;
     if (offLeftSide || offRightSide || offTop || offBottom) {
-      this.destroy();
+      this.remove();
     }
   }
 }

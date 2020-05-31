@@ -11,7 +11,7 @@ export interface PowerUpParams {
 }
 
 @autobind
-export class PowerUp extends Sprite {
+export class PowerUp implements Sprite {
   // Variables
   private frameNum: number = 0;
   private readonly position: IPosition;
@@ -20,15 +20,14 @@ export class PowerUp extends Sprite {
   private readonly maxSize: number = 150;
   private readonly blendMode: CanvasBlendMode;
   private readonly color: string;
-  private readonly destroy: () => void;
+  private readonly remove: () => void;
   private readonly lifespan: number = 15; // how many frames
 
   constructor(params: PowerUpParams) {
-    super();
     this.position = params.position;
     this.blendMode = params.blendMode;
     this.color = params.color;
-    this.destroy = () => params.destroy(this);
+    this.remove = () => params.destroy(this);
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -51,7 +50,7 @@ export class PowerUp extends Sprite {
   public tick(world: WorldState) {
     this.frameNum++;
     if (this.frameNum > this.lifespan) {
-      this.destroy();
+      this.remove();
     }
   }
 }

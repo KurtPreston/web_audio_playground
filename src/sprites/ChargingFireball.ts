@@ -11,7 +11,7 @@ interface ChargingFireballParams {
   position: IPosition;
 }
 
-export class ChargingFireball extends Sprite {
+export class ChargingFireball implements Sprite {
   // Variables
   private chargeSize: number;
   private position: IPosition;
@@ -33,7 +33,6 @@ export class ChargingFireball extends Sprite {
   private readonly rippleRatio: number = 1.5;
 
   constructor(params: ChargingFireballParams) {
-    super();
     this.position = params.position;
     this.chargeSize = this.chargeMinSize;
     this.maxChargeSize = this.chargeSize;

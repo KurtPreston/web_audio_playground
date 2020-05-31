@@ -10,7 +10,7 @@ export interface NoteWheelParams {
   size?: number;
 }
 
-export class NoteWheel extends Sprite {
+export class NoteWheel implements Sprite {
   // State
   private position: IPosition = {
     x: -1000,
@@ -26,7 +26,6 @@ export class NoteWheel extends Sprite {
   private readonly targetDistance: number = 20;
 
   constructor(params: Partial<NoteWheelParams> = {}) {
-    super();
     this.notes = params.notes || range(0, 12);
     this.mixBlendMode = params.mixBlendMode || 'soft-light';
     this.size = params.size || 120;

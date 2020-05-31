@@ -5,7 +5,7 @@ import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types';
 import {circularPath} from './renderHelpers/circularPath';
 import {Sprite} from './Sprite';
 
-export class Flower extends Sprite {
+export class Flower implements Sprite {
   private state: IWanderer;
   private readonly minSize = 100;
   private readonly maxSize = 1000;
@@ -18,7 +18,6 @@ export class Flower extends Sprite {
   });
 
   constructor(dimensions: Dimensions) {
-    super();
     const {width, height} = dimensions;
 
     this.state = {

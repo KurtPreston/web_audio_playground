@@ -29,12 +29,11 @@ interface NoteEdge {
   node2: NoteNode;
 }
 
-export class NoteGraph extends Sprite {
+export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
 
   constructor(params: NoteGraphParams) {
-    super();
     const notes: Note[] = params.notes || randomChord();
 
     // Create nodes
