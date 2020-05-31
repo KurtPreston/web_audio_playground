@@ -2,9 +2,11 @@ import {random} from 'lodash';
 import {midiNoteToFreq} from '../audio/midi';
 import headphoneWamdag from '../images/astroWamdag.svg';
 import {OverflowMode, scale} from '../math/scale';
+import {BounceOffEdge} from '../math/traveler/forces';
+import {updateTraveler} from '../math/traveler/updateTraveler';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
-import {IPosition, IVector, WorldState} from '../types';
+import {ITraveler, WorldState} from '../types';
 import {NoteNode} from './NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
 import {drawRotated} from './renderHelpers/drawRotated';
@@ -21,8 +23,7 @@ type DopplerType = 'none' | 'doppler' | 'invert';
 
 export class Microphone extends Sprite {
   // Variables
-  private position: IPosition;
-  private vector: IVector | undefined;
+  private traveler: ITraveler;
   private angle: number = 0;
   private angularMomentum: number = 0.01;
 
@@ -38,19 +39,22 @@ export class Microphone extends Sprite {
 
   constructor(params: MicrophoneParams) {
     super();
-    this.position = {
-      x: 0,
-      y: 0
-    };
-    this.vector = {
-      xMomentum: 1,
-      yMomentum: 1
+    this.traveler = {
+      position: {
+        x: 0,
+        y: 0
+      },
+      vector: {
+        xMomentum: 1,
+        yMomentum: 1
+      }
     };
     this.noteNodes = params.noteNodes;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    const {angle, position} = this;
+    const {angle} = this;
+    const {position} = this.traveler;
     if (!position) {
       return;
     }
@@ -124,16 +128,18 @@ export class Microphone extends Sprite {
   public tick(world: WorldState): void {
     const {mouseClickLocation} = world;
     if (mouseClickLocation) {
-      this.position = mouseClickLocation;
+      this.traveler = {
+        position: mouseClickLocation,
+        vector: {
+          xMomentum: 0,
+          yMomentum: 0
+        }
+      };
       this.angularMomentum = 0;
       this.angle = 0;
-      this.vector = undefined;
     }
 
-    if (this.vector) {
-      this.position.x += this.vector.xMomentum;
-      this.position.y += this.vector.yMomentum;
-    }
+    updateTraveler(this.traveler, [BounceOffEdge], world);
 
     this.angle += this.angularMomentum;
   }

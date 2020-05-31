@@ -24,6 +24,11 @@ export interface IWanderer {
   angle: number;
 }
 
+export interface ITraveler {
+  position: IPosition;
+  vector: IVector;
+}
+
 export interface IVector {
   xMomentum: number;
   yMomentum: number;
