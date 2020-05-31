@@ -1,6 +1,6 @@
 import {random} from 'lodash';
 import {midiNoteToFreq} from '../audio/midi';
-import headphoneWamdag from '../images/headphoneWamdag.svg';
+import headphoneWamdag from '../images/astroWamdag.svg';
 import {OverflowMode, scale} from '../math/scale';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
@@ -55,7 +55,8 @@ export class Microphone extends Sprite {
     const {x, y} = position;
 
     // Draw the circle
-    canvas.fillStyle = 'white';
+    canvas.fillStyle = 'transparent';
+    canvas.strokeStyle = 'white';
     circularPath({
       canvas,
       wave: world.audio.uintWave,
