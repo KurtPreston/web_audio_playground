@@ -2,22 +2,9 @@ import {IPosition} from '../../types';
 
 const tau = Math.PI * 2;
 export function angleBetween(point1: IPosition, point2: IPosition) {
-  const xDiff = point1.x - point2.x;
-  const yDiff = point1.y - point2.y;
-  if (xDiff !== 0) {
-    const angle = Math.atan(yDiff / xDiff);
-    if (xDiff > 0) {
-      return mod(angle + Math.PI, tau);
-    } else {
-      return mod(angle, tau);
-    }
-  } else {
-    if (yDiff > 0) {
-      return (3 * Math.PI) / 2;
-    } else {
-      return Math.PI / 2;
-    }
-  }
+  const xDiff = point2.x - point1.x;
+  const yDiff = point2.y - point1.y;
+  return mod(Math.atan2(yDiff, xDiff), tau);
 }
 
 function mod(num: number, modulo: number) {
