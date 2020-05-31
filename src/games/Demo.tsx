@@ -61,7 +61,6 @@ export class DemoGame implements Game {
     noteGrid: [],
     spectrogram: []
   };
-  private menuRef: DemoMenu | undefined;
 
   constructor(world: WorldState, initializers: ResourceInitializers) {
     initializers.mic();
@@ -152,10 +151,6 @@ export class DemoGame implements Game {
   }
 
   public menu = (<DemoMenu options={this.options} updateOptions={this.updateOptions} />);
-
-  private menuRefFn(ref: DemoMenu) {
-    this.menuRef = ref;
-  }
 
   private updateOptions(options: Options) {
     this.nextOptions = options;
