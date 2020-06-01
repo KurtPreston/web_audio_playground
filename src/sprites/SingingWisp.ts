@@ -1,5 +1,5 @@
 import {random} from 'lodash';
-import {Channel, PanVol, Synth} from 'tone';
+import {PanVol, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
 import {randomSustainSynth} from '../audio/oscillators';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
@@ -17,7 +17,7 @@ export class SingingWisp implements Sprite, NoteNode {
   public readonly synth: Synth;
   public readonly panVol: PanVol;
 
-  constructor(channel: Channel) {
+  constructor(channel: ToneAudioNode) {
     this.traveler = {
       position: {
         x: 0,

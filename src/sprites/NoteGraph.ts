@@ -1,5 +1,5 @@
 import {random, sample, sampleSize, times} from 'lodash';
-import {Channel, PanVol, Synth, SynthOptions} from 'tone';
+import {PanVol, Synth, SynthOptions, ToneAudioNode} from 'tone';
 import {randomChord} from '../audio/chords';
 import {getNoteInfo, Note} from '../audio/Note';
 import {randomSustainSynth, SynthPreset} from '../audio/oscillators';
@@ -11,7 +11,7 @@ import {Sprite} from './Sprite';
 
 export interface NoteGraphParams {
   dimensions: Dimensions;
-  channel: Channel;
+  channel: ToneAudioNode;
   notes?: Note[];
   numNodes?: number;
 }
@@ -33,7 +33,7 @@ export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
 
-  private readonly channel: Channel;
+  private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
   public notes: Note[];
   public synthPresets: SynthPreset[];

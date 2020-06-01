@@ -1,6 +1,6 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
-import {Channel, setContext} from 'tone';
+import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
@@ -21,7 +21,7 @@ export class DopplerSynthGame implements Game {
   private readonly microphone: Microphone;
 
   // Other state
-  private readonly channel: Channel;
+  private readonly channel: ToneAudioNode;
   private lastDimensions: Dimensions;
 
   // Constants
@@ -29,7 +29,7 @@ export class DopplerSynthGame implements Game {
 
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
     setContext(initializers.audioContext);
-    this.channel = new Channel();
+    this.channel = new Compressor(-10, 4);
     this.channel.toDestination();
     this.channel.connect(initializers.analyserNode);
     const {dimensions} = world;

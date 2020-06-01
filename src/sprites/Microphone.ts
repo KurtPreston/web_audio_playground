@@ -1,6 +1,6 @@
 import {autobind} from 'core-decorators';
 import {sample} from 'lodash';
-import {Channel, Synth} from 'tone';
+import {Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
 import {Note} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
@@ -20,7 +20,7 @@ import {Sprite} from './Sprite';
 
 interface MicrophoneParams {
   getNoteNodes: () => Set<NoteNode>;
-  channel: Channel;
+  channel: ToneAudioNode;
 }
 
 const headphoneWamdagImage = new Image();
