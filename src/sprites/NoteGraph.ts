@@ -76,7 +76,7 @@ export class NoteGraph implements Sprite {
     panVol.connect(this.channel);
 
     // Connect the node to the graph
-    const numNodesToConnectTo = random(1, 4);
+    const numNodesToConnectTo = random(0, 4);
     const nodesToConnectTo: NoteNode[] = sampleSize(Array.from(this.nodes), numNodesToConnectTo);
     nodesToConnectTo.forEach((node2: NoteNode) => {
       this.edges.add({
