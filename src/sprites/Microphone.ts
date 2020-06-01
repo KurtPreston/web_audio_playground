@@ -58,8 +58,8 @@ export class Microphone implements Sprite {
     this.bounceSynth.connect(params.channel);
     this.bounceSynth.volume.value = -5;
     this.dopplerSettings = {
-      mode: DopplerMode.Off,
-      speedOfSound: 1500
+      mode: DopplerMode.On,
+      speedOfSound: 3000
     };
   }
 

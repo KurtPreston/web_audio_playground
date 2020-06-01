@@ -58,10 +58,12 @@ export class DopplerSynthGame implements Game {
 
   public addNoteNode() {
     this.noteGraph.createNode();
+    this.updateMenu();
   }
 
   public deleteNoteNode() {
     this.noteGraph.deleteNode();
+    this.updateMenu();
   }
 
   private regenerateGraph() {
@@ -70,6 +72,7 @@ export class DopplerSynthGame implements Game {
       dimensions: this.lastDimensions,
       channel: this.channel
     });
+    this.updateMenu();
   }
 
   public gameTick(world: WorldState) {
