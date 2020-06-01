@@ -11,10 +11,13 @@ export function randomSustainSynth(): RecursivePartial<SynthOptions> {
         'sine',
         'sine',
         'sine',
+        'sine',
         'triangle',
         'triangle',
-        'square'
-        // 'saw'
+        'triangle',
+        'square',
+        'square',
+        'sawtooth'
       ]),
       partialCount: random(0, 10)
     }

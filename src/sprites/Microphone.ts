@@ -133,7 +133,7 @@ export class Microphone implements Sprite {
         input: distanceToNode,
         inputMin: 0,
         inputMax: this.maxDistance,
-        outputMin: -8,
+        outputMin: -4,
         outputMax: -75,
         logarithmic: 4,
         overflowMode: OverflowMode.Constrain
