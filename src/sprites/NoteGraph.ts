@@ -35,7 +35,7 @@ export class NoteGraph implements Sprite {
 
   private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
-  public notes: Note[];
+  public readonly notes: Note[];
   public synthPresets: SynthPreset[];
 
   constructor(params: NoteGraphParams) {
