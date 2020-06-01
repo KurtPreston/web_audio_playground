@@ -39,7 +39,7 @@ export class NoteGraph implements Sprite {
   public synthPresets: SynthPreset[];
 
   constructor(params: NoteGraphParams) {
-    this.notes = params.notes || randomChord();
+    this.notes = params.notes || randomChord().notes;
     this.channel = params.channel;
     this.dimensions = params.dimensions;
 

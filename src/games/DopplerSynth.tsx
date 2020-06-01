@@ -1,6 +1,7 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
+import {chordName} from '../audio/chords';
 import {getNoteName} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {Microphone} from '../sprites/Microphone';
@@ -93,6 +94,8 @@ export class DopplerSynthGame implements Game {
       <div className='doppler-synth-menu'>
         <fieldset>
           <label>Notes</label>
+          <strong>{chordName(this.noteGraph.notes)}</strong>
+          <br />
           {this.noteGraph.notes.map(getNoteName).join(', ')}
         </fieldset>
         <fieldset>
