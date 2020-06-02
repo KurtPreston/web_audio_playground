@@ -62,8 +62,8 @@ export class Microphone implements Sprite {
     // Create synth
     this.bounceSynth = new Synth(pingOscillator);
     this.bounceSynth.volume.value = -5;
-    const delay = new FeedbackDelay(0.4, 0.5);
-    const reverb = new Reverb(5);
+    const delay = new FeedbackDelay(0.4, 0.7);
+    const reverb = new Reverb(7);
     this.bounceSynth.connect(delay);
     this.bounceSynth.connect(reverb);
     delay.connect(reverb);
@@ -177,9 +177,11 @@ export class Microphone implements Sprite {
 
   private onBounce() {
     this.bounceFill = 1;
-    const node: NoteNode = sample(Array.from(this.getNoteNodes())) as NoteNode;
-    const note: Note = node.note % 12;
-    const freq = midiNoteToFreq(note + 72);
-    this.bounceSynth.triggerAttackRelease(freq, 0.125);
+    const node: NoteNode | undefined = sample(Array.from(this.getNoteNodes()));
+    if (node) {
+      const note: Note = node.note % 12;
+      const freq = midiNoteToFreq(note + 72);
+      this.bounceSynth.triggerAttackRelease(freq, 0.125);
+    }
   }
 }
