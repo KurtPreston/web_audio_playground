@@ -1,5 +1,6 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
+import {Context as AudioContext} from 'tone';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
 import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types/State';
@@ -58,8 +59,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
 
   private async initializeGame() {
     // Create audio first
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    const audioContext = new AudioContextClass();
+    const audioContext: AudioContext = new AudioContext();
     const analyserNode = audioContext.createAnalyser();
     const audioAnalyser = new AudioAnalyser(analyserNode);
 
