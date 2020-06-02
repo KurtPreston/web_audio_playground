@@ -1,6 +1,6 @@
 import {autobind} from 'core-decorators';
 import {sample} from 'lodash';
-import {Synth, ToneAudioNode} from 'tone';
+import {FeedbackDelay, Reverb, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
 import {Note} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
@@ -54,13 +54,20 @@ export class Microphone implements Sprite {
       }
     };
     this.getNoteNodes = params.getNoteNodes;
-    this.bounceSynth = new Synth(pingOscillator);
-    this.bounceSynth.connect(params.channel);
-    this.bounceSynth.volume.value = -5;
     this.dopplerSettings = {
       mode: DopplerMode.On,
       speedOfSound: 3000
     };
+
+    // Create synth
+    this.bounceSynth = new Synth(pingOscillator);
+    this.bounceSynth.volume.value = -5;
+    const delay = new FeedbackDelay(0.4, 0.5);
+    const reverb = new Reverb(5);
+    this.bounceSynth.connect(delay);
+    this.bounceSynth.connect(reverb);
+    delay.connect(reverb);
+    reverb.connect(params.channel);
   }
 
   @autobind

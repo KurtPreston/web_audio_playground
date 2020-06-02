@@ -29,7 +29,7 @@ export const pingOscillator: SynthPreset = {
     type: 'triangle'
   },
   envelope: {
-    attack: 0.01,
+    attack: 0.1,
     decay: 0.01,
     sustain: 0.4,
     release: 3.11
