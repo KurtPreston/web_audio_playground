@@ -1,4 +1,4 @@
-import {flatten, isEqual, random, sample, sortBy, times} from 'lodash';
+import {flatten, isEqual, random, sample, sortBy, times, uniq} from 'lodash';
 import {mod} from '../math/mod';
 import {getNoteName, Note} from './Note';
 
@@ -250,8 +250,24 @@ export function chordsMatching(notes: Note[]) {
   return AllChords.filter((chord: Chord) => isEqual(normalizeChord(chord.notes), modNotes));
 }
 
-export function chordsContaining(notes: Note[]) {
-  return AllChords.filter((chord: Chord) => notes.every((note) => chord.notes.includes(note)));
+// Returns chords containing these notes and more
+export function superChords(notes: Note[]): Chord[] {
+  const modNotes = normalizeChord(notes);
+  return AllChords.filter(
+    (chord: Chord) =>
+      chord.notes.length > notes.length &&
+      modNotes.every((note) => normalizeChord(chord.notes).includes(note))
+  );
+}
+
+// Return chords containing a subset of the notes in this chord
+export function subChords(notes: Note[]): Chord[] {
+  const modNotes = normalizeChord(notes);
+  return AllChords.filter(
+    (chord: Chord) =>
+      chord.notes.length < modNotes.length &&
+      normalizeChord(chord.notes).every((note) => modNotes.includes(note))
+  );
 }
 
 export function chordName(notes: Note[]): string | null {
@@ -280,6 +296,6 @@ export function randomChord(rootNote?: Note): Chord {
   return chordGenerator(root, inversion);
 }
 
-function normalizeChord(notes: Note[]): Note[] {
-  return sortBy(notes.map((note: Note) => mod(note, 12)));
+export function normalizeChord(notes: Note[]): Note[] {
+  return uniq(sortBy(notes.map((note: Note) => mod(note, 12))));
 }

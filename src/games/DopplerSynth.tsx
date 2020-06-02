@@ -3,6 +3,7 @@ import {random, sample} from 'lodash';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {chordName} from '../audio/chords';
+import {generateRelatedChord} from '../audio/harmony';
 import {getNoteName, Note} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {Microphone} from '../sprites/Microphone';
@@ -68,6 +69,27 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  public loadRelatedChord() {
+    const currentNotes: Note[] = this.noteGraph.notes;
+    const relatedChord = generateRelatedChord(this.noteGraph.notes);
+
+    // Add any missing notes
+    relatedChord.forEach((note: Note) => {
+      if (!currentNotes.includes(note)) {
+        this.noteGraph.addNote(note);
+      }
+    });
+
+    // Remote any removed notes
+    currentNotes.forEach((note: Note) => {
+      if (!relatedChord.includes(note)) {
+        this.noteGraph.deleteNote(note);
+      }
+    });
+
+    this.updateMenu();
+  }
+
   public deleteNote() {
     this.noteGraph.deleteNote(sample(this.noteGraph.notes) as Note);
     this.updateMenu();
@@ -111,6 +133,7 @@ export class DopplerSynthGame implements Game {
             {this.noteGraph.notes.map((note) => getNoteName(note)).join(', ')}
           </div>
           <div>
+            <button onClick={this.loadRelatedChord}>Related chord</button>
             <button onClick={this.addNote}>Add</button>
             <button onClick={this.deleteNote}>Delete</button>
           </div>

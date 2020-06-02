@@ -1,4 +1,15 @@
-import {AllChords, Chord, chordName, dominant7Chord, majorChord} from './chords';
+import {
+  AllChords,
+  Chord,
+  chordName,
+  dominant7Chord,
+  fiveChord,
+  major6Chord,
+  majorChord,
+  minorChord,
+  subChords,
+  superChords
+} from './chords';
 import {NoteValue} from './Note';
 
 const bChord: Chord = {
@@ -37,5 +48,46 @@ describe('chordName', () => {
 
   it('can name dominant7 chords', () => {
     expect(chordName(asharp7chord.notes)).toEqual('A#7');
+  });
+});
+
+describe('superChords', () => {
+  it('returns chords that are a superset of the chord', () => {
+    const c7Chord = dominant7Chord(NoteValue.C);
+    const c6Chord = major6Chord(NoteValue.C);
+    const cChord = majorChord(NoteValue.C);
+
+    const sups = superChords(cChord.notes);
+    expect(sups).toContainEqual(c6Chord);
+    expect(sups).toContainEqual(c7Chord);
+    expect(sups).not.toContainEqual(cChord);
+  });
+
+  it('handles 5 chords', () => {
+    const b5 = fiveChord(NoteValue.B);
+    const bMajor = majorChord(NoteValue.B);
+    const bMinor = minorChord(NoteValue.B);
+    const sups = superChords(b5.notes.map((note) => note + 12));
+    expect(sups).toContainEqual(bMajor);
+    expect(sups).toContainEqual(bMinor);
+  });
+});
+
+describe('subChords', () => {
+  it('returns chords that are a subset of the chord', () => {
+    const c6Chord = major6Chord(NoteValue.C);
+    const cChord = majorChord(NoteValue.C);
+
+    const subs = subChords(c6Chord.notes);
+    expect(subs).toContainEqual(cChord);
+    expect(subs).not.toContainEqual(c6Chord);
+  });
+
+  it('can handle f major 7', () => {
+    const fM7 = [52, 53, 57, 60];
+    const fMajor = majorChord(NoteValue.F);
+
+    const subs = subChords(fM7);
+    expect(subs).toContainEqual(fMajor);
   });
 });
