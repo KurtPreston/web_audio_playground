@@ -1,4 +1,4 @@
-import {scale} from '../../math/scale';
+import {OverflowMode, scale} from '../../math/scale';
 import {ouroboros} from './ouroboros';
 
 interface CircularPathParams {
@@ -42,7 +42,8 @@ export function circularPath(params: CircularPathParams): void {
       inputMin: 0,
       inputMax: 255,
       outputMin: minSize,
-      outputMax: maxSize
+      outputMax: maxSize,
+      overflowMode: OverflowMode.Constrain // floating point rounding error has cause value to be 255.03
     });
     const pointAngle = scale({
       input: idx,
