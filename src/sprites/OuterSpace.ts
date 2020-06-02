@@ -14,7 +14,7 @@ function randomStarColor(): tinycolor.ColorFormats.HSL {
   const white = '#fff';
   const blue = '#acd0e5';
 
-  const colorPct = Math.random();
+  const colorPct = random(0.2, 0.8, true);
   if (colorPct < 0.5) {
     return tinycolor.mix(red, white, colorPct * 200).toHsl();
   } else {
@@ -56,7 +56,7 @@ export class OuterSpace implements Sprite {
         x: random(xMin, xMax),
         y: random(yMin, yMax)
       },
-      size: random(0.4, 1),
+      size: random(0.5, 1.5),
       color: randomStarColor()
     };
   }
@@ -67,11 +67,8 @@ export class OuterSpace implements Sprite {
 
     this.stars.forEach(({color, position, size}) => {
       const {x, y} = position;
-      canvas.beginPath();
-      canvas.fillStyle = tinycolor(color).toHexString();
-      canvas.arc(x, y, size, 0, Math.PI * 2);
-      canvas.fill();
-      canvas.closePath();
+      canvas.fillStyle = `hsl(${color.h}, ${color.s * 100}%, ${color.l * 100}%)`;
+      canvas.fillRect(x, y, size, size);
     });
   }
 
