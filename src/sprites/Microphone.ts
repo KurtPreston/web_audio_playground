@@ -145,8 +145,8 @@ export class Microphone implements Sprite {
         logarithmic: 4,
         overflowMode: OverflowMode.Constrain
       });
-      panVol.volume.value = volume;
-      panVol.pan.value = Math.cos(angleToNode) * -1;
+      panVol.volume.rampTo(volume);
+      panVol.pan.rampTo(Math.cos(angleToNode) * -1);
       synth.frequency.value = adjustedFreq;
     });
   }
