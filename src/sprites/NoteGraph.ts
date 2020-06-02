@@ -68,7 +68,7 @@ export class NoteGraph implements Sprite {
     });
     const panVol = new PanVol();
     if (this.channel.immediate() > 1) {
-      synth.start('+0.1');
+      synth.start('+0.5');
     } else {
       synth.start(1);
     }
