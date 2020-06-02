@@ -1,4 +1,4 @@
-import {random, sample, sampleSize, times} from 'lodash';
+import {pull, random, sample, sampleSize, times} from 'lodash';
 import {PanVol, Synth, SynthOptions, ToneAudioNode} from 'tone';
 import {randomChord} from '../audio/chords';
 import {getNoteInfo, Note} from '../audio/Note';
@@ -29,6 +29,11 @@ interface NoteEdge {
   node2: NoteNode;
 }
 
+interface NodeOptions {
+  synthPreset: SynthPreset;
+  note: Note;
+}
+
 export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
@@ -52,12 +57,14 @@ export class NoteGraph implements Sprite {
     times(numNodes, () => this.createNode());
   }
 
-  public createNode(note: Note = sample(this.notes) as Note): void {
+  public createNode(options: Partial<NodeOptions> = {}): void {
+    const synthPreset: SynthPreset =
+      options.synthPreset || (sample(this.synthPresets) as SynthOptions);
+    const note: Note = options.note || (sample(this.notes) as Note);
     const {width, height} = this.dimensions;
 
     // Create the node
-    const synthOptions: SynthOptions = sample(this.synthPresets) as SynthOptions;
-    const synth = new Synth(synthOptions);
+    const synth = new Synth(synthPreset);
     const panVol = new PanVol();
     synth.connect(panVol);
     const node: NoteNode = {
@@ -89,8 +96,27 @@ export class NoteGraph implements Sprite {
     this.nodes.add(node);
   }
 
-  public deleteNode() {
-    const node: NoteNode = sample(Array.from(this.nodes)) as NoteNode;
+  public deleteNote(note: Note) {
+    pull(this.notes, note);
+    this.nodes.forEach((node) => {
+      if (node.note === note) {
+        this.deleteNode(node);
+      }
+    });
+  }
+
+  public addNote(note: Note, numNodes?: number) {
+    this.notes.push(note);
+    numNodes = numNodes || random(1, 5);
+    times(numNodes, () => {
+      this.createNode({
+        note
+      });
+    });
+  }
+
+  public deleteNode(node?: NoteNode) {
+    node = node || (sample(Array.from(this.nodes)) as NoteNode);
     node.panVol.dispose();
     node.synth.dispose();
     this.nodes.delete(node);

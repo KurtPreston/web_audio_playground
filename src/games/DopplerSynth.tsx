@@ -1,8 +1,9 @@
 import {autobind} from 'core-decorators';
+import {random, sample} from 'lodash';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {chordName} from '../audio/chords';
-import {getNoteName} from '../audio/Note';
+import {getNoteName, Note} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
@@ -62,6 +63,16 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  public addNote() {
+    this.noteGraph.addNote(random(36, 60));
+    this.updateMenu();
+  }
+
+  public deleteNote() {
+    this.noteGraph.deleteNote(sample(this.noteGraph.notes) as Note);
+    this.updateMenu();
+  }
+
   public deleteNoteNode() {
     this.noteGraph.deleteNode();
     this.updateMenu();
@@ -94,9 +105,15 @@ export class DopplerSynthGame implements Game {
       <div className='doppler-synth-menu'>
         <fieldset>
           <label>Notes</label>
-          <strong>{chordName(this.noteGraph.notes)}</strong>
-          <br />
-          {this.noteGraph.notes.map((note) => getNoteName(note)).join(', ')}
+          <div>
+            <strong>{chordName(this.noteGraph.notes)}</strong>
+            <br />
+            {this.noteGraph.notes.map((note) => getNoteName(note)).join(', ')}
+          </div>
+          <div>
+            <button onClick={this.addNote}>Add</button>
+            <button onClick={this.deleteNote}>Delete</button>
+          </div>
         </fieldset>
         <fieldset>
           <label>Constellation</label>
