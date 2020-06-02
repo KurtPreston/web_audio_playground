@@ -1,9 +1,10 @@
 import {pull, random, sample, sampleSize, times} from 'lodash';
-import {Oscillator, PanVol, ToneAudioNode, ToneOscillatorType} from 'tone';
+import {Oscillator, PanVol, ToneAudioNode} from 'tone';
+import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import {randomChord} from '../audio/chords';
 import {midiNoteToFreq} from '../audio/midi';
 import {getNoteInfo, Note} from '../audio/Note';
-import {randomSustainOscillator} from '../audio/oscillators';
+import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
@@ -31,7 +32,7 @@ interface NoteEdge {
 }
 
 interface NodeOptions {
-  oscillator: ToneOscillatorType;
+  oscillator: Partial<ToneOscillatorConstructorOptions>;
   note: Note;
 }
 
@@ -54,13 +55,15 @@ export class NoteGraph implements Sprite {
   }
 
   public createNode(options: Partial<NodeOptions> = {}): void {
-    const oscillator = options.oscillator || randomSustainOscillator();
+    const oscillator = options.oscillator || randomSustainOscillatorOptions();
     const note: Note = options.note || (sample(this.notes) as Note);
     const {width, height} = this.dimensions;
 
     // Create the node
-    const freq = midiNoteToFreq(note);
-    const synth = new Oscillator(freq, oscillator);
+    const synth = new Oscillator({
+      ...oscillator,
+      frequency: midiNoteToFreq(note)
+    });
     const panVol = new PanVol();
     synth.start(1);
 

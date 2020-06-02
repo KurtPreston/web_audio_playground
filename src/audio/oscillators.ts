@@ -20,12 +20,16 @@ export function randomSustainOscillator(): NonCustomOscillatorType {
   ]) as NonCustomOscillatorType;
 }
 
+export function randomSustainOscillatorOptions() {
+  return {
+    type: randomSustainOscillator(),
+    partialCount: random(0, 10)
+  };
+}
+
 export function randomSustainSynth(): RecursivePartial<SynthOptions> {
   return {
-    oscillator: {
-      type: randomSustainOscillator(),
-      partialCount: random(0, 10)
-    }
+    oscillator: randomSustainOscillatorOptions()
   };
 }
 
