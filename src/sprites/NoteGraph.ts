@@ -62,6 +62,8 @@ export class NoteGraph implements Sprite {
     // Create the node
     const synth = new Oscillator({
       ...oscillator,
+      detune: random(-1, 1, true),
+      phase: random(0, Math.PI * 2, true),
       frequency: midiNoteToFreq(note)
     });
     const panVol = new PanVol();

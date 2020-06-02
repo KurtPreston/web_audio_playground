@@ -35,7 +35,8 @@ export function randomSustainSynth(): RecursivePartial<SynthOptions> {
 
 export const pingOscillator: SynthPreset = {
   oscillator: {
-    type: 'triangle'
+    type: 'triangle',
+    phase: random(0, Math.PI * 2, true)
   },
   envelope: {
     attack: 0.1,
