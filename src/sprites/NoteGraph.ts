@@ -65,7 +65,11 @@ export class NoteGraph implements Sprite {
       frequency: midiNoteToFreq(note)
     });
     const panVol = new PanVol();
-    synth.start(1);
+    if (this.channel.immediate() > 1) {
+      synth.start('+0.1');
+    } else {
+      synth.start(1);
+    }
 
     panVol.connect(this.channel);
     synth.connect(panVol);
