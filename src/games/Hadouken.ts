@@ -15,6 +15,7 @@ export class HadoukenGame implements Game {
 
   constructor(world: WorldState, initializers: ResourceInitializers) {
     initializers.mic();
+    initializers.deviceOrientation();
     const {dimensions} = world;
 
     this.player1 = new Ryu({

@@ -51,7 +51,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     window.document.addEventListener('keydown', this.onKeyDown);
     window.document.addEventListener('keyup', this.onKeyUp);
     window.document.addEventListener('keypress', this.onKeyPress);
-    window.addEventListener('deviceorientation', this.onDeviceOrientation, false);
     document.title = `KurtPreston.com | ${this.props.gameInfo.title}`;
 
     this.initializeGame();
@@ -84,6 +83,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       this.world(),
       {
         mic: this.requestMic,
+        deviceOrientation: this.requestDeviceOrientation,
         analyserNode,
         audioContext
       },
@@ -323,5 +323,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     this.setState({
       requireClickToStart: audioState === 'suspended'
     });
+  }
+
+  private requestDeviceOrientation() {
+    window.addEventListener('deviceorientation', this.onDeviceOrientation, false);
   }
 }
