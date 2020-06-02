@@ -1,8 +1,9 @@
 import {pull, random, sample, sampleSize, times} from 'lodash';
-import {PanVol, Synth, SynthOptions, ToneAudioNode} from 'tone';
+import {Oscillator, PanVol, ToneAudioNode, ToneOscillatorType} from 'tone';
 import {randomChord} from '../audio/chords';
+import {midiNoteToFreq} from '../audio/midi';
 import {getNoteInfo, Note} from '../audio/Note';
-import {randomSustainSynth, SynthPreset} from '../audio/oscillators';
+import {randomSustainOscillator} from '../audio/oscillators';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
@@ -20,7 +21,7 @@ export interface NoteNode {
   note: Note;
   position: IPosition;
   vector: IVector;
-  synth: Synth;
+  synth: Oscillator;
   panVol: PanVol;
 }
 
@@ -30,7 +31,7 @@ interface NoteEdge {
 }
 
 interface NodeOptions {
-  synthPreset: SynthPreset;
+  oscillator: ToneOscillatorType;
   note: Note;
 }
 
@@ -41,16 +42,11 @@ export class NoteGraph implements Sprite {
   private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
   public readonly notes: Note[];
-  public synthPresets: SynthPreset[];
 
   constructor(params: NoteGraphParams) {
     this.notes = params.notes || randomChord().notes;
     this.channel = params.channel;
     this.dimensions = params.dimensions;
-
-    // Define the synths that will be used
-    const numSynths = random(1, 5);
-    this.synthPresets = times(numSynths, randomSustainSynth);
 
     // Create nodes
     const numNodes = params.numNodes || random(8, 16);
@@ -58,15 +54,20 @@ export class NoteGraph implements Sprite {
   }
 
   public createNode(options: Partial<NodeOptions> = {}): void {
-    const synthPreset: SynthPreset =
-      options.synthPreset || (sample(this.synthPresets) as SynthOptions);
+    const oscillator = options.oscillator || randomSustainOscillator();
     const note: Note = options.note || (sample(this.notes) as Note);
     const {width, height} = this.dimensions;
 
     // Create the node
-    const synth = new Synth(synthPreset);
+    const freq = midiNoteToFreq(note);
+    const synth = new Oscillator(freq, oscillator);
     const panVol = new PanVol();
+    synth.start(1);
+
+    panVol.connect(this.channel);
     synth.connect(panVol);
+
+    // Create the node
     const node: NoteNode = {
       note,
       vector: {
@@ -80,7 +81,6 @@ export class NoteGraph implements Sprite {
       synth,
       panVol
     };
-    panVol.connect(this.channel);
 
     // Connect the node to the graph
     const numNodesToConnectTo = random(0, 4);

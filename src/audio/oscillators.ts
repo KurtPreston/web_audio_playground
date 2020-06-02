@@ -1,24 +1,29 @@
 import {random, sample} from 'lodash';
 import {SynthOptions} from 'tone';
 import {RecursivePartial} from 'tone/build/esm/core/util/Interface';
+import {NonCustomOscillatorType} from 'tone/build/esm/source/oscillator/OscillatorInterface';
 
 export type SynthPreset = RecursivePartial<SynthOptions>;
+
+export function randomSustainOscillator(): NonCustomOscillatorType {
+  return sample([
+    'sine',
+    'sine',
+    'sine',
+    'sine',
+    'triangle',
+    'triangle',
+    'triangle',
+    'square',
+    'square',
+    'sawtooth'
+  ]) as NonCustomOscillatorType;
+}
 
 export function randomSustainSynth(): RecursivePartial<SynthOptions> {
   return {
     oscillator: {
-      type: sample([
-        'sine',
-        'sine',
-        'sine',
-        'sine',
-        'triangle',
-        'triangle',
-        'triangle',
-        'square',
-        'square',
-        'sawtooth'
-      ]),
+      type: randomSustainOscillator(),
       partialCount: random(0, 10)
     }
   };

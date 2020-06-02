@@ -1,7 +1,7 @@
 import {random} from 'lodash';
-import {PanVol, Synth, ToneAudioNode} from 'tone';
+import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
-import {randomSustainSynth} from '../audio/oscillators';
+import {randomSustainOscillator} from '../audio/oscillators';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
 import {IPosition, ITraveler, IVector, WorldState} from '../types/State';
@@ -14,7 +14,7 @@ export class SingingWisp implements Sprite, NoteNode {
   private readonly size = 20;
   private readonly color = 'white';
   public readonly note = random(36, 60);
-  public readonly synth: Synth;
+  public readonly synth: Oscillator;
   public readonly panVol: PanVol;
 
   constructor(channel: ToneAudioNode) {
@@ -28,13 +28,11 @@ export class SingingWisp implements Sprite, NoteNode {
         yMomentum: 0
       }
     };
-    this.synth = new Synth(randomSustainSynth());
+    const freq = midiNoteToFreq(this.note);
+    this.synth = new Oscillator(freq, randomSustainOscillator());
     this.panVol = new PanVol();
     this.synth.connect(this.panVol);
     this.panVol.connect(channel);
-
-    const freq = midiNoteToFreq(this.note);
-    this.synth.triggerAttack(freq);
   }
 
   public get position(): IPosition {
