@@ -61,11 +61,15 @@ export class Microphone implements Sprite {
 
     // Create synth
     this.bounceSynth = new Synth(pingOscillator);
-    this.bounceSynth.volume.value = -5;
-    const delay = new FeedbackDelay(0.4, 0.7);
-    const reverb = new Reverb(7);
+    const delay = new FeedbackDelay({
+      wet: 0.5,
+      delayTime: 0.4,
+      feedback: 0.7
+    });
+    const reverb = new Reverb({
+      decay: 7 // 7seconds
+    });
     this.bounceSynth.connect(delay);
-    this.bounceSynth.connect(reverb);
     delay.connect(reverb);
     reverb.connect(params.channel);
   }
