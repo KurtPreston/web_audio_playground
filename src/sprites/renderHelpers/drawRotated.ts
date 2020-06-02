@@ -11,9 +11,9 @@ export function drawRotated(params: DrawRotatedParams) {
   const {canvas, angle, position, draw} = params;
   const {x, y} = position;
 
-  canvas.translate(x, y);
-  canvas.rotate(angle);
+  const matrix = new DOMMatrix();
+  matrix.translateSelf(x, y).rotateSelf((angle * 180) / Math.PI);
+  canvas.setTransform(matrix);
   draw();
-  canvas.rotate(-angle);
-  canvas.translate(-x, -y);
+  canvas.resetTransform();
 }
