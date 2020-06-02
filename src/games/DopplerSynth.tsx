@@ -117,9 +117,13 @@ export class DopplerSynthGame implements Game {
         </fieldset>
         <fieldset>
           <label>Constellation</label>
-          <button onClick={this.regenerateGraph}>Regenerate</button>
-          <button onClick={this.addNoteNode}>Add</button>
-          <button onClick={this.deleteNoteNode}>Delete</button>
+          <div>
+            <button onClick={this.regenerateGraph}>Regenerate</button>
+          </div>
+          <div>
+            <button onClick={this.addNoteNode}>Add Node</button>
+            <button onClick={this.deleteNoteNode}>Delete Node</button>
+          </div>
         </fieldset>
         <fieldset>
           <DopplerSettingsForm

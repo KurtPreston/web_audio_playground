@@ -28,12 +28,28 @@ export function DopplerSettingsForm(props: DopplerSettingFormProps) {
     });
   }
 
+  const speedOfSoundForm =
+    value.mode !== DopplerMode.Off ? (
+      <label>
+        Speed of Sound
+        <div>
+          {value.speedOfSound} px/frame
+          <input
+            type='range'
+            value={value.speedOfSound}
+            onChange={onSpeedOfSoundChanged}
+            min={1}
+            max={5000}
+          />
+        </div>
+      </label>
+    ) : null;
+
   return (
     <div>
       <label>Doppler</label>
       <div>
         <div>
-          Mode
           {modes.map((mode: DopplerMode) => (
             <label key={mode}>
               <input
@@ -46,19 +62,7 @@ export function DopplerSettingsForm(props: DopplerSettingFormProps) {
             </label>
           ))}
         </div>
-        <label>
-          Speed of Sound
-          <div>
-            {value.speedOfSound} px/frame
-            <input
-              type='range'
-              value={value.speedOfSound}
-              onChange={onSpeedOfSoundChanged}
-              min={1}
-              max={5000}
-            />
-          </div>
-        </label>
+        {speedOfSoundForm}
       </div>
     </div>
   );
