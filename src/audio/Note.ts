@@ -4,6 +4,26 @@ export type Note = number;
 export type NoteLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type NoteAccidental = 'b' | '#' | null;
 
+export enum NoteValue {
+  C = 0,
+  Csharp = 1,
+  Dflat = 1,
+  D = 2,
+  Dsharp = 3,
+  Eflat = 3,
+  E = 4,
+  F = 5,
+  Fsharp = 6,
+  Gflat = 6,
+  G = 7,
+  Gsharp = 8,
+  Aflat = 8,
+  A = 9,
+  Asharp = 10,
+  Bflat = 10,
+  B = 11
+}
+
 export interface NoteInfo {
   letter: string;
   accidental: 'b' | '#' | null;
@@ -26,10 +46,22 @@ const noteAscii = [
   71.5 // G#/Ab
 ];
 
+export interface NoteNameParams {
+  octave: boolean;
+  accidental: NoteAccidental;
+}
+
 // Value 21 127
-export function getNoteName(note: Note): string {
-  const {letter, octave, accidental} = getNoteInfo(note);
-  return `${letter}${accidental || ''}${octave}`;
+export function getNoteName(
+  note: Note,
+  params: NoteNameParams = {octave: false, accidental: '#'}
+): string {
+  const {letter, octave, accidental} = getNoteInfo(note, params.accidental);
+  if (params.octave) {
+    return `${letter}${accidental || ''}${octave}`;
+  } else {
+    return `${letter}${accidental || ''}`;
+  }
 }
 
 export function getNoteNames(note: Note): string[] {

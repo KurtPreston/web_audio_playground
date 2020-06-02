@@ -96,7 +96,7 @@ export class DopplerSynthGame implements Game {
           <label>Notes</label>
           <strong>{chordName(this.noteGraph.notes)}</strong>
           <br />
-          {this.noteGraph.notes.map(getNoteName).join(', ')}
+          {this.noteGraph.notes.map((note) => getNoteName(note)).join(', ')}
         </fieldset>
         <fieldset>
           <label>Constellation</label>

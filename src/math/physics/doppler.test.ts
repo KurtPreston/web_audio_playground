@@ -1,4 +1,5 @@
-import {doppler, DopplerMode} from './doppler';
+import {DopplerMode} from '../../types/DopplerSettings.d';
+import {doppler} from './doppler';
 
 describe('doppler', () => {
   describe('increases freq if object is moving toward target', () => {
