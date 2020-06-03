@@ -90,21 +90,7 @@ export class DopplerSynthGame implements Game {
 
   public loadRelatedChord() {
     const relatedChord = generateRelatedChord(this.noteGraph.notes);
-
-    // Add any missing notes
-    relatedChord.notes.forEach((note: NoteValue) => {
-      if (!this.noteGraph.notes.has(note)) {
-        this.noteGraph.addNote(note);
-      }
-    });
-
-    // Remote any removed notes
-    this.noteGraph.notes.forEach((note: NoteValue) => {
-      if (!relatedChord.notes.has(note)) {
-        this.noteGraph.deleteNote(note);
-      }
-    });
-
+    this.noteGraph.setChord(relatedChord.notes);
     this.updateMenu();
   }
 

@@ -1,4 +1,4 @@
-import {maxBy, random, sample, sampleSize, times, without} from 'lodash';
+import {difference, maxBy, pull, random, sample, sampleSize, times, without} from 'lodash';
 import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import {randomChord} from '../audio/chords';
@@ -177,6 +177,49 @@ export class NoteGraph implements Sprite {
     });
   }
 
+  public setChord(chord: Set<NoteValue>) {
+    const newNotes = difference(Array.from(chord), Array.from(this.notes));
+    const yesterNotes = difference(Array.from(this.notes), Array.from(chord));
+
+    // Rebuild any overlapping notes that have disappeared
+    newNotes.forEach((noteValue: Note) => {
+      const currentNodes: NoteNode[] = this.nodesWithNote(noteValue);
+      if (this.notes.has(noteValue) && currentNodes.length === 0) {
+        // All nodes with this note have been removed. Unacceptable!
+        this.createNode({
+          midiNote: this.randomNote(noteValue)
+        });
+      }
+    });
+
+    // Convert current nodes to new nodes
+    while (newNotes.length && yesterNotes.length) {
+      const newNote = sample(newNotes) as NoteValue;
+      const oldNote = sample(yesterNotes) as NoteValue;
+      const oldNodes = this.nodesWithNote(oldNote);
+      oldNodes.forEach((node: NoteNode) => {
+        node.note = this.randomNote(newNote);
+      });
+      pull(newNotes, newNote);
+      pull(yesterNotes, oldNote);
+      this.notes.delete(oldNote);
+      this.notes.add(newNote);
+    }
+
+    // If any remaining old notes, scrap 'm
+    yesterNotes.forEach((oldNote: NoteValue) => {
+      const oldNodes = this.nodesWithNote(oldNote);
+      oldNodes.forEach((oldNode) => this.deleteNode(oldNode));
+      this.notes.delete(oldNote);
+    });
+
+    // If any remaining new notes, create new nodes
+    newNotes.forEach((newNote: NoteValue) => {
+      this.addNote(newNote);
+      this.notes.add(newNote);
+    });
+  }
+
   public addNote(note: NoteValue, numNodes?: number) {
     this.notes.add(note);
     numNodes = numNodes || random(1, 5);
@@ -189,20 +232,28 @@ export class NoteGraph implements Sprite {
   public deleteNode(node?: NoteNode) {
     node = node || sample(Array.from(this.nodes));
     if (node) {
-      node.panVol.volume.rampTo(0, 1);
+      node.synth.volume.rampTo(-200);
+      node.panVol.volume.rampTo(-100);
       setTimeout(() => {
         if (node) {
           node.panVol.dispose();
           node.synth.dispose();
+          this.nodes.delete(node);
+          this.edges.forEach((edge: NoteEdge) => {
+            if (edge.node1 === node || edge.node2 === node) {
+              this.edges.delete(edge);
+            }
+          });
         }
       }, 1000);
-      this.nodes.delete(node);
-      this.edges.forEach((edge: NoteEdge) => {
-        if (edge.node1 === node || edge.node2 === node) {
-          this.edges.delete(edge);
-        }
-      });
     }
+  }
+
+  private nodesWithNote(note: NoteValue): NoteNode[] {
+    return Array.from(this.nodes).filter((node) => {
+      const nodeNote: NoteValue = noteToNoteValue(node.note);
+      return nodeNote === note;
+    });
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
