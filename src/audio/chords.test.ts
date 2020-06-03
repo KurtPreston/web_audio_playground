@@ -13,12 +13,14 @@ import {
 import {NoteValue} from './Note';
 
 const bChord: Chord = {
-  notes: [NoteValue.B, NoteValue.Dsharp + 12, NoteValue.Fsharp + 12],
+  notes: new Set([NoteValue.B, NoteValue.Dsharp, NoteValue.Fsharp]),
+  root: NoteValue.B,
   name: 'B'
 };
 
 const asharp7chord: Chord = {
-  notes: [NoteValue.Asharp, NoteValue.D + 12, NoteValue.F + 12, NoteValue.Gsharp + 12],
+  notes: new Set([NoteValue.Asharp, NoteValue.D, NoteValue.F, NoteValue.Gsharp]),
+  root: NoteValue.Asharp,
   name: 'A#7'
 };
 
@@ -43,11 +45,11 @@ describe('AllChords', () => {
 
 describe('chordName', () => {
   it('can name major chords', () => {
-    expect(chordName(bChord.notes)).toEqual('B');
+    expect(chordName(Array.from(bChord.notes))).toEqual('B');
   });
 
   it('can name dominant7 chords', () => {
-    expect(chordName(asharp7chord.notes)).toEqual('A#7');
+    expect(chordName(Array.from(asharp7chord.notes))).toEqual('A#7');
   });
 });
 
@@ -57,7 +59,7 @@ describe('superChords', () => {
     const c6Chord = major6Chord(NoteValue.C);
     const cChord = majorChord(NoteValue.C);
 
-    const sups = superChords(cChord.notes);
+    const sups = superChords(Array.from(cChord.notes));
     expect(sups).toContainEqual(c6Chord);
     expect(sups).toContainEqual(c7Chord);
     expect(sups).not.toContainEqual(cChord);
@@ -67,7 +69,7 @@ describe('superChords', () => {
     const b5 = fiveChord(NoteValue.B);
     const bMajor = majorChord(NoteValue.B);
     const bMinor = minorChord(NoteValue.B);
-    const sups = superChords(b5.notes.map((note) => note + 12));
+    const sups = superChords(Array.from(b5.notes));
     expect(sups).toContainEqual(bMajor);
     expect(sups).toContainEqual(bMinor);
   });
@@ -78,7 +80,7 @@ describe('subChords', () => {
     const c6Chord = major6Chord(NoteValue.C);
     const cChord = majorChord(NoteValue.C);
 
-    const subs = subChords(c6Chord.notes);
+    const subs = subChords(Array.from(c6Chord.notes));
     expect(subs).toContainEqual(cChord);
     expect(subs).not.toContainEqual(c6Chord);
   });

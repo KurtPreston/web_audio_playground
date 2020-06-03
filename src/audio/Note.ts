@@ -1,3 +1,4 @@
+import {mod} from '../math/mod';
 import {midiNoteToFreq} from './midi';
 
 export type Note = number;
@@ -22,6 +23,10 @@ export enum NoteValue {
   Asharp = 10,
   Bflat = 10,
   B = 11
+}
+
+export function noteToNoteValue(note: Note): NoteValue {
+  return mod(note, 12);
 }
 
 export interface NoteInfo {
