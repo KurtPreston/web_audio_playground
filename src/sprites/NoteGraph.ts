@@ -189,8 +189,13 @@ export class NoteGraph implements Sprite {
   public deleteNode(node?: NoteNode) {
     node = node || sample(Array.from(this.nodes));
     if (node) {
-      node.panVol.dispose();
-      node.synth.dispose();
+      node.panVol.volume.rampTo(0, 1);
+      setTimeout(() => {
+        if (node) {
+          node.panVol.dispose();
+          node.synth.dispose();
+        }
+      }, 1000);
       this.nodes.delete(node);
       this.edges.forEach((edge: NoteEdge) => {
         if (edge.node1 === node || edge.node2 === node) {
