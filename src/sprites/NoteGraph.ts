@@ -1,9 +1,9 @@
-import {pull, random, sample, sampleSize, times} from 'lodash';
+import {random, sample, sampleSize, times} from 'lodash';
 import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import {randomChord} from '../audio/chords';
 import {midiNoteToFreq} from '../audio/midi';
-import {getNoteInfo, Note} from '../audio/Note';
+import {getNoteInfo, Note, NoteValue} from '../audio/Note';
 import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
@@ -14,7 +14,7 @@ import {Sprite} from './Sprite';
 export interface NoteGraphParams {
   dimensions: Dimensions;
   channel: ToneAudioNode;
-  notes?: Note[];
+  notes?: Set<NoteValue>;
   numNodes?: number;
 }
 
@@ -33,7 +33,7 @@ interface NoteEdge {
 
 interface NodeOptions {
   oscillator: Partial<ToneOscillatorConstructorOptions>;
-  note: Note;
+  midiNote: Note;
 }
 
 export class NoteGraph implements Sprite {
@@ -42,7 +42,7 @@ export class NoteGraph implements Sprite {
 
   private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
-  public readonly notes: Note[];
+  public readonly notes: Set<NoteValue>;
 
   constructor(params: NoteGraphParams) {
     this.notes = params.notes || randomChord().notes;
@@ -54,9 +54,14 @@ export class NoteGraph implements Sprite {
     times(numNodes, () => this.createNode());
   }
 
+  private randomNote(noteValue?: NoteValue): Note {
+    noteValue = noteValue || (sample(Array.from(this.notes)) as NoteValue);
+    return noteValue + random(2, 5) * 12;
+  }
+
   public createNode(options: Partial<NodeOptions> = {}): void {
     const oscillator = options.oscillator || randomSustainOscillatorOptions();
-    const note: Note = options.note || (sample(this.notes) as Note);
+    const note: Note = options.midiNote || this.randomNote();
     const {width, height} = this.dimensions;
 
     // Create the node
@@ -105,8 +110,8 @@ export class NoteGraph implements Sprite {
     this.nodes.add(node);
   }
 
-  public deleteNote(note: Note) {
-    pull(this.notes, note);
+  public deleteNote(note: NoteValue) {
+    this.notes.delete(note);
     this.nodes.forEach((node) => {
       if (node.note === note) {
         this.deleteNode(node);
@@ -114,13 +119,12 @@ export class NoteGraph implements Sprite {
     });
   }
 
-  public addNote(note: Note, numNodes?: number) {
-    this.notes.push(note);
+  public addNote(note: NoteValue, numNodes?: number) {
+    this.notes.add(note);
     numNodes = numNodes || random(1, 5);
+    const midiNote = this.randomNote(note);
     times(numNodes, () => {
-      this.createNode({
-        note
-      });
+      this.createNode({midiNote});
     });
   }
 

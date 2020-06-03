@@ -1,10 +1,10 @@
 import {autobind} from 'core-decorators';
-import {random, sample} from 'lodash';
+import {random, range, sample} from 'lodash';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
-import {chordName} from '../audio/chords';
+import {chordsMatching} from '../audio/chords';
 import {generateRelatedChord} from '../audio/harmony';
-import {getNoteName, Note} from '../audio/Note';
+import {getNoteName, Note, NoteValue} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
@@ -65,24 +65,29 @@ export class DopplerSynthGame implements Game {
   }
 
   public addNote() {
-    this.noteGraph.addNote(random(36, 60));
-    this.updateMenu();
+    const noteValue: NoteValue = random(0, 12);
+    const unusedNotes = range(0, 12).filter(
+      (noteValue: NoteValue) => !this.noteGraph.notes.has(noteValue)
+    );
+    if (unusedNotes.length) {
+      this.noteGraph.addNote(noteValue);
+      this.updateMenu();
+    }
   }
 
   public loadRelatedChord() {
-    const currentNotes: Note[] = this.noteGraph.notes;
     const relatedChord = generateRelatedChord(this.noteGraph.notes);
 
     // Add any missing notes
-    relatedChord.forEach((note: Note) => {
-      if (!currentNotes.includes(note)) {
+    relatedChord.notes.forEach((note: NoteValue) => {
+      if (!this.noteGraph.notes.has(note)) {
         this.noteGraph.addNote(note);
       }
     });
 
     // Remote any removed notes
-    currentNotes.forEach((note: Note) => {
-      if (!relatedChord.includes(note)) {
+    this.noteGraph.notes.forEach((note: NoteValue) => {
+      if (!relatedChord.notes.has(note)) {
         this.noteGraph.deleteNote(note);
       }
     });
@@ -91,7 +96,7 @@ export class DopplerSynthGame implements Game {
   }
 
   public deleteNote() {
-    this.noteGraph.deleteNote(sample(this.noteGraph.notes) as Note);
+    this.noteGraph.deleteNote(sample(Array.from(this.noteGraph.notes)) as Note);
     this.updateMenu();
   }
 
@@ -123,14 +128,20 @@ export class DopplerSynthGame implements Game {
       return null;
     }
 
+    const notesArray: NoteValue[] = Array.from(this.noteGraph.notes);
+
     return (
       <div className='doppler-synth-menu'>
         <fieldset>
           <label>Notes</label>
           <div>
-            <strong>{chordName(this.noteGraph.notes)}</strong>
+            <strong>
+              {chordsMatching(notesArray)
+                .map((chord) => chord.name)
+                .join(' or ')}
+            </strong>
             <br />
-            {this.noteGraph.notes.map((note) => getNoteName(note)).join(', ')}
+            {notesArray.map((note: NoteValue) => getNoteName(note)).join(', ')}
           </div>
           <div>
             <button onClick={this.loadRelatedChord}>Related chord</button>

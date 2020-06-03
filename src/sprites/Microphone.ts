@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import {sample} from 'lodash';
 import {FeedbackDelay, Reverb, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
-import {Note} from '../audio/Note';
+import {noteToNoteValue, NoteValue} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
 import headphoneWamdag from '../images/astroWamdag.svg';
 import {doppler} from '../math/physics/doppler';
@@ -183,7 +183,7 @@ export class Microphone implements Sprite {
     this.bounceFill = 1;
     const node: NoteNode | undefined = sample(Array.from(this.getNoteNodes()));
     if (node) {
-      const note: Note = node.note % 12;
+      const note: NoteValue = noteToNoteValue(node.note);
       const freq = midiNoteToFreq(note + 72);
       this.bounceSynth.triggerAttackRelease(freq, 0.125);
     }

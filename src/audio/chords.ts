@@ -173,15 +173,6 @@ export function subChords(notes: Note[]): Chord[] {
   );
 }
 
-export function chordName(notes: Note[]): string | null {
-  const chords: Chord[] = chordsMatching(notes);
-  if (chords.length >= 1) {
-    return chords[0].name;
-  } else {
-    return null;
-  }
-}
-
 export function randomChord(rootNote?: Note): Chord {
   const chordGenerator: ChordGenerator = sample(chordGenerators) as ChordGenerator;
   const root: Note = rootNote || random(0, 12);
