@@ -1,4 +1,4 @@
-import {random, sample, sampleSize, times} from 'lodash';
+import {maxBy, random, sample, sampleSize, times, without} from 'lodash';
 import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import {randomChord} from '../audio/chords';
@@ -108,6 +108,48 @@ export class NoteGraph implements Sprite {
 
     // Add node
     this.nodes.add(node);
+  }
+
+  // Map of each node to a set of all nodes it's connected to
+  private nodeGroups(): Map<NoteNode, Set<NoteNode>> {
+    const groups = new Map<NoteNode, Set<NoteNode>>();
+    this.nodes.forEach((node) => {
+      groups.set(
+        node,
+        new Set<NoteNode>([node])
+      );
+    });
+
+    this.edges.forEach((edge: NoteEdge) => {
+      const {node1, node2} = edge;
+      const node1Set = groups.get(node1) as Set<NoteNode>;
+      const node2Set = groups.get(node2) as Set<NoteNode>;
+      const merged = new Set<NoteNode>([...Array.from(node1Set), ...Array.from(node2Set)]);
+      groups.set(node1, merged);
+      groups.set(node2, merged);
+    });
+
+    return groups;
+  }
+
+  // Delete some set of edges to split node1 and node2 from each other
+  public splitGraph() {
+    const groups: Set<NoteNode>[] = Array.from(this.nodeGroups().values());
+    const largestGroup = maxBy(groups, (group) => group.size);
+    if (!largestGroup) {
+      return;
+    }
+
+    const nodes: NoteNode[] = Array.from(largestGroup);
+    const group1: Set<NoteNode> = new Set(sampleSize(nodes, Math.round(nodes.length / 2)));
+    const group2: Set<NoteNode> = new Set(without(nodes, ...Array.from(group1)));
+
+    this.edges.forEach((edge) => {
+      const {node1, node2} = edge;
+      if ((group1.has(node1) && group2.has(node2)) || (group2.has(node1) && group1.has(node2))) {
+        this.edges.delete(edge);
+      }
+    });
   }
 
   public deleteNote(note: NoteValue) {

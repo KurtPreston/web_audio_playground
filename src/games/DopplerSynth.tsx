@@ -105,6 +105,10 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  public splitConstellation() {
+    this.noteGraph.splitGraph();
+  }
+
   private regenerateGraph() {
     this.noteGraph.destroy();
     this.noteGraph = new NoteGraph({
@@ -156,10 +160,11 @@ export class DopplerSynthGame implements Game {
         </fieldset>
         <fieldset>
           <label>Constellation</label>
-          <div/>
+          <div />
           <div>
             <button onClick={this.addNoteNode}>Add Node</button>
             <button onClick={this.deleteNoteNode}>Delete Node</button>
+            <button onClick={this.splitConstellation}>Split</button>
           </div>
         </fieldset>
         <fieldset>
