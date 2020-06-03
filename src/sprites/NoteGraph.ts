@@ -152,6 +152,22 @@ export class NoteGraph implements Sprite {
     });
   }
 
+  public mergeGraphs() {
+    const groups: Set<NoteNode>[] = Array.from(this.nodeGroups().values());
+    for (let i = 0; i < groups.length - 1; i++) {
+      const group1 = groups[i];
+      const group2 = groups[i + 1];
+      const node1 = sample(Array.from(group1));
+      const node2 = sample(Array.from(group2));
+      if (node1 && node2) {
+        this.edges.add({
+          node1,
+          node2
+        });
+      }
+    }
+  }
+
   public deleteNote(note: NoteValue) {
     this.notes.delete(note);
     this.nodes.forEach((node) => {
