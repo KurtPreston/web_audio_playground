@@ -187,15 +187,17 @@ export class NoteGraph implements Sprite {
   }
 
   public deleteNode(node?: NoteNode) {
-    node = node || (sample(Array.from(this.nodes)) as NoteNode);
-    node.panVol.dispose();
-    node.synth.dispose();
-    this.nodes.delete(node);
-    this.edges.forEach((edge: NoteEdge) => {
-      if (edge.node1 === node || edge.node2 === node) {
-        this.edges.delete(edge);
-      }
-    });
+    node = node || sample(Array.from(this.nodes));
+    if (node) {
+      node.panVol.dispose();
+      node.synth.dispose();
+      this.nodes.delete(node);
+      this.edges.forEach((edge: NoteEdge) => {
+        if (edge.node1 === node || edge.node2 === node) {
+          this.edges.delete(edge);
+        }
+      });
+    }
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {

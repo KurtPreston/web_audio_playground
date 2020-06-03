@@ -31,6 +31,9 @@ export class DopplerSynthGame implements Game {
   // Constants
   private updateMenu: () => void;
 
+  // Random actions mapped to how frequently the action occurs in seconds
+  private randomActions = new Map<() => void, number>();
+
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
     setContext(initializers.audioContext);
     this.channel = new Compressor(-10, 4);
@@ -49,6 +52,13 @@ export class DopplerSynthGame implements Game {
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
+
+    this.randomActions.set(this.addNoteNode, 15);
+    this.randomActions.set(this.deleteNoteNode, 15);
+    this.randomActions.set(this.loadRelatedChord, 20);
+    this.randomActions.set(this.splitConstellation, 45);
+    this.randomActions.set(this.mergeConstellations, 45);
+    // this.randomActions.set(this.regenerateGraph, 60);
   }
 
   public sprites(): Sprite[] {
@@ -124,6 +134,13 @@ export class DopplerSynthGame implements Game {
 
   public gameTick(world: WorldState) {
     this.lastDimensions = world.dimensions;
+
+    this.randomActions.forEach((interval, action) => {
+      const oddsOfHappeningThisFrame = 1 / 25 / interval;
+      if (Math.random() < oddsOfHappeningThisFrame) {
+        action();
+      }
+    });
   }
 
   private updateDopplerSettings(settings: DopplerSettings) {
