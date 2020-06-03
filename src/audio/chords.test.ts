@@ -2,6 +2,7 @@ import {
   AllChords,
   Chord,
   chordName,
+  ChordType,
   dominant7Chord,
   fiveChord,
   major6Chord,
@@ -15,13 +16,13 @@ import {NoteValue} from './Note';
 const bChord: Chord = {
   notes: new Set([NoteValue.B, NoteValue.Dsharp, NoteValue.Fsharp]),
   root: NoteValue.B,
-  name: 'B'
+  type: ChordType.major
 };
 
 const asharp7chord: Chord = {
   notes: new Set([NoteValue.Asharp, NoteValue.D, NoteValue.F, NoteValue.Gsharp]),
   root: NoteValue.Asharp,
-  name: 'A#7'
+  type: ChordType.dominant7
 };
 
 describe('majorChord', () => {
@@ -38,18 +39,20 @@ describe('dominant7Chord', () => {
 
 describe('AllChords', () => {
   it('lists all chords', () => {
-    const chord = AllChords.find((chord: Chord) => chord.name === 'B');
+    const chord = AllChords.find(
+      (chord: Chord) => chord.root === NoteValue.B && chord.type === ChordType.major
+    );
     expect(chord).toEqual(bChord);
   });
 });
 
 describe('chordName', () => {
   it('can name major chords', () => {
-    expect(chordName(Array.from(bChord.notes))).toEqual('B');
+    expect(chordName(bChord)).toEqual('B');
   });
 
   it('can name dominant7 chords', () => {
-    expect(chordName(Array.from(asharp7chord.notes))).toEqual('A#7');
+    expect(chordName(asharp7chord)).toEqual('A#7');
   });
 });
 

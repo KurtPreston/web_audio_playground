@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import {random, range, sample} from 'lodash';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
-import {chordsMatching} from '../audio/chords';
+import {chordName, chordsMatching} from '../audio/chords';
 import {generateRelatedChord} from '../audio/harmony';
 import {getNoteName, Note, NoteValue} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
@@ -149,11 +149,7 @@ export class DopplerSynthGame implements Game {
         <fieldset>
           <label>Notes</label>
           <div>
-            <strong>
-              {chordsMatching(notesArray)
-                .map((chord) => chord.name)
-                .join(' or ')}
-            </strong>
+            <strong>{chordsMatching(notesArray).map(chordName).join(' or ')}</strong>
             <br />
             {notesArray.map((note: NoteValue) => getNoteName(note)).join(', ')}
           </div>
