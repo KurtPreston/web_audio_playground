@@ -1,4 +1,5 @@
 import {autobind} from 'core-decorators';
+import NoSleep from 'nosleep.js';
 import React from 'react';
 import {Context as AudioContext} from 'tone';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
@@ -47,6 +48,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   // Audio
   private audio: AudioNodes | undefined;
 
+  // Listeners
+  private noSleep: NoSleep = new NoSleep();
+
   public componentDidMount() {
     window.document.addEventListener('keydown', this.onKeyDown);
     window.document.addEventListener('keyup', this.onKeyUp);
@@ -72,6 +76,8 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       });
       return;
     }
+
+    this.noSleep.enable();
 
     this.audio = {
       audioContext,
@@ -103,6 +109,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     window.removeEventListener('deviceorientation', this.onDeviceOrientation);
     this.pauseGame();
     this.audio?.audioContext.close();
+    this.noSleep.disable();
   }
 
   public render(): React.ReactNode {
