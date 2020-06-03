@@ -3,7 +3,7 @@ import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import {randomChord} from '../audio/chords';
 import {midiNoteToFreq} from '../audio/midi';
-import {getNoteInfo, Note, NoteValue} from '../audio/Note';
+import {getNoteInfo, Note, noteToNoteValue, NoteValue} from '../audio/Note';
 import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
@@ -113,7 +113,7 @@ export class NoteGraph implements Sprite {
   public deleteNote(note: NoteValue) {
     this.notes.delete(note);
     this.nodes.forEach((node) => {
-      if (node.note === note) {
+      if (noteToNoteValue(node.note) === note) {
         this.deleteNode(node);
       }
     });

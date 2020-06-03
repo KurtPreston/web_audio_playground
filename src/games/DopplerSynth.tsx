@@ -144,16 +144,19 @@ export class DopplerSynthGame implements Game {
             {notesArray.map((note: NoteValue) => getNoteName(note)).join(', ')}
           </div>
           <div>
-            <button onClick={this.loadRelatedChord}>Related chord</button>
-            <button onClick={this.addNote}>Add</button>
-            <button onClick={this.deleteNote}>Delete</button>
+            <div>
+              <button onClick={this.regenerateGraph}>Random</button>
+              <button onClick={this.loadRelatedChord}>Related chord</button>
+            </div>
+            <div>
+              <button onClick={this.addNote}>Add note</button>
+              <button onClick={this.deleteNote}>Delete note</button>
+            </div>
           </div>
         </fieldset>
         <fieldset>
           <label>Constellation</label>
-          <div>
-            <button onClick={this.regenerateGraph}>Regenerate</button>
-          </div>
+          <div/>
           <div>
             <button onClick={this.addNoteNode}>Add Node</button>
             <button onClick={this.deleteNoteNode}>Delete Node</button>

@@ -33,14 +33,15 @@ export function DopplerSettingsForm(props: DopplerSettingFormProps) {
       <label>
         Speed of Sound
         <div>
-          {value.speedOfSound} px/frame
           <input
             type='range'
             value={value.speedOfSound}
             onChange={onSpeedOfSoundChanged}
             min={1}
             max={5000}
+            style={{display: 'block'}}
           />
+          {value.speedOfSound} px/frame
         </div>
       </label>
     ) : null;
