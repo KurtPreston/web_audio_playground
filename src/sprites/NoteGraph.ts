@@ -32,6 +32,7 @@ interface NoteEdge {
   node2: NoteNode;
   springConstant: number;
   lineWidth: number;
+  flaggedForDelete: boolean;
 }
 
 interface NodeOptions {
@@ -108,7 +109,8 @@ export class NoteGraph implements Sprite {
         node1: node,
         node2,
         springConstant: 0,
-        lineWidth: 0
+        lineWidth: 0,
+        flaggedForDelete: false
       });
     });
 
@@ -127,6 +129,10 @@ export class NoteGraph implements Sprite {
     });
 
     this.edges.forEach((edge: NoteEdge) => {
+      if (edge.flaggedForDelete) {
+        return;
+      }
+
       const {node1, node2} = edge;
       const node1Set = groups.get(node1) as Set<NoteNode>;
       const node2Set = groups.get(node2) as Set<NoteNode>;
@@ -153,7 +159,7 @@ export class NoteGraph implements Sprite {
     this.edges.forEach((edge) => {
       const {node1, node2} = edge;
       if ((group1.has(node1) && group2.has(node2)) || (group2.has(node1) && group1.has(node2))) {
-        this.edges.delete(edge);
+        edge.flaggedForDelete = true;
       }
     });
   }
@@ -170,7 +176,8 @@ export class NoteGraph implements Sprite {
           node1,
           node2,
           springConstant: 0,
-          lineWidth: 0
+          lineWidth: 0,
+          flaggedForDelete: false
         });
       }
     }
@@ -247,7 +254,7 @@ export class NoteGraph implements Sprite {
           this.nodes.delete(node);
           this.edges.forEach((edge: NoteEdge) => {
             if (edge.node1 === node || edge.node2 === node) {
-              this.edges.delete(edge);
+              edge.flaggedForDelete = true;
             }
           });
         }
@@ -316,12 +323,26 @@ export class NoteGraph implements Sprite {
 
     // Grow edges to target strength
     this.edges.forEach((edge) => {
-      if (edge.springConstant < 0.1) {
-        edge.springConstant += 0.01;
-      }
+      if (edge.flaggedForDelete) {
+        if (edge.springConstant > 0) {
+          edge.springConstant -= 0.05;
+        }
 
-      if (edge.lineWidth < 3) {
-        edge.lineWidth += 0.03;
+        if (edge.lineWidth > 0) {
+          edge.lineWidth -= 0.1;
+        }
+
+        if (edge.lineWidth <= 0 || edge.springConstant <= 0) {
+          this.edges.delete(edge);
+        }
+      } else {
+        if (edge.springConstant < 0.1) {
+          edge.springConstant += 0.01;
+        }
+
+        if (edge.lineWidth < 3) {
+          edge.lineWidth += 0.03;
+        }
       }
     });
 
