@@ -125,6 +125,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
           onMouseDown={this.onMouseDown}
           onMouseMove={this.onMouseDown}
           onTouchMove={this.onTouchMove}
+          onTouchEnd={this.onTouchEnd}
           onMouseUp={this.onMouseUp}
           onMouseOut={this.onMouseUp}
         />
@@ -191,7 +192,12 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private onTouchMove(event: React.TouchEvent<HTMLCanvasElement>) {
     const x = event.touches[0].clientX;
     const y = event.touches[0].clientY;
+    this.mouseDragging = true;
     this.mouseClickLocation = {x, y};
+  }
+
+  private onTouchEnd(event: React.TouchEvent<HTMLCanvasElement>) {
+    this.mouseDragging = false;
   }
 
   private onMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
@@ -257,7 +263,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
 
     // Clear out user input
     this.keysPressedThisFrame.clear();
-    this.mouseClickLocation = undefined;
+    if (!this.mouseDragging) {
+      this.mouseClickLocation = undefined;
+    }
 
     // Re-render
     const {canvasCtx} = this;
