@@ -182,13 +182,11 @@ export class NoteGraph implements Sprite {
     const yesterNotes = difference(Array.from(this.notes), Array.from(chord));
 
     // Rebuild any overlapping notes that have disappeared
-    newNotes.forEach((noteValue: Note) => {
+    chord.forEach((noteValue: Note) => {
       const currentNodes: NoteNode[] = this.nodesWithNote(noteValue);
       if (this.notes.has(noteValue) && currentNodes.length === 0) {
         // All nodes with this note have been removed. Unacceptable!
-        this.createNode({
-          midiNote: this.randomNote(noteValue)
-        });
+        this.addNote(noteValue);
       }
     });
 
