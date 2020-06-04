@@ -152,6 +152,12 @@ export class Microphone implements Sprite {
         logarithmic: 4,
         overflowMode: OverflowMode.Constrain
       });
+
+      // Let quiet nodes be for performance
+      if (panVol.volume.value < -30 && volume < -30) {
+        return;
+      }
+
       panVol.volume.rampTo(volume);
       panVol.pan.rampTo(Math.cos(angleToNode) * -1);
       synth.frequency.value = adjustedFreq;
