@@ -11,11 +11,11 @@ import {Sprite} from './Sprite';
 export class SingingWisp implements Sprite, NoteNode {
   private traveler: ITraveler;
   private forces: IForce[] = [BounceOffEdge];
-  private readonly size = 20;
   private readonly color = 'white';
   public readonly note = random(36, 60);
   public readonly synth: Oscillator;
   public readonly panVol: PanVol;
+  public readonly size: number = 20;
 
   constructor(channel: ToneAudioNode) {
     this.traveler = {

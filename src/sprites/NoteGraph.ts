@@ -22,6 +22,7 @@ export interface NoteNode {
   note: Note;
   position: IPosition;
   vector: IVector;
+  size: number;
   synth: Oscillator;
   panVol: PanVol;
 }
@@ -29,6 +30,8 @@ export interface NoteNode {
 interface NoteEdge {
   node1: NoteNode;
   node2: NoteNode;
+  springConstant: number;
+  lineWidth: number;
 }
 
 interface NodeOptions {
@@ -92,6 +95,7 @@ export class NoteGraph implements Sprite {
         x: random(0, width),
         y: random(0, height)
       },
+      size: 0,
       synth,
       panVol
     };
@@ -102,7 +106,9 @@ export class NoteGraph implements Sprite {
     nodesToConnectTo.forEach((node2: NoteNode) => {
       this.edges.add({
         node1: node,
-        node2
+        node2,
+        springConstant: 0,
+        lineWidth: 0
       });
     });
 
@@ -162,7 +168,9 @@ export class NoteGraph implements Sprite {
       if (node1 && node2) {
         this.edges.add({
           node1,
-          node2
+          node2,
+          springConstant: 0,
+          lineWidth: 0
         });
       }
     }
@@ -257,9 +265,9 @@ export class NoteGraph implements Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Draw edges
     canvas.strokeStyle = 'white';
-    canvas.lineWidth = 3;
     this.edges.forEach((edge: NoteEdge) => {
-      const {node1, node2} = edge;
+      const {node1, node2, lineWidth} = edge;
+      canvas.lineWidth = lineWidth;
       canvas.beginPath();
       canvas.moveTo(node1.position.x, node1.position.y);
       canvas.lineTo(node2.position.x, node2.position.y);
@@ -268,13 +276,13 @@ export class NoteGraph implements Sprite {
     });
 
     this.nodes.forEach((node: NoteNode) => {
-      const {position, note} = node;
+      const {position, note, size} = node;
       const {x, y} = position;
       const {letter, accidental} = getNoteInfo(note);
 
       // Draw nodes
-      const nodeSize = 25;
-      const fontSize = 20;
+      const nodeSize = size;
+      const fontSize = 0.8 * size;
       const noteIsSelected = false;
       canvas.beginPath();
       canvas.arc(x, y, nodeSize, 0, 2 * Math.PI);
@@ -299,12 +307,30 @@ export class NoteGraph implements Sprite {
     // Cache dimensions so new nodes can be added
     this.dimensions = dimensions;
 
+    // Grow new nodes to target size
+    this.nodes.forEach((node) => {
+      if (node.size < 25) {
+        node.size++;
+      }
+    });
+
+    // Grow edges to target strength
+    this.edges.forEach((edge) => {
+      if (edge.springConstant < 0.1) {
+        edge.springConstant += 0.01;
+      }
+
+      if (edge.lineWidth < 3) {
+        edge.lineWidth += 0.03;
+      }
+    });
+
     // Adjust momentum by applying spring force between connected nodes
-    this.edges.forEach(({node1, node2}) => {
+    this.edges.forEach(({node1, node2, springConstant}) => {
       const {xForce, yForce} = springForce({
         point1: node1.position,
         point2: node2.position,
-        springConstant: 0.1,
+        springConstant,
         targetDistance: 200
       });
 
