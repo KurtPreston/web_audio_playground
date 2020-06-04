@@ -1,8 +1,31 @@
 import {groupBy, sample, size} from 'lodash';
-import {Chord, subChords, superChords} from './chords';
-import {NoteValue} from './Note';
+import {
+  Chord,
+  chordsMatching,
+  ChordType,
+  majorChord,
+  minorChord,
+  subChords,
+  superChords
+} from './chords';
+import {noteToNoteValue, NoteValue} from './Note';
 
 export function generateRelatedChord(notes: Set<NoteValue>): Chord {
+  const chords: Chord[] = chordsMatching(Array.from(notes));
+  for (const chord of chords) {
+    if (chord.type === ChordType.major) {
+      const relativeMinor = noteToNoteValue(chord.root - 3);
+      if (Math.random() < 0.7) {
+        return minorChord(relativeMinor);
+      }
+    } else if (chord.type === ChordType.minor) {
+      const relativeMajor = noteToNoteValue(chord.root + 3);
+      if (Math.random() < 0.7) {
+        return majorChord(relativeMajor);
+      }
+    }
+  }
+
   const sups: Chord[] = superChords(Array.from(notes));
   if (sups.length > 0) {
     const chordsBySize = groupBy(sups, (chord) => chord.notes.size);
