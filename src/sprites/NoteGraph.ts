@@ -25,6 +25,7 @@ export interface NoteNode {
   size: number;
   synth: Oscillator;
   panVol: PanVol;
+  flaggedForDelete?: boolean;
 }
 
 interface NoteEdge {
@@ -122,6 +123,10 @@ export class NoteGraph implements Sprite {
   private nodeGroups(): Map<NoteNode, Set<NoteNode>> {
     const groups = new Map<NoteNode, Set<NoteNode>>();
     this.nodes.forEach((node) => {
+      if (node.flaggedForDelete) {
+        return;
+      }
+
       groups.set(
         node,
         new Set<NoteNode>([node])
@@ -245,8 +250,14 @@ export class NoteGraph implements Sprite {
   public deleteNode(node?: NoteNode) {
     node = node || sample(Array.from(this.nodes));
     if (node) {
+      node.flaggedForDelete = true;
       node.synth.volume.rampTo(-200);
       node.panVol.volume.rampTo(-100);
+      this.edges.forEach((edge: NoteEdge) => {
+        if (edge.node1 === node || edge.node2 === node) {
+          edge.flaggedForDelete = true;
+        }
+      });
       setTimeout(() => {
         if (node) {
           node.panVol.dispose();
@@ -254,7 +265,7 @@ export class NoteGraph implements Sprite {
           this.nodes.delete(node);
           this.edges.forEach((edge: NoteEdge) => {
             if (edge.node1 === node || edge.node2 === node) {
-              edge.flaggedForDelete = true;
+              this.edges.delete(edge);
             }
           });
         }
@@ -316,8 +327,14 @@ export class NoteGraph implements Sprite {
 
     // Grow new nodes to target size
     this.nodes.forEach((node) => {
-      if (node.size < 25) {
-        node.size++;
+      if (node.flaggedForDelete) {
+        if (node.size > 0) {
+          node.size--;
+        }
+      } else {
+        if (node.size < 25) {
+          node.size++;
+        }
       }
     });
 
