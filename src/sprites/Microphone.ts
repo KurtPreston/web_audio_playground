@@ -176,6 +176,13 @@ export class Microphone implements Sprite {
       };
       this.angularMomentum = 0;
       this.angle = 0;
+    } else if (this.angularMomentum === 0) {
+      // Resume spinning
+      this.traveler.vector = {
+        xMomentum: 1,
+        yMomentum: 1
+      };
+      this.angularMomentum = 0.01;
     }
 
     updateTraveler(this.traveler, [this.bounceOffEdgeWithSound], world);
