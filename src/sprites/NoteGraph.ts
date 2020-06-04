@@ -260,6 +260,8 @@ export class NoteGraph implements Sprite {
       });
       setTimeout(() => {
         if (node) {
+          node.panVol.disconnect();
+          node.synth.disconnect();
           node.panVol.dispose();
           node.synth.dispose();
           this.nodes.delete(node);
@@ -465,8 +467,12 @@ export class NoteGraph implements Sprite {
 
   public destroy() {
     this.nodes.forEach((node) => {
+      node.panVol.disconnect();
+      node.synth.disconnect();
       node.panVol.dispose();
       node.synth.dispose();
     });
+    this.nodes.clear();
+    this.edges.clear();
   }
 }
