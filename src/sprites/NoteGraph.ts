@@ -49,6 +49,7 @@ export class NoteGraph implements Sprite {
   private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
   public readonly notes: Set<NoteValue>;
+  public springLength: number = 150;
 
   constructor(params: NoteGraphParams) {
     this.notes = params.notes || randomChord().notes;
@@ -382,7 +383,7 @@ export class NoteGraph implements Sprite {
         point1: node1.position,
         point2: node2.position,
         springConstant,
-        targetDistance: 200
+        targetDistance: this.springLength
       });
 
       node1.vector.xMomentum += xForce;
