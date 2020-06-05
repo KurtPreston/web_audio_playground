@@ -23,16 +23,16 @@ function randomStarColor(): tinycolor.ColorFormats.HSL {
 }
 
 export class OuterSpace implements Sprite {
-  private readonly stars: Star[];
+  private stars: Star[];
 
   // Number of stars per pixel
   private readonly starDensity: number = 1 / 1000;
 
-  // Store the maxDimensions so we can generate new stars on screen resize
-  private readonly maxDimensions: Dimensions;
+  // Store the dimensions so we can generate new stars on screen resize
+  private readonly dimensions: Dimensions;
 
   constructor(dimensions: Dimensions) {
-    this.maxDimensions = dimensions;
+    this.dimensions = dimensions;
 
     const pixels = dimensions.width * dimensions.height;
     const numStars = pixels * this.starDensity;
@@ -73,30 +73,36 @@ export class OuterSpace implements Sprite {
   }
 
   public tick(world: WorldState) {
-    if (world.dimensions.height > this.maxDimensions.height) {
+    if (world.dimensions.height > this.dimensions.height) {
       // Create new stars
       const xMin = 0;
-      const xMax = this.maxDimensions.width;
-      const yMin = this.maxDimensions.height;
+      const xMax = this.dimensions.width;
+      const yMin = this.dimensions.height;
       const yMax = world.dimensions.height;
       const numNewStars = (xMax - xMin) * (yMax - yMin) * this.starDensity;
       this.stars.push(...times(numNewStars, () => this.generateStar({xMin, xMax, yMin, yMax})));
 
       // Update maxDimensions
-      this.maxDimensions.height = world.dimensions.height;
+      this.dimensions.height = world.dimensions.height;
+    } else if (world.dimensions.height < this.dimensions.height) {
+      this.stars = this.stars.filter((star) => star.position.y < world.dimensions.height);
+      this.dimensions.height = world.dimensions.height;
     }
 
-    if (world.dimensions.width > this.maxDimensions.width) {
+    if (world.dimensions.width > this.dimensions.width) {
       // Create new stars
-      const xMin = this.maxDimensions.width;
+      const xMin = this.dimensions.width;
       const xMax = world.dimensions.width;
       const yMin = 0;
-      const yMax = this.maxDimensions.height;
+      const yMax = this.dimensions.height;
       const numNewStars = (xMax - xMin) * (yMax - yMin) * this.starDensity;
       this.stars.push(...times(numNewStars, () => this.generateStar({xMin, xMax, yMin, yMax})));
 
       // Update maxDimensions
-      this.maxDimensions.width = world.dimensions.width;
+      this.dimensions.width = world.dimensions.width;
+    } else if (world.dimensions.width < this.dimensions.width) {
+      this.stars = this.stars.filter((star) => star.position.x < world.dimensions.width);
+      this.dimensions.width = world.dimensions.width;
     }
 
     this.stars.forEach(({color}: Star) => {
