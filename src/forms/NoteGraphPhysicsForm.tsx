@@ -64,7 +64,7 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
       {numberForm({
         key: 'repulsionExponent',
         title: 'Repulsion Scaling',
-        min: 0,
+        min: 1,
         max: 3,
         step: 0.1
       })}
