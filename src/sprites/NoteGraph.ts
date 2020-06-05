@@ -67,7 +67,7 @@ export class NoteGraph implements Sprite {
     this.physics = {
       edgeLength: 150,
       edgeStrength: 0.1,
-      repulsionStrength: -5000,
+      repulsionStrength: 5000,
       repulsionExponent: 1.5,
       momentumDamping: 0.8,
       maxVelocity: 1000
@@ -419,7 +419,7 @@ export class NoteGraph implements Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          coefficient: this.physics.repulsionStrength, // repel,
+          coefficient: -this.physics.repulsionStrength, // repel,
           exponent: this.physics.repulsionExponent
         });
 

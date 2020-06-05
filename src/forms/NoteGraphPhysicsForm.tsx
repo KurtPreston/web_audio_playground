@@ -71,8 +71,8 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
       {numberForm({
         key: 'repulsionStrength',
         title: 'Repulsion Strength',
-        min: -10000,
-        max: 0,
+        min: 0,
+        max: 20_000,
         step: 1000
       })}
       {numberForm({
