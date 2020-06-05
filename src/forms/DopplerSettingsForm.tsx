@@ -47,7 +47,7 @@ export function DopplerSettingsForm(props: DopplerSettingFormProps) {
     ) : null;
 
   return (
-    <div>
+    <fieldset>
       <label>Doppler</label>
       <div>
         <div>
@@ -65,6 +65,6 @@ export function DopplerSettingsForm(props: DopplerSettingFormProps) {
         </div>
         {speedOfSoundForm}
       </div>
-    </div>
+    </fieldset>
   );
 }

@@ -175,6 +175,10 @@ export class DopplerSynthGame implements Game {
     return (
       <div className='doppler-synth-menu'>
         <fieldset>
+          <label>DopplerSynth</label>
+          <button onClick={this.regenerateGraph}>Reset</button>
+        </fieldset>
+        <fieldset>
           <label>Notes</label>
           <div>
             <strong>{chordsMatching(notesArray).map(chordName).join(' or ')}</strong>
@@ -183,7 +187,6 @@ export class DopplerSynthGame implements Game {
           </div>
           <div>
             <div>
-              <button onClick={this.regenerateGraph}>Random</button>
               <button onClick={this.loadRelatedChord}>Related chord</button>
             </div>
             <div>
@@ -210,15 +213,11 @@ export class DopplerSynthGame implements Game {
             </div>
           </div>
         </fieldset>
-        <fieldset>
-          <DopplerSettingsForm
-            value={this.microphone.dopplerSettings}
-            onChange={this.updateDopplerSettings}
-          />
-        </fieldset>
-        <fieldset>
-          <NoteGraphPhysicsForm value={this.noteGraph.physics} onChange={this.updatePhysics} />
-        </fieldset>
+        <DopplerSettingsForm
+          value={this.microphone.dopplerSettings}
+          onChange={this.updateDopplerSettings}
+        />
+        <NoteGraphPhysicsForm value={this.noteGraph.physics} onChange={this.updatePhysics} />
       </div>
     );
   }

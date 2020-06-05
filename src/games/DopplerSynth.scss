@@ -4,9 +4,17 @@
     border-radius: 0.25rem;
     background-color: rgba(255, 255, 255, 0.2);
     margin: 0.5rem 0;
+
+    > label {
+      text-align: center;
+      font-weight: bolder;
+      font-variant: small-caps;
+      padding-bottom: 0.5rem;
+    }
   }
 
   label {
+    font-weight: 600;
     display: block;
   }
 }

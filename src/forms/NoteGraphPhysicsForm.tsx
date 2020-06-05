@@ -27,8 +27,8 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
       });
     };
     return (
-      <label key={key}>
-        {title}
+      <div>
+        <label key={key}>{title}</label>
         <div>
           {propValue}
           <input
@@ -41,12 +41,12 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
             style={{display: 'block'}}
           />
         </div>
-      </label>
+      </div>
     );
   }
 
   return (
-    <div>
+    <fieldset>
       <label>Physics</label>
       {numberForm({
         key: 'edgeLength',
@@ -89,6 +89,6 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
         max: 1000,
         step: 1
       })}
-    </div>
+    </fieldset>
   );
 }
