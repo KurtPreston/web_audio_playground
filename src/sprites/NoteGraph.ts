@@ -5,6 +5,7 @@ import {randomChord} from '../audio/chords';
 import {midiNoteToFreq} from '../audio/midi';
 import {getNoteInfo, Note, noteToNoteValue, NoteValue} from '../audio/Note';
 import {randomSustainOscillatorOptions} from '../audio/oscillators';
+import {nodeGroups} from '../math/graph/nodeGroups';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
@@ -119,40 +120,18 @@ export class NoteGraph implements Sprite {
     this.nodes.add(node);
   }
 
-  // Map of each node to a set of all nodes it's connected to
-  private nodeGroups(): Map<NoteNode, Set<NoteNode>> {
-    const groups = new Map<NoteNode, Set<NoteNode>>();
-    this.nodes.forEach((node) => {
-      if (node.flaggedForDelete) {
-        return;
-      }
-
-      groups.set(
-        node,
-        new Set<NoteNode>([node])
-      );
+  // Returns a list of all connected node groups
+  private nodeGroups(): NoteNode[][] {
+    return nodeGroups({
+      nodes: Array.from(this.nodes).filter((node) => !node.flaggedForDelete),
+      edges: Array.from(this.edges).filter((edge) => !edge.flaggedForDelete)
     });
-
-    this.edges.forEach((edge: NoteEdge) => {
-      if (edge.flaggedForDelete) {
-        return;
-      }
-
-      const {node1, node2} = edge;
-      const node1Set = groups.get(node1) as Set<NoteNode>;
-      const node2Set = groups.get(node2) as Set<NoteNode>;
-      const merged = new Set<NoteNode>([...Array.from(node1Set), ...Array.from(node2Set)]);
-      groups.set(node1, merged);
-      groups.set(node2, merged);
-    });
-
-    return groups;
   }
 
   // Delete some set of edges to split node1 and node2 from each other
   public splitGraph() {
-    const groups: Set<NoteNode>[] = Array.from(this.nodeGroups().values());
-    const largestGroup = maxBy(groups, (group) => group.size);
+    const groups: NoteNode[][] = this.nodeGroups();
+    const largestGroup = maxBy(groups, (group) => group.length);
     if (!largestGroup) {
       return;
     }
@@ -170,12 +149,15 @@ export class NoteGraph implements Sprite {
   }
 
   public mergeGraphs() {
-    const groups: Set<NoteNode>[] = Array.from(this.nodeGroups().values());
+    const groups: NoteNode[][] = this.nodeGroups();
+    if (groups.length <= 1) {
+      return;
+    }
     for (let i = 0; i < groups.length - 1; i++) {
       const group1 = groups[i];
       const group2 = groups[i + 1];
-      const node1 = sample(Array.from(group1));
-      const node2 = sample(Array.from(group2));
+      const node1 = sample(group1);
+      const node2 = sample(group2);
       if (node1 && node2) {
         this.edges.add({
           node1,
