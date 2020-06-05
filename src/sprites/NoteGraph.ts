@@ -42,6 +42,14 @@ interface NodeOptions {
   midiNote: Note;
 }
 
+export interface NoteGraphPhysics {
+  edgeLength: number;
+  edgeStrength: number;
+  repulsionStrength: number;
+  repulsionExponent: number;
+  momentumDamping: number;
+}
+
 export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
@@ -49,12 +57,19 @@ export class NoteGraph implements Sprite {
   private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
   public readonly notes: Set<NoteValue>;
-  public springLength: number = 150;
+  public physics: NoteGraphPhysics;
 
   constructor(params: NoteGraphParams) {
     this.notes = params.notes || randomChord().notes;
     this.channel = params.channel;
     this.dimensions = params.dimensions;
+    this.physics = {
+      edgeLength: 150,
+      edgeStrength: 0.1,
+      repulsionStrength: -5000,
+      repulsionExponent: 1.5,
+      momentumDamping: 0.8
+    };
 
     // Create nodes
     const numNodes = params.numNodes || random(8, 16);
@@ -382,8 +397,8 @@ export class NoteGraph implements Sprite {
       const {xForce, yForce} = springForce({
         point1: node1.position,
         point2: node2.position,
-        springConstant,
-        targetDistance: this.springLength
+        springConstant: this.physics.edgeStrength,
+        targetDistance: this.physics.edgeLength
       });
 
       node1.vector.xMomentum += xForce;
@@ -402,8 +417,8 @@ export class NoteGraph implements Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          coefficient: -5000, // repel,
-          exponent: 1.5
+          coefficient: this.physics.repulsionStrength, // repel,
+          exponent: this.physics.repulsionExponent
         });
 
         node1.vector.xMomentum += xForce;
@@ -431,7 +446,7 @@ export class NoteGraph implements Sprite {
     });
 
     // Apply damping
-    const dampingCoefficient = 0.8;
+    const dampingCoefficient = this.physics.momentumDamping;
     this.nodes.forEach(({vector}) => {
       // Apply damping
       vector.xMomentum *= dampingCoefficient;

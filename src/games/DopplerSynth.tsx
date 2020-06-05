@@ -6,8 +6,9 @@ import {chordName, chordsMatching} from '../audio/chords';
 import {generateRelatedChord} from '../audio/harmony';
 import {getNoteName, Note, NoteValue} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
+import {NoteGraphPhysicsForm} from '../forms/NoteGraphPhysicsForm';
 import {Microphone} from '../sprites/Microphone';
-import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
+import {NoteGraph, NoteGraphPhysics, NoteNode} from '../sprites/NoteGraph';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
 import {DopplerSettings} from '../types/DopplerSettings';
@@ -159,6 +160,11 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  private updatePhysics(physics: NoteGraphPhysics) {
+    this.noteGraph.physics = physics;
+    this.updateMenu();
+  }
+
   public menu() {
     if (!this.microphone) {
       return null;
@@ -209,6 +215,9 @@ export class DopplerSynthGame implements Game {
             value={this.microphone.dopplerSettings}
             onChange={this.updateDopplerSettings}
           />
+        </fieldset>
+        <fieldset>
+          <NoteGraphPhysicsForm value={this.noteGraph.physics} onChange={this.updatePhysics} />
         </fieldset>
       </div>
     );
