@@ -20,6 +20,19 @@ export enum ChordType {
   five
 }
 
+const chordTypeSymbol: {[type in ChordType]: string} = {
+  [ChordType.major]: '',
+  [ChordType.minor]: 'm',
+  [ChordType.major7]: '△7',
+  [ChordType.dominant7]: '7',
+  [ChordType.minor7]: 'm7',
+  [ChordType.minor6]: 'm6',
+  [ChordType.major6]: '6',
+  [ChordType.sus2]: 'sus2',
+  [ChordType.sus4]: 'sus4',
+  [ChordType.five]: '5'
+};
+
 export type ChordGenerator = (rootNote: Note) => Chord;
 
 export const majorChord: ChordGenerator = (root: NoteValue): Chord => {
@@ -197,5 +210,5 @@ export function normalizeChord(notes: Note[]): NoteValue[] {
 }
 
 export function chordName(chord: Chord): string {
-  return `${getNoteName(chord.root)}${ChordType[chord.type]}`;
+  return `${getNoteName(chord.root)}${chordTypeSymbol[chord.type]}`;
 }
