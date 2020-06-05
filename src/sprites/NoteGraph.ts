@@ -48,6 +48,7 @@ export interface NoteGraphPhysics {
   repulsionStrength: number;
   repulsionExponent: number;
   momentumDamping: number;
+  maxVelocity: number;
 }
 
 export class NoteGraph implements Sprite {
@@ -68,7 +69,8 @@ export class NoteGraph implements Sprite {
       edgeStrength: 0.1,
       repulsionStrength: -5000,
       repulsionExponent: 1.5,
-      momentumDamping: 0.8
+      momentumDamping: 0.8,
+      maxVelocity: 1000
     };
 
     // Create nodes
@@ -455,19 +457,15 @@ export class NoteGraph implements Sprite {
 
     // Limit to max velocity
     // const maxVelocity = 20;
-    // this.nodes.forEach(({vector}) => {
-    //   // Apply damping
-    //   vector.xMomentum *= dampingCoefficient;
-    //   vector.yMomentum *= dampingCoefficient;
-
-    //   // Apply max velocity
-    //   const velocity = Math.sqrt(Math.pow(vector.xMomentum, 2) + Math.pow(vector.yMomentum, 2));
-    //   const ratio = maxVelocity / velocity;
-    //   if (ratio < 1) {
-    //     vector.xMomentum *= ratio;
-    //     vector.yMomentum *= ratio;
-    //   }
-    // });
+    this.nodes.forEach(({vector}) => {
+      // Apply max velocity
+      const velocity = Math.sqrt(Math.pow(vector.xMomentum, 2) + Math.pow(vector.yMomentum, 2));
+      const ratio = this.physics.maxVelocity / velocity;
+      if (ratio < 1) {
+        vector.xMomentum *= ratio;
+        vector.yMomentum *= ratio;
+      }
+    });
 
     // Adjust positions
     this.nodes.forEach(({position, vector}: NoteNode) => {

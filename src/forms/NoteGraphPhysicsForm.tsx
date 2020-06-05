@@ -56,10 +56,10 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
       })}
       {numberForm({
         key: 'edgeStrength',
-        title: 'Edge Strength',
-        min: 0.01,
-        max: 0.6,
-        step: 0.01
+        title: 'Edge Rigidity',
+        min: 0.001,
+        max: 0.3,
+        step: 0.001
       })}
       {numberForm({
         key: 'repulsionExponent',
@@ -70,17 +70,24 @@ export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps) {
       })}
       {numberForm({
         key: 'repulsionStrength',
-        title: 'Repulsion Scaling',
+        title: 'Repulsion Strength',
         min: -10000,
-        max: 10000,
+        max: 0,
         step: 1000
       })}
       {numberForm({
         key: 'momentumDamping',
-        title: 'Damping',
+        title: 'Inertia',
         min: 0,
         max: 1,
         step: 0.1
+      })}
+      {numberForm({
+        key: 'maxVelocity',
+        title: 'maxVelocity',
+        min: 1,
+        max: 1000,
+        step: 1
       })}
     </div>
   );
