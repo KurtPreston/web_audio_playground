@@ -107,12 +107,9 @@ export class NoteGraph implements Sprite {
     const numNodesToConnectTo = random(0, 4);
     const nodesToConnectTo: NoteNode[] = sampleSize(Array.from(this.nodes), numNodesToConnectTo);
     nodesToConnectTo.forEach((node2: NoteNode) => {
-      this.edges.add({
+      this.addEdge({
         node1: node,
-        node2,
-        springConstant: 0,
-        lineWidth: 0,
-        flaggedForDelete: false
+        node2
       });
     });
 
@@ -148,6 +145,32 @@ export class NoteGraph implements Sprite {
     });
   }
 
+  public addEdge(params?: {node1: NoteNode; node2: NoteNode}) {
+    const {node1, node2} = params || {
+      node1: sample(Array.from(this.nodes)),
+      node2: sample(Array.from(this.nodes))
+    };
+    if (!node1 || !node2) {
+      return;
+    }
+    for (const edge of Array.from(this.edges)) {
+      if (
+        (edge.node1 === node1 && edge.node2 === node2) ||
+        (edge.node1 === node2 && edge.node2 === node1)
+      ) {
+        // Edge already exists
+        return;
+      }
+    }
+    this.edges.add({
+      node1,
+      node2,
+      springConstant: 0,
+      lineWidth: 0,
+      flaggedForDelete: false
+    });
+  }
+
   public mergeGraphs() {
     const groups: NoteNode[][] = this.nodeGroups();
     if (groups.length <= 1) {
@@ -159,12 +182,9 @@ export class NoteGraph implements Sprite {
       const node1 = sample(group1);
       const node2 = sample(group2);
       if (node1 && node2) {
-        this.edges.add({
+        this.addEdge({
           node1,
-          node2,
-          springConstant: 0,
-          lineWidth: 0,
-          flaggedForDelete: false
+          node2
         });
       }
     }
@@ -253,6 +273,16 @@ export class NoteGraph implements Sprite {
             }
           });
         }
+      }, 1000);
+    }
+  }
+
+  public deleteEdge(edge?: NoteEdge) {
+    edge = edge || sample(Array.from(this.edges.values()));
+    if (edge) {
+      edge.flaggedForDelete = true;
+      setTimeout(() => {
+        this.edges.delete(edge as NoteEdge);
       }, 1000);
     }
   }

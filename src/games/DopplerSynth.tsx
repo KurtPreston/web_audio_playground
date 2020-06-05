@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import {random, range, sample} from 'lodash';
+import {random, range, sample, times} from 'lodash';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {chordName, chordsMatching} from '../audio/chords';
@@ -58,6 +58,8 @@ export class DopplerSynthGame implements Game {
 
     this.randomActions.set(this.addNoteNode, 15);
     this.randomActions.set(this.deleteNoteNode, 15);
+    this.randomActions.set(this.addEdges, 15);
+    this.randomActions.set(this.deleteEdges, 15);
     this.randomActions.set(this.loadRelatedChord, 20);
     this.randomActions.set(this.splitConstellation, 45);
     this.randomActions.set(this.mergeConstellations, 45);
@@ -86,6 +88,18 @@ export class DopplerSynthGame implements Game {
       this.noteGraph.addNote(noteValue);
       this.updateMenu();
     }
+  }
+
+  public addEdges() {
+    times(random(1, 5), () => {
+      this.noteGraph.addEdge();
+    });
+  }
+
+  public deleteEdges() {
+    times(random(1, 5), () => {
+      this.noteGraph.deleteEdge();
+    });
   }
 
   public loadRelatedChord() {
@@ -173,8 +187,12 @@ export class DopplerSynthGame implements Game {
               <button onClick={this.deleteNoteNode}>Delete Node</button>
             </div>
             <div>
-              <button onClick={this.splitConstellation}>Split</button>
-              <button onClick={this.mergeConstellations}>Merge</button>
+              <button onClick={this.addEdges}>Add Edges</button>
+              <button onClick={this.deleteEdges}>Delete Edges</button>
+            </div>
+            <div>
+              <button onClick={this.splitConstellation}>Split Groups</button>
+              <button onClick={this.mergeConstellations}>Merge Groups</button>
             </div>
           </div>
         </fieldset>
