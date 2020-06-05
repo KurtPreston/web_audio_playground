@@ -56,14 +56,14 @@ export class DopplerSynthGame implements Game {
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
 
-    this.randomActions.set(this.addNoteNode, 15);
-    this.randomActions.set(this.deleteNoteNode, 15);
-    this.randomActions.set(this.addEdges, 15);
-    this.randomActions.set(this.deleteEdges, 15);
+    this.randomActions.set(this.addNoteNode, 20);
+    this.randomActions.set(this.deleteNoteNode, 20);
+    this.randomActions.set(this.addEdges, 25);
+    this.randomActions.set(this.deleteEdges, 40);
     this.randomActions.set(this.loadRelatedChord, 20);
-    this.randomActions.set(this.splitConstellation, 45);
-    this.randomActions.set(this.mergeConstellations, 45);
-    // this.randomActions.set(this.regenerateGraph, 60);
+    this.randomActions.set(this.splitConstellation, 50);
+    this.randomActions.set(this.mergeConstellations, 50);
+    this.randomActions.set(this.regenerateGraph, 60);
   }
 
   public sprites(): Sprite[] {
@@ -124,15 +124,23 @@ export class DopplerSynthGame implements Game {
 
   public mergeConstellations() {
     this.noteGraph.mergeGraphs();
+    times(random(0, 6), () => {
+      this.noteGraph.addEdge();
+    });
   }
 
   private regenerateGraph() {
-    this.noteGraph.destroy();
-    this.noteGraph = new NoteGraph({
-      dimensions: this.lastDimensions,
-      channel: this.channel
+    this.noteGraph.nodes.forEach((node) => {
+      this.noteGraph.deleteNode(node);
     });
-    this.updateMenu();
+    setTimeout(() => {
+      this.noteGraph.destroy();
+      this.noteGraph = new NoteGraph({
+        dimensions: this.lastDimensions,
+        channel: this.channel
+      });
+      this.updateMenu();
+    }, 1000);
   }
 
   public gameTick(world: WorldState) {

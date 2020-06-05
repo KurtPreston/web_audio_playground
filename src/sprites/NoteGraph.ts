@@ -179,14 +179,16 @@ export class NoteGraph implements Sprite {
     for (let i = 0; i < groups.length - 1; i++) {
       const group1 = groups[i];
       const group2 = groups[i + 1];
-      const node1 = sample(group1);
-      const node2 = sample(group2);
-      if (node1 && node2) {
-        this.addEdge({
-          node1,
-          node2
-        });
-      }
+      times(random(1, 5), () => {
+        const node1 = sample(group1);
+        const node2 = sample(group2);
+        if (node1 && node2) {
+          this.addEdge({
+            node1,
+            node2
+          });
+        }
+      });
     }
   }
 
