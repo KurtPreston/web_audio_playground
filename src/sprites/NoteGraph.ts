@@ -402,7 +402,7 @@ export class NoteGraph implements Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          coefficient: -10000, // repel,
+          coefficient: -5000, // repel,
           exponent: 1.5
         });
 
