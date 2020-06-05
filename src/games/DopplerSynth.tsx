@@ -63,7 +63,7 @@ export class DopplerSynthGame implements Game {
     this.randomActions.set(this.loadRelatedChord, 20);
     this.randomActions.set(this.splitConstellation, 50);
     this.randomActions.set(this.mergeConstellations, 50);
-    this.randomActions.set(this.regenerateGraph, 60);
+    // this.randomActions.set(this.regenerateGraph, 500);
   }
 
   public sprites(): Sprite[] {

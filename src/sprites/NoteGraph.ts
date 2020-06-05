@@ -77,12 +77,10 @@ export class NoteGraph implements Sprite {
       phase: random(0, Math.PI * 2, true),
       frequency: midiNoteToFreq(note)
     });
+    synth.volume.value = -100;
+    synth.start();
+    synth.volume.rampTo(0, 1);
     const panVol = new PanVol();
-    if (this.channel.immediate() > 1) {
-      synth.start('+0.5');
-    } else {
-      synth.start(1);
-    }
 
     panVol.connect(this.channel);
     synth.connect(panVol);
@@ -255,8 +253,7 @@ export class NoteGraph implements Sprite {
     node = node || sample(Array.from(this.nodes));
     if (node) {
       node.flaggedForDelete = true;
-      node.synth.volume.rampTo(-200);
-      node.panVol.volume.rampTo(-100);
+      node.synth.volume.rampTo(-200, 1);
       this.edges.forEach((edge: NoteEdge) => {
         if (edge.node1 === node || edge.node2 === node) {
           edge.flaggedForDelete = true;
