@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "edgeLength": {
+      "type": "number",
+      "title": "Edge Length",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "edgeStrength": {
+      "type": "number",
+      "title": "Edge Rigidity",
+      "minimum": 0.001,
+      "maximum": 0.3
+    },
+    "repulsionExponent": {
+      "type": "number",
+      "title": "Repulsion Scaling",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "repulsionStrength": {
+      "type": "number",
+      "title": "Repulsion Strength",
+      "minimum": 0,
+      "maximum": 20000
+    },
+    "momentumDamping": {
+      "type": "number",
+      "title": "Inertia",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "maxVelocity": {
+      "type": "number",
+      "title": "Max Velocity",
+      "minimum": 1,
+      "maximum": 1000
+    }
+  },
+  "required": [
+    "edgeLength",
+    "edgeStrength",
+    "repulsionExponent",
+    "repulsionStrength",
+    "momentumDamping",
+    "maxVelocity"
+  ],
+  "additionalProperties": false
+}
