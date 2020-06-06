@@ -1,4 +1,4 @@
-import {Dictionary, map} from 'lodash';
+import {Dictionary, map, round} from 'lodash';
 import React from 'react';
 import {isNumber} from 'util';
 import {JSONSchema6} from '../types/JsonSchema';
@@ -8,6 +8,8 @@ export interface JsonSchemaFormProps<T> {
   onChange: (value: T) => void;
   schema: JSONSchema6;
 }
+
+const RANGE_PRECISION = 3;
 
 export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactElement {
   const {schema} = props;
@@ -57,9 +59,8 @@ function JsonSchemaNumberForm(props: JsonSchemaFormProps<number>): React.ReactEl
   const {title, minimum, maximum} = schema;
   const onPropChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedValue = parseFloat(event.target.value);
-    debugger;
     if (isNumber(updatedValue)) {
-      onChange(updatedValue);
+      onChange(round(updatedValue, RANGE_PRECISION));
     }
   };
 
@@ -92,7 +93,7 @@ function formStep(schema: JSONSchema6): number | undefined {
 
   const range = maximum - minimum;
   const magnitudeRange = Math.round(Math.log10(range));
-  const step = Math.pow(10, magnitudeRange - 3);
+  const step = Math.pow(10, magnitudeRange - RANGE_PRECISION);
 
   if (type === 'integer') {
     return Math.max(step, 1);

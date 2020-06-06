@@ -9,6 +9,7 @@ import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {nodeGroups} from '../math/graph/nodeGroups';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
+import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
 import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
 import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
@@ -41,15 +42,6 @@ interface NoteEdge {
 interface NodeOptions {
   oscillator: Partial<ToneOscillatorConstructorOptions>;
   midiNote: Note;
-}
-
-export interface NoteGraphPhysics {
-  edgeLength: number;
-  edgeStrength: number;
-  repulsionStrength: number;
-  repulsionExponent: number;
-  momentumDamping: number;
-  maxVelocity: number;
 }
 
 export class NoteGraph implements Sprite {

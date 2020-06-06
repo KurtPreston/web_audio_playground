@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "title": "Note Graph Physics",
   "properties": {
     "edgeLength": {
       "type": "number",
