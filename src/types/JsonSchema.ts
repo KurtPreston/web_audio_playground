@@ -664,3 +664,7 @@ export interface JSONSchema7 {
   writeOnly?: boolean;
   examples?: JSONSchema7Type;
 }
+
+export interface JsonSchema extends JSONSchema6 {
+  enumNames?: string[];
+}

@@ -1,33 +1,33 @@
 import {Dictionary, map, round} from 'lodash';
 import React from 'react';
 import {isNumber} from 'util';
-import {JSONSchema6} from '../types/JsonSchema';
+import {JsonSchema} from '../types/JsonSchema';
 import './JsonSchemaForm.scss';
 
 export interface JsonSchemaFormProps<T> {
   value: T;
   onChange: (value: T) => void;
-  schema: JSONSchema6;
+  schema: JsonSchema;
 }
 
 const RANGE_PRECISION = 3;
 
 export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactElement {
   const {schema} = props;
-  const {type} = schema;
-  switch (type) {
-    case 'object':
-      return JsonSchemaObjectForm(props as any);
-    case 'number':
-      return JsonSchemaNumberForm(props as any);
-    default:
-      throw new Error(`Unspported type ${type}`);
+  if (schema.enum) {
+    return JsonSchemaEnumForm(props as any);
+  } else if (schema.type === 'object') {
+    return JsonSchemaObjectForm(props as any);
+  } else if (schema.type === 'number') {
+    return JsonSchemaNumberForm(props as any);
+  } else {
+    throw new Error(`Unspported type ${schema.type}`);
   }
 }
 
 function JsonSchemaObjectForm(props: JsonSchemaFormProps<Dictionary<any>>): React.ReactElement {
   const {schema, value, onChange} = props;
-  function renderSubObject<T>(subSchema: JSONSchema6, key: string): React.ReactNode {
+  function renderSubObject<T>(subSchema: JsonSchema, key: string): React.ReactNode {
     const onSubValueChanged = (subValue: T) => {
       onChange({
         ...value,
@@ -74,7 +74,6 @@ function JsonSchemaNumberForm(props: JsonSchemaFormProps<number>): React.ReactEl
         {value}
       </div>
       <div className='jsonschema-number-form-range'>
-        {minimum}
         <input
           type='range'
           value={value}
@@ -84,13 +83,12 @@ function JsonSchemaNumberForm(props: JsonSchemaFormProps<number>): React.ReactEl
           step={step}
           style={{display: 'block'}}
         />
-        {maximum}
       </div>
     </div>
   );
 }
 
-function formStep(schema: JSONSchema6): number | undefined {
+function formStep(schema: JsonSchema): number | undefined {
   const {minimum, maximum, type} = schema;
   if (!isNumber(minimum) || !isNumber(maximum)) {
     return;
@@ -105,4 +103,35 @@ function formStep(schema: JSONSchema6): number | undefined {
   } else if (type === 'number') {
     return step;
   }
+}
+
+function JsonSchemaEnumForm(props: JsonSchemaFormProps<any>): React.ReactElement {
+  const {onChange, schema, value} = props;
+
+  return (
+    <div className='jsonschema-enum-form'>
+      <label>{schema.title}</label>
+      <div>
+        {(props.schema.enum || []).map((enumValue, idx) => {
+          const enumTitle = props.schema.enumNames ? props.schema.enumNames[idx] : enumValue;
+
+          const onSelected = () => {
+            onChange(enumValue);
+          };
+
+          return (
+            <label className='jsonschema-enum-form-radio' key={idx}>
+              <input
+                type='radio'
+                value={enumValue as any}
+                checked={enumValue === value}
+                onChange={onSelected}
+              />
+              {enumTitle}
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
