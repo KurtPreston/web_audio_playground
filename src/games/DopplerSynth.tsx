@@ -169,6 +169,7 @@ export class DopplerSynthGame implements Game {
 
   private initializeMidi() {
     this.requestMidi();
+    this.randomActions.delete(this.loadRelatedChord);
   }
 
   public menu() {

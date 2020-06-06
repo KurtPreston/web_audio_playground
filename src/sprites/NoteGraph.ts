@@ -1,6 +1,7 @@
 import {difference, maxBy, pull, random, sample, sampleSize, times, without} from 'lodash';
 import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
+import {isNumber} from 'util';
 import {randomChord} from '../audio/chords';
 import {midiNoteToFreq} from '../audio/midi';
 import {getNoteInfo, Note, noteToNoteValue, NoteValue} from '../audio/Note';
@@ -78,14 +79,19 @@ export class NoteGraph implements Sprite {
     times(numNodes, () => this.createNode());
   }
 
-  private randomNote(noteValue?: NoteValue): Note {
-    noteValue = noteValue || (sample(Array.from(this.notes)) as NoteValue);
-    return noteValue + random(2, 5) * 12;
+  private randomNote(noteValue?: NoteValue): Note | undefined {
+    noteValue = noteValue || sample(Array.from(this.notes));
+    if (noteValue) {
+      return noteValue + random(2, 5) * 12;
+    }
   }
 
   public createNode(options: Partial<NodeOptions> = {}): void {
     const oscillator = options.oscillator || randomSustainOscillatorOptions();
-    const note: Note = options.midiNote || this.randomNote();
+    const note = options.midiNote || this.randomNote();
+    if (!note) {
+      return;
+    }
     const {width, height} = this.dimensions;
 
     // Create the node
@@ -236,7 +242,10 @@ export class NoteGraph implements Sprite {
       const oldNote = sample(yesterNotes) as NoteValue;
       const oldNodes = this.nodesWithNote(oldNote);
       oldNodes.forEach((node: NoteNode) => {
-        node.note = this.randomNote(newNote);
+        const note = this.randomNote(newNote);
+        if (note) {
+          node.note = note;
+        }
       });
       pull(newNotes, newNote);
       pull(yesterNotes, oldNote);
@@ -260,7 +269,7 @@ export class NoteGraph implements Sprite {
 
   public addNote(note: NoteValue, numNodes?: number) {
     this.notes.add(note);
-    numNodes = numNodes || random(1, 5);
+    numNodes = isNumber(numNodes) ? numNodes : random(1, 5);
     const midiNote = this.randomNote(note);
     times(numNodes, () => {
       this.createNode({midiNote});
@@ -354,17 +363,41 @@ export class NoteGraph implements Sprite {
     const {dimensions, midiKeysPressed} = world;
 
     if (midiKeysPressed) {
-      const noteValues = new Set<NoteValue>(Array.from(midiKeysPressed).map(noteToNoteValue));
+      // Update the list of note values for random nodes
+      const noteValues = new Map<NoteValue, Note[]>();
+      midiKeysPressed.forEach((note: Note) => {
+        const noteValue = noteToNoteValue(note);
+        const notes = noteValues.get(noteValue);
+        if (notes) {
+          notes.push(note);
+        } else {
+          noteValues.set(noteValue, [note]);
+        }
+      });
+
       this.notes.forEach((noteValue: NoteValue) => {
         if (!noteValues.has(noteValue)) {
           this.deleteNote(noteValue);
         }
       });
-      noteValues.forEach((noteValue: NoteValue) => {
+      noteValues.forEach((notes: Note[], noteValue: NoteValue) => {
         if (!this.notes.has(noteValue)) {
-          this.addNote(noteValue);
+          // Register the noteValue
+          this.addNote(noteValue, 0);
+
+          // Play the specific notes
+          notes.forEach((midiNote) => {
+            times(random(2, 5), () => {
+              this.createNode({
+                midiNote
+              });
+            });
+          });
         }
       });
+
+      // Also add the specific keys played
+      midiKeysPressed.forEach((midiNote: Note) => {});
     }
 
     // Cache dimensions so new nodes can be added
