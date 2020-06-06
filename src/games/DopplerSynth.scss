@@ -6,6 +6,7 @@
     margin: 0.5rem 0;
 
     > label {
+      display: block;
       text-align: center;
       font-weight: bolder;
       font-variant: small-caps;
@@ -15,6 +16,5 @@
 
   label {
     font-weight: 600;
-    display: block;
   }
 }

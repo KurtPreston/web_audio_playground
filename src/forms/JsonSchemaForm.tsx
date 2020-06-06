@@ -2,6 +2,7 @@ import {Dictionary, map, round} from 'lodash';
 import React from 'react';
 import {isNumber} from 'util';
 import {JSONSchema6} from '../types/JsonSchema';
+import './JsonSchemaForm.scss';
 
 export interface JsonSchemaFormProps<T> {
   value: T;
@@ -67,10 +68,13 @@ function JsonSchemaNumberForm(props: JsonSchemaFormProps<number>): React.ReactEl
   const step = formStep(schema);
 
   return (
-    <div>
-      <label>{title}</label>
-      <div>
+    <div className='jsonschema-number-form'>
+      <div className='jsonschema-number-form-title'>
+        <label>{title}:</label>
         {value}
+      </div>
+      <div className='jsonschema-number-form-range'>
+        {minimum}
         <input
           type='range'
           value={value}
@@ -80,6 +84,7 @@ function JsonSchemaNumberForm(props: JsonSchemaFormProps<number>): React.ReactEl
           step={step}
           style={{display: 'block'}}
         />
+        {maximum}
       </div>
     </div>
   );

@@ -1,0 +1,18 @@
+.jsonschema-number-form {
+  margin: 0.5rem 0;
+
+  .jsonschema-number-form-range {
+    width: 100%;
+    display: flex;
+    font-size: small;
+
+    > input {
+      flex: 1;
+    }
+  }
+
+  .jsonschema-number-form-title {
+    display: flex;
+    justify-content: space-between;
+  }
+}
