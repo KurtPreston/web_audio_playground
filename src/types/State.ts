@@ -1,3 +1,4 @@
+import {Note} from '../audio/Note';
 import {AudioData} from './AudioData';
 
 export interface WorldState {
@@ -8,6 +9,7 @@ export interface WorldState {
   deviceOrientation: DeviceOrientation | undefined;
   mouseClickLocation: IPosition | undefined;
   frameNum: number;
+  midiKeysPressed: Set<Note> | undefined;
 }
 
 export type SpriteTicker<TState> = (spriteState: TState, WorldState: WorldState) => TState;

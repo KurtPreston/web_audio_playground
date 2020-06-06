@@ -31,6 +31,7 @@ export class DopplerSynthGame implements Game {
 
   // Constants
   private updateMenu: () => void;
+  private requestMidi: () => void;
 
   // Random actions mapped to how frequently the action occurs in seconds
   private randomActions = new Map<() => void, number>();
@@ -56,6 +57,7 @@ export class DopplerSynthGame implements Game {
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
+    this.requestMidi = initializers.midi;
 
     this.randomActions.set(this.addNoteNode, 20);
     this.randomActions.set(this.deleteNoteNode, 20);
@@ -165,6 +167,10 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  private initializeMidi() {
+    this.requestMidi();
+  }
+
   public menu() {
     if (!this.microphone) {
       return null;
@@ -177,6 +183,7 @@ export class DopplerSynthGame implements Game {
         <fieldset>
           <label>DopplerSynth</label>
           <button onClick={this.regenerateGraph}>Reset</button>
+          <button onClick={this.initializeMidi}>MIDI</button>
         </fieldset>
         <fieldset>
           <label>Notes</label>

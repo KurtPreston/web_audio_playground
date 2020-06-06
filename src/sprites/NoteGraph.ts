@@ -351,7 +351,21 @@ export class NoteGraph implements Sprite {
   }
 
   public tick(world: WorldState) {
-    const {dimensions} = world;
+    const {dimensions, midiKeysPressed} = world;
+
+    if (midiKeysPressed) {
+      const noteValues = new Set<NoteValue>(Array.from(midiKeysPressed).map(noteToNoteValue));
+      this.notes.forEach((noteValue: NoteValue) => {
+        if (!noteValues.has(noteValue)) {
+          this.deleteNote(noteValue);
+        }
+      });
+      noteValues.forEach((noteValue: NoteValue) => {
+        if (!this.notes.has(noteValue)) {
+          this.addNote(noteValue);
+        }
+      });
+    }
 
     // Cache dimensions so new nodes can be added
     this.dimensions = dimensions;

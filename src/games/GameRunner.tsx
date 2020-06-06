@@ -3,6 +3,7 @@ import NoSleep from 'nosleep.js';
 import React from 'react';
 import {Context as AudioContext} from 'tone';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
+import {Note} from '../audio/Note';
 import {emptyAudioData} from '../types/AudioData';
 import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types/State';
 import {Game, GameInfo} from './Game';
@@ -44,6 +45,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private frameNum: number = 0;
   private canvasCtx: CanvasRenderingContext2D | null = null;
   private mouseDragging: boolean = false;
+  private midiKeysPressed: Set<Note> | undefined;
 
   // Audio
   private audio: AudioNodes | undefined;
@@ -89,6 +91,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       this.world(),
       {
         mic: this.requestMic,
+        midi: this.requestMidi,
         deviceOrientation: this.requestDeviceOrientation,
         analyserNode,
         audioContext
@@ -287,7 +290,8 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       keysPressedThisFrame: this.keysPressedThisFrame,
       deviceOrientation: this.deviceOrientation,
       frameNum: this.frameNum,
-      mouseClickLocation: this.mouseClickLocation
+      mouseClickLocation: this.mouseClickLocation,
+      midiKeysPressed: this.midiKeysPressed
     };
   }
 
@@ -337,6 +341,29 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
 
     this.setState({
       requireClickToStart: audioState === 'suspended'
+    });
+  }
+
+  private async requestMidi() {
+    const midiAccess = await navigator.requestMIDIAccess();
+    const inputs = midiAccess.inputs;
+    this.midiKeysPressed = new Set<Note>();
+
+    inputs.forEach((input) => {
+      input.onmidimessage = (event) => {
+        const signal = event.data[0];
+        const cc = event.data[1];
+        const value = event.data[2];
+        if (signal === 144 && this.midiKeysPressed) {
+          // Keyboard!
+          const midiNote: Note = cc;
+          if (value === 0) {
+            this.midiKeysPressed.delete(midiNote);
+          } else {
+            this.midiKeysPressed.add(midiNote);
+          }
+        }
+      };
     });
   }
 
