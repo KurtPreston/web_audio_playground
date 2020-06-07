@@ -36,11 +36,11 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       [
         {
           name: 'Add Note',
-          action: this.addNote
+          action: () => this.addNote()
         },
         {
           name: 'Delete Note',
-          action: this.deleteNote
+          action: () => this.deleteNote()
         }
       ],
       [
@@ -50,7 +50,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
         },
         {
           name: 'Delete Node',
-          action: this.noteGraph.deleteNode
+          action: this.deleteNode
         }
       ]
     ];
@@ -128,6 +128,10 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     }
   }
 
+  public deleteNode() {
+    this.noteGraph.deleteNode();
+  }
+
   public deleteNote(note?: NoteValue) {
     note = note || sample(Array.from(this.noteValues));
     if (note) {
@@ -144,24 +148,23 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   public addNote(noteValue?: NoteValue, numNodes?: number) {
     noteValue = noteValue || this.randomUnusedNote();
-    if (noteValue) {
+    if (isNumber(noteValue)) {
       this.noteValues.add(noteValue);
       numNodes = isNumber(numNodes) ? numNodes : random(1, 5);
-      times(numNodes);
-      const midiNote = this.randomNote(noteValue);
-      if (midiNote) {
-        times(numNodes, () => {
+      times(numNodes, () => {
+        const midiNote = this.randomNote(noteValue);
+        if (isNumber(midiNote)) {
           this.noteGraph.createNode({midiNote});
-        });
-      }
+        }
+      });
     }
 
     this.onNotesUpdated();
   }
 
   private randomUnusedNote(): Note | undefined {
-    const unusedNotes = range(0, 12).filter((noteValue: NoteValue) =>
-      this.noteValues.has(noteValue)
+    const unusedNotes = range(0, 12).filter(
+      (noteValue: NoteValue) => !this.noteValues.has(noteValue)
     );
     return sample(unusedNotes);
   }
