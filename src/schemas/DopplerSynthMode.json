@@ -1,0 +1,6 @@
+{
+  "title": "DopplerSynth Mode",
+  "type": "string",
+  "enum": ["auto", "midi"],
+  "enumNames": ["Auto-generate music", "MIDI input"]
+}

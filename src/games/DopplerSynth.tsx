@@ -1,18 +1,23 @@
 import {autobind} from 'core-decorators';
-import {random, range, sample, times} from 'lodash';
+import {random, times} from 'lodash';
 import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {chordName, chordsMatching} from '../audio/chords';
-import {generateRelatedChord} from '../audio/harmony';
-import {getNoteName, Note, NoteValue} from '../audio/Note';
+import {getNoteName, NoteValue} from '../audio/Note';
 import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
+import {JsonSchemaForm} from '../forms/JsonSchemaForm';
 import {NoteGraphPhysicsForm} from '../forms/NoteGraphPhysicsForm';
+import DopplerSynthModeSchema from '../schemas/DopplerSynthMode.json';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
 import {NoteGraphAutoplayer} from '../sprites/NoteGraphAutoplayer';
+import {NoteGraphController} from '../sprites/NoteGraphController';
+import {NoteGraphMidiPlayer} from '../sprites/NoteGraphMidiPlayer';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
 import {DopplerSettings} from '../types/DopplerSettings';
+import {DopplerSynthMode} from '../types/DopplerSynthMode';
+import {JsonSchema} from '../types/JsonSchema';
 import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
 import {Dimensions, WorldState} from '../types/State';
 import './DopplerSynth.scss';
@@ -24,20 +29,17 @@ export class DopplerSynthGame implements Game {
 
   // Sprites
   private noteGraph: NoteGraph;
-  private noteGraphAutoplayer: NoteGraphAutoplayer;
+  private noteGraphController: NoteGraphController;
   private readonly bg: Sprite;
   private readonly microphone: Microphone;
 
   // Other state
+  private mode: DopplerSynthMode = 'auto';
   private readonly channel: ToneAudioNode;
   private lastDimensions: Dimensions;
 
   // Constants
   private updateMenu: () => void;
-  private requestMidi: () => void;
-
-  // Random actions mapped to how frequently the action occurs in seconds
-  private randomActions = new Map<() => void, number>();
 
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
     setContext(initializers.audioContext);
@@ -54,23 +56,13 @@ export class DopplerSynthGame implements Game {
       dimensions,
       channel: this.channel
     });
-    this.noteGraphAutoplayer = new NoteGraphAutoplayer(this.noteGraph);
+    this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, updateMenu);
     this.microphone = new Microphone({
       getNoteNodes: this.getNoteNodes,
       channel: this.channel
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
-    this.requestMidi = initializers.midi;
-
-    this.randomActions.set(this.addNoteNode, 20);
-    this.randomActions.set(this.deleteNoteNode, 20);
-    this.randomActions.set(this.addEdges, 25);
-    this.randomActions.set(this.deleteEdges, 40);
-    this.randomActions.set(this.loadRelatedChord, 20);
-    this.randomActions.set(this.splitConstellation, 50);
-    this.randomActions.set(this.mergeConstellations, 50);
-    // this.randomActions.set(this.regenerateGraph, 500);
   }
 
   public sprites(): Sprite[] {
@@ -79,22 +71,6 @@ export class DopplerSynthGame implements Game {
 
   public getNoteNodes(): Set<NoteNode> {
     return this.noteGraph.nodes;
-  }
-
-  public addNoteNode() {
-    this.noteGraphAutoplayer.createNode();
-    this.updateMenu();
-  }
-
-  public addNote() {
-    const noteValue: NoteValue = random(0, 12);
-    const unusedNotes = range(0, 12).filter(
-      (noteValue: NoteValue) => !this.noteGraphAutoplayer.notes.has(noteValue)
-    );
-    if (unusedNotes.length) {
-      this.noteGraphAutoplayer.addNote(noteValue);
-      this.updateMenu();
-    }
   }
 
   public addEdges() {
@@ -107,17 +83,6 @@ export class DopplerSynthGame implements Game {
     times(random(1, 5), () => {
       this.noteGraph.deleteEdge();
     });
-  }
-
-  public loadRelatedChord() {
-    const relatedChord = generateRelatedChord(this.noteGraphAutoplayer.notes);
-    this.noteGraphAutoplayer.setChord(relatedChord.notes);
-    this.updateMenu();
-  }
-
-  public deleteNote() {
-    this.noteGraphAutoplayer.deleteNote(sample(Array.from(this.noteGraphAutoplayer.notes)) as Note);
-    this.updateMenu();
   }
 
   public deleteNoteNode() {
@@ -136,30 +101,27 @@ export class DopplerSynthGame implements Game {
     });
   }
 
-  private regenerateGraph() {
+  private reset() {
     this.noteGraph.nodes.forEach((node) => {
       this.noteGraph.deleteNode(node);
     });
+    this.updateMenu();
     setTimeout(() => {
       this.noteGraph.destroy();
+      this.noteGraphController.destroy();
+      this.mode = 'auto';
       this.noteGraph = new NoteGraph({
         dimensions: this.lastDimensions,
         channel: this.channel
       });
-      this.noteGraphAutoplayer = new NoteGraphAutoplayer(this.noteGraph);
+      this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
       this.updateMenu();
     }, 1000);
   }
 
   public gameTick(world: WorldState) {
     this.lastDimensions = world.dimensions;
-
-    this.randomActions.forEach((interval, action) => {
-      const oddsOfHappeningThisFrame = 1 / 25 / interval;
-      if (Math.random() < oddsOfHappeningThisFrame) {
-        action();
-      }
-    });
+    this.noteGraphController.tick(world);
   }
 
   private updateDopplerSettings(settings: DopplerSettings) {
@@ -172,9 +134,13 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
-  private initializeMidi() {
-    this.requestMidi();
-    this.randomActions.delete(this.loadRelatedChord);
+  public updateMode(mode: DopplerSynthMode) {
+    this.noteGraphController.destroy();
+    this.mode = mode;
+    this.noteGraphController =
+      mode === 'midi'
+        ? new NoteGraphMidiPlayer(this.noteGraph, this.updateMenu)
+        : new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
   }
 
   public menu() {
@@ -182,14 +148,18 @@ export class DopplerSynthGame implements Game {
       return null;
     }
 
-    const notesArray: NoteValue[] = Array.from(this.noteGraphAutoplayer.notes);
+    const notesArray: NoteValue[] = Array.from(this.noteGraphController.noteValues);
 
     return (
       <div className='doppler-synth-menu'>
         <fieldset>
           <label>DopplerSynth</label>
-          <button onClick={this.regenerateGraph}>Reset</button>
-          <button onClick={this.initializeMidi}>MIDI</button>
+          <button onClick={this.reset}>Reset</button>
+          <JsonSchemaForm
+            value={this.mode}
+            onChange={this.updateMode}
+            schema={DopplerSynthModeSchema as JsonSchema}
+          />
         </fieldset>
         <fieldset>
           <label>Notes</label>
@@ -198,23 +168,17 @@ export class DopplerSynthGame implements Game {
             <br />
             {notesArray.map((note: NoteValue) => getNoteName(note)).join(', ')}
           </div>
-          <div>
-            <div>
-              <button onClick={this.loadRelatedChord}>Related chord</button>
-            </div>
-            <div>
-              <button onClick={this.addNote}>Add note</button>
-              <button onClick={this.deleteNote}>Delete note</button>
-            </div>
-          </div>
         </fieldset>
         <fieldset>
-          <label>Constellation</label>
+          <label>Actions</label>
           <div />
           <div>
             <div>
-              <button onClick={this.addNoteNode}>Add Node</button>
-              <button onClick={this.deleteNoteNode}>Delete Node</button>
+              {this.noteGraphController.actions.map(({name, action}, idx) => (
+                <button key={idx} onClick={action}>
+                  {name}
+                </button>
+              ))}
             </div>
             <div>
               <button onClick={this.addEdges}>Add Edges</button>

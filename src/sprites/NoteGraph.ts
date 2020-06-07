@@ -1,3 +1,4 @@
+import {autobind} from 'core-decorators';
 import {maxBy, random, sample, sampleSize, times, without} from 'lodash';
 import {Oscillator, PanVol, ToneAudioNode} from 'tone';
 import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
@@ -42,6 +43,7 @@ interface NodeOptions {
   midiNote: Note;
 }
 
+@autobind
 export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
@@ -63,7 +65,7 @@ export class NoteGraph implements Sprite {
     };
   }
 
-  public createNode(options: NodeOptions): void {
+  public createNode(options: NodeOptions): NoteNode | undefined {
     const oscillator = options.oscillator || randomSustainOscillatorOptions();
     const note = options.midiNote;
     if (!note) {
@@ -114,6 +116,8 @@ export class NoteGraph implements Sprite {
 
     // Add node
     this.nodes.add(node);
+
+    return node;
   }
 
   // Returns a list of all connected node groups
