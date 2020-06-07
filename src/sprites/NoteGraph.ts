@@ -106,7 +106,10 @@ export class NoteGraph implements Sprite {
 
     // Connect the node to the graph
     const numNodesToConnectTo = random(0, 4);
-    const nodesToConnectTo: NoteNode[] = sampleSize(Array.from(this.nodes), numNodesToConnectTo);
+    const nodesToConnectTo: NoteNode[] = sampleSize(
+      Array.from(this.nodes).filter((node) => !node.flaggedForDelete),
+      numNodesToConnectTo
+    );
     nodesToConnectTo.forEach((node2: NoteNode) => {
       this.addEdge({
         node1: node,
