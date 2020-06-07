@@ -1,8 +1,14 @@
 {
-  "title": "Doppler Settings",
+  "title": "Microphone Audio Settings",
   "type": "object",
   "properties": {
-    "mode": {
+    "distanceVolumeRolloff": {
+      "title": "Distance-Volume Roll-off",
+      "type": "number",
+      "minimum": -10,
+      "maximum": 10
+    },
+    "dopplerMode": {
       "title": "Doppler Mode",
       "type": "integer",
       "enum": ["Off", "On", "Invert"],
@@ -17,6 +23,6 @@
       "maximum": 5000
     }
   },
-  "required": ["mode", "speedOfSound"],
+  "required": ["dopplerMode", "speedOfSound", "distanceVolumeRolloff"],
   "additionalProperties": false
 }

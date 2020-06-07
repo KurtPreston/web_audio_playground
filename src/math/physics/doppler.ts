@@ -1,4 +1,4 @@
-import {DopplerMode, DopplerSettings} from '../../types/DopplerSettings.d';
+import {DopplerMode} from '../../types/MicrophoneAudioSettings.d';
 import {IPosition, IVector} from '../../types/State';
 import {angleBetween} from '../trig/angleBetween';
 
@@ -12,15 +12,18 @@ export interface DopplerParams {
     position: IPosition;
     vector: IVector;
   };
-  settings: DopplerSettings;
+  settings: {
+    speedOfSound: number;
+    dopplerMode: DopplerMode;
+  };
 }
 
 // Returns the frequency perceived by the target
 export function doppler(params: DopplerParams): number {
   const {settings, source, target} = params;
-  const {speedOfSound, mode} = settings;
+  const {speedOfSound, dopplerMode} = settings;
 
-  if (mode === DopplerMode.Off) {
+  if (dopplerMode === DopplerMode.Off) {
     return source.freq;
   }
 
@@ -39,7 +42,7 @@ export function doppler(params: DopplerParams): number {
 
   // Adjust freq
   const freqRatio =
-    mode === DopplerMode.Invert
+    dopplerMode === DopplerMode.Invert
       ? Math.abs(speedOfSound - velocityTowardNode) / speedOfSound
       : Math.abs(speedOfSound + velocityTowardNode) / speedOfSound;
   return source.freq * freqRatio;

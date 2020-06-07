@@ -4,10 +4,10 @@ import React from 'react';
 import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {chordName, chordsMatching} from '../audio/chords';
 import {getNoteName, NoteValue} from '../audio/Note';
-import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {JsonSchemaForm} from '../forms/JsonSchemaForm';
 import {NoteGraphPhysicsForm} from '../forms/NoteGraphPhysicsForm';
 import DopplerSynthModeSchema from '../schemas/DopplerSynthMode.json';
+import MicrophoneAudioSettingsSchema from '../schemas/MicrophoneAudioSettings.json';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
 import {NoteGraphAutoplayer} from '../sprites/NoteGraphAutoplayer';
@@ -15,9 +15,9 @@ import {NoteGraphAction, NoteGraphController} from '../sprites/NoteGraphControll
 import {NoteGraphMidiPlayer} from '../sprites/NoteGraphMidiPlayer';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
-import {DopplerSettings} from '../types/DopplerSettings';
 import {DopplerSynthMode} from '../types/DopplerSynthMode';
 import {JsonSchema} from '../types/JsonSchema';
+import {MicrophoneAudioSettings} from '../types/MicrophoneAudioSettings.d';
 import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
 import {Dimensions, WorldState} from '../types/State';
 import './DopplerSynth.scss';
@@ -126,8 +126,8 @@ export class DopplerSynthGame implements Game {
     this.noteGraphController.tick(world);
   }
 
-  private updateDopplerSettings(settings: DopplerSettings) {
-    this.microphone.updateDopplerSettings(settings);
+  private updateAudioSettings(settings: MicrophoneAudioSettings) {
+    this.microphone.updateAudioSettings(settings);
     this.updateMenu();
   }
 
@@ -203,9 +203,10 @@ export class DopplerSynthGame implements Game {
             </div>
           </div>
         </fieldset>
-        <DopplerSettingsForm
-          value={this.microphone.dopplerSettings}
-          onChange={this.updateDopplerSettings}
+        <JsonSchemaForm
+          value={this.microphone.audioSettings}
+          onChange={this.updateAudioSettings}
+          schema={MicrophoneAudioSettingsSchema as JsonSchema}
         />
         <NoteGraphPhysicsForm value={this.noteGraph.physics} onChange={this.updatePhysics} />
       </div>

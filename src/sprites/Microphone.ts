@@ -11,7 +11,7 @@ import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
-import {DopplerMode, DopplerSettings} from '../types/DopplerSettings.d';
+import {DopplerMode, MicrophoneAudioSettings} from '../types/MicrophoneAudioSettings.d';
 import {ITraveler, WorldState} from '../types/State';
 import {NoteNode} from './NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
@@ -38,7 +38,7 @@ export class Microphone implements Sprite {
   private readonly maxDistance = 600;
 
   // Doppler settings
-  public dopplerSettings: DopplerSettings;
+  public audioSettings: MicrophoneAudioSettings;
   private bounceSynth: Synth;
   private bounceFill: number = 0;
 
@@ -54,9 +54,10 @@ export class Microphone implements Sprite {
       }
     };
     this.getNoteNodes = params.getNoteNodes;
-    this.dopplerSettings = {
-      mode: DopplerMode.On,
-      speedOfSound: 3000
+    this.audioSettings = {
+      dopplerMode: DopplerMode.On,
+      speedOfSound: 3000,
+      distanceVolumeRolloff: 4
     };
 
     // Create synth
@@ -78,12 +79,12 @@ export class Microphone implements Sprite {
   }
 
   @autobind
-  public updateDopplerSettings(value: DopplerSettings) {
-    this.dopplerSettings = value;
+  public updateAudioSettings(value: MicrophoneAudioSettings) {
+    this.audioSettings = value;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    const {angle, dopplerSettings} = this;
+    const {angle, audioSettings} = this;
     const {position} = this.traveler;
     if (!position) {
       return;
@@ -121,7 +122,7 @@ export class Microphone implements Sprite {
       const angleToNode = angleBetween(noteNode.position, position);
       const distanceToNode = distanceBetween(position, noteNode.position);
 
-      let adjustedFreq = dopplerSettings
+      let adjustedFreq = audioSettings
         ? doppler({
             source: {
               freq,
@@ -132,7 +133,7 @@ export class Microphone implements Sprite {
               position: this.traveler.position,
               vector: this.traveler.vector
             },
-            settings: dopplerSettings
+            settings: audioSettings
           })
         : freq;
 
@@ -149,7 +150,7 @@ export class Microphone implements Sprite {
         inputMax: this.maxDistance,
         outputMin: -4,
         outputMax: -75,
-        logarithmic: 4,
+        logarithmic: audioSettings.distanceVolumeRolloff,
         overflowMode: OverflowMode.Constrain
       });
 
