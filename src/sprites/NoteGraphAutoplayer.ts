@@ -11,7 +11,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   // Store which notes are currently being played
   public readonly noteValues = new Set<NoteValue>();
 
-  public readonly actions: NoteGraphAction[];
+  public readonly actions: NoteGraphAction[][];
   private randomActions = new Map<() => void, number>();
 
   constructor(private readonly noteGraph: NoteGraph, private readonly onNotesUpdated: () => void) {
@@ -27,26 +27,32 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
     // Set publicly accessible actions
     this.actions = [
-      {
-        name: 'Related chord',
-        action: this.loadRelatedChord
-      },
-      {
-        name: 'Add Note',
-        action: this.addNote
-      },
-      {
-        name: 'Delete Note',
-        action: this.deleteNote
-      },
-      {
-        name: 'Add Node',
-        action: this.createNode
-      },
-      {
-        name: 'Delete Node',
-        action: this.noteGraph.deleteNode
-      }
+      [
+        {
+          name: 'Related chord',
+          action: this.loadRelatedChord
+        }
+      ],
+      [
+        {
+          name: 'Add Note',
+          action: this.addNote
+        },
+        {
+          name: 'Delete Note',
+          action: this.deleteNote
+        }
+      ],
+      [
+        {
+          name: 'Add Node',
+          action: this.createNode
+        },
+        {
+          name: 'Delete Node',
+          action: this.noteGraph.deleteNode
+        }
+      ]
     ];
 
     // Create random actions

@@ -7,7 +7,7 @@ import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 export class NoteGraphMidiPlayer implements NoteGraphController {
   private notes = new Map<Note, NoteNode[]>();
 
-  public readonly actions: NoteGraphAction[] = [];
+  public readonly actions: NoteGraphAction[][] = [];
 
   constructor(private readonly noteGraph: NoteGraph, private readonly onNotesUpdated: () => void) {}
 

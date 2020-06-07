@@ -1,4 +1,10 @@
 .doppler-synth-menu {
+  .doppler-synth-menu-mode {
+    label {
+      display: block;
+    }
+  }
+
   fieldset {
     border: none;
     border-radius: 0.25rem;

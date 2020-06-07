@@ -11,7 +11,7 @@ import DopplerSynthModeSchema from '../schemas/DopplerSynthMode.json';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
 import {NoteGraphAutoplayer} from '../sprites/NoteGraphAutoplayer';
-import {NoteGraphController} from '../sprites/NoteGraphController';
+import {NoteGraphAction, NoteGraphController} from '../sprites/NoteGraphController';
 import {NoteGraphMidiPlayer} from '../sprites/NoteGraphMidiPlayer';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
@@ -152,13 +152,16 @@ export class DopplerSynthGame implements Game {
 
     return (
       <div className='doppler-synth-menu'>
-        <fieldset>
+        <fieldset className='doppler-synth-menu-mode'>
           <label>DopplerSynth</label>
           <button onClick={this.reset}>Reset</button>
           <JsonSchemaForm
             value={this.mode}
             onChange={this.updateMode}
-            schema={DopplerSynthModeSchema as JsonSchema}
+            schema={{
+              ...(DopplerSynthModeSchema as JsonSchema),
+              title: 'Mode'
+            }}
           />
         </fieldset>
         <fieldset>
@@ -174,11 +177,17 @@ export class DopplerSynthGame implements Game {
           <div />
           <div>
             <div>
-              {this.noteGraphController.actions.map(({name, action}, idx) => (
-                <button key={idx} onClick={action}>
-                  {name}
-                </button>
-              ))}
+              {this.noteGraphController.actions.map(
+                (actionGroup: NoteGraphAction[], idx: number) => (
+                  <div key={idx}>
+                    {actionGroup.map(({action, name}, idx) => (
+                      <button key={idx} onClick={action}>
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                )
+              )}
             </div>
             <div>
               <button onClick={this.addEdges}>Add Edges</button>
