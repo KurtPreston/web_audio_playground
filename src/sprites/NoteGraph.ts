@@ -64,7 +64,7 @@ export class NoteGraph implements Sprite {
       maxVelocity: 1000,
       volumeRampTime: 1000,
       nodeFadeInTime: 1000,
-      nodeFadeOutTime: 250,
+      nodeFadeOutTime: 500,
       nodeSize: 25
     };
   }
@@ -304,7 +304,7 @@ export class NoteGraph implements Sprite {
     const edgeWidth = 3;
 
     const springGrowthRate = this.physics.edgeStrength / fadeInFrames;
-    const springDecayRate = this.physics.edgeStrength / fadeOutFrames;
+    const springDecayRate = (this.physics.edgeStrength / fadeOutFrames) * 3;
     const lineGrowthRate = edgeWidth / fadeInFrames;
     const lineDecayRate = edgeWidth / fadeOutFrames;
 
