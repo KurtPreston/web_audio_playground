@@ -35,7 +35,6 @@ export class Microphone implements Sprite {
   // Constants
   private readonly getNoteNodes: () => Set<NoteNode>;
   private readonly color = 'white';
-  private readonly maxDistance = 600;
 
   // Doppler settings
   public audioSettings: MicrophoneAudioSettings;
@@ -57,7 +56,9 @@ export class Microphone implements Sprite {
     this.audioSettings = {
       dopplerMode: DopplerMode.On,
       speedOfSound: 3000,
-      distanceVolumeRolloff: 4
+      distanceVolumeRolloff: 4,
+      maxAudibleDistance: 600,
+      maxNodeVolume: -4
     };
 
     // Create synth
@@ -147,7 +148,7 @@ export class Microphone implements Sprite {
       const volume = scale({
         input: distanceToNode,
         inputMin: 0,
-        inputMax: this.maxDistance,
+        inputMax: audioSettings.maxAudibleDistance,
         outputMin: -4,
         outputMax: -75,
         logarithmic: audioSettings.distanceVolumeRolloff,

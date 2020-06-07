@@ -2,11 +2,23 @@
   "title": "Microphone Audio Settings",
   "type": "object",
   "properties": {
+    "maxAudibleDistance": {
+      "title": "Max Audible Distance",
+      "type": "number",
+      "minimum": 100,
+      "maximum": 5000
+    },
     "distanceVolumeRolloff": {
       "title": "Distance-Volume Roll-off",
       "type": "number",
-      "minimum": -10,
-      "maximum": 10
+      "minimum": 1,
+      "maximum": 20
+    },
+    "maxNodeVolume": {
+      "title": "Max Node Volume (db)",
+      "type": "number",
+      "minimum": -30,
+      "maximum": 0
     },
     "dopplerMode": {
       "title": "Doppler Mode",
@@ -23,6 +35,12 @@
       "maximum": 5000
     }
   },
-  "required": ["dopplerMode", "speedOfSound", "distanceVolumeRolloff"],
+  "required": [
+    "dopplerMode",
+    "speedOfSound",
+    "distanceVolumeRolloff",
+    "maxAudibleDistance",
+    "maxNodeVolume"
+  ],
   "additionalProperties": false
 }

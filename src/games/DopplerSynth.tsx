@@ -141,8 +141,18 @@ export class DopplerSynthGame implements Game {
     this.mode = mode;
     if (mode === 'midi') {
       this.requestMidi();
+      this.updateAudioSettings({
+        ...this.microphone.audioSettings,
+        maxAudibleDistance: 1500,
+        maxNodeVolume: -12
+      });
       this.noteGraphController = new NoteGraphMidiPlayer(this.noteGraph, this.updateMenu);
     } else if (mode === 'auto') {
+      this.updateAudioSettings({
+        ...this.microphone.audioSettings,
+        maxAudibleDistance: 600,
+        maxNodeVolume: -4
+      });
       this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
     }
   }
@@ -206,7 +216,10 @@ export class DopplerSynthGame implements Game {
         <JsonSchemaForm
           value={this.microphone.audioSettings}
           onChange={this.updateAudioSettings}
-          schema={MicrophoneAudioSettingsSchema as JsonSchema}
+          schema={{
+            ...(MicrophoneAudioSettingsSchema as JsonSchema),
+            title: 'Audio'
+          }}
         />
         <NoteGraphPhysicsForm value={this.noteGraph.physics} onChange={this.updatePhysics} />
       </div>
