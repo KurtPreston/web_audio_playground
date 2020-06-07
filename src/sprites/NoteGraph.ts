@@ -9,7 +9,7 @@ import {nodeGroups} from '../math/graph/nodeGroups';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
 import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
-import {Dimensions, IPosition, IVector, WorldState} from '../types/State';
+import {Dimensions, FRAME_RATE, IPosition, IVector, WorldState} from '../types/State';
 import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 
@@ -61,7 +61,11 @@ export class NoteGraph implements Sprite {
       repulsionStrength: 5000,
       repulsionExponent: 1.5,
       momentumDamping: 0.8,
-      maxVelocity: 1000
+      maxVelocity: 1000,
+      volumeRampTime: 1000,
+      nodeFadeInTime: 1000,
+      nodeFadeOutTime: 250,
+      nodeSize: 25
     };
   }
 
@@ -82,7 +86,7 @@ export class NoteGraph implements Sprite {
     });
     synth.volume.value = -100;
     synth.start();
-    synth.volume.rampTo(0, 1);
+    synth.volume.exponentialRampTo(0, this.physics.volumeRampTime / 1000);
     const panVol = new PanVol();
 
     panVol.connect(this.channel);
@@ -221,7 +225,7 @@ export class NoteGraph implements Sprite {
             }
           });
         }
-      }, 1000);
+      }, this.physics.nodeFadeOutTime);
     }
   }
 
@@ -254,9 +258,8 @@ export class NoteGraph implements Sprite {
       const {letter, accidental} = getNoteInfo(note);
 
       // Draw nodes
-      const nodeSize = size;
+      const nodeSize = Math.max(size, 0.001);
       const fontSize = 0.8 * size;
-      const noteIsSelected = false;
       canvas.beginPath();
       canvas.arc(x, y, nodeSize, 0, 2 * Math.PI);
       canvas.fillStyle = noteColor(note, 0.5);
@@ -264,13 +267,13 @@ export class NoteGraph implements Sprite {
       canvas.closePath();
 
       // Draw letters
-      canvas.font = noteIsSelected
-        ? `bold ${fontSize * 1.25}px sans-serif`
-        : `${fontSize}px sans-serif`;
-      canvas.fillStyle = 'white';
-      canvas.textAlign = 'center';
-      canvas.textBaseline = 'middle';
-      canvas.fillText(`${letter}${accidental ? '♯' : ''}`, x, y);
+      if (!node.flaggedForDelete) {
+        canvas.font = `${fontSize}px sans-serif`;
+        canvas.fillStyle = 'white';
+        canvas.textAlign = 'center';
+        canvas.textBaseline = 'middle';
+        canvas.fillText(`${letter}${accidental ? '♯' : ''}`, x, y);
+      }
     });
   }
 
@@ -281,39 +284,50 @@ export class NoteGraph implements Sprite {
     this.dimensions = dimensions;
 
     // Grow new nodes to target size
+    const fadeInFrames = (this.physics.nodeFadeInTime / 1000) * FRAME_RATE;
+    const fadeOutFrames = (this.physics.nodeFadeOutTime / 1000) * FRAME_RATE;
+    const nodeGrowthRate = this.physics.nodeSize / fadeInFrames;
+    const nodeDecayRate = this.physics.nodeSize / fadeOutFrames;
     this.nodes.forEach((node) => {
       if (node.flaggedForDelete) {
         if (node.size > 0) {
-          node.size--;
+          node.size -= nodeDecayRate;
         }
       } else {
-        if (node.size < 25) {
-          node.size++;
+        if (node.size < this.physics.nodeSize) {
+          node.size += nodeGrowthRate;
         }
       }
     });
 
     // Grow edges to target strength
+    const edgeWidth = 3;
+
+    const springGrowthRate = this.physics.edgeStrength / fadeInFrames;
+    const springDecayRate = this.physics.edgeStrength / fadeOutFrames;
+    const lineGrowthRate = edgeWidth / fadeInFrames;
+    const lineDecayRate = edgeWidth / fadeOutFrames;
+
     this.edges.forEach((edge) => {
       if (edge.flaggedForDelete) {
         if (edge.springConstant > 0) {
-          edge.springConstant -= 0.05;
+          edge.springConstant -= springDecayRate;
         }
 
         if (edge.lineWidth > 0) {
-          edge.lineWidth -= 0.1;
+          edge.lineWidth -= lineDecayRate;
         }
 
         if (edge.lineWidth <= 0 || edge.springConstant <= 0) {
           this.edges.delete(edge);
         }
       } else {
-        if (edge.springConstant < 0.1) {
-          edge.springConstant += 0.01;
+        if (edge.springConstant < this.physics.edgeStrength) {
+          edge.springConstant += springGrowthRate;
         }
 
         if (edge.lineWidth < 3) {
-          edge.lineWidth += 0.03;
+          edge.lineWidth += lineGrowthRate;
         }
       }
     });

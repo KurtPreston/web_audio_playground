@@ -1,6 +1,8 @@
 import {Note} from '../audio/Note';
 import {AudioData} from './AudioData';
 
+export const FRAME_RATE = 25;
+
 export interface WorldState {
   dimensions: Dimensions;
   audio: AudioData;

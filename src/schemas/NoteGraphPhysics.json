@@ -37,6 +37,30 @@
       "title": "Max Velocity",
       "minimum": 1,
       "maximum": 1000
+    },
+    "nodeFadeInTime": {
+      "type": "number",
+      "title": "Node Fade-in Time (ms)",
+      "minimum": 1,
+      "maximum": 3000
+    },
+    "nodeFadeOutTime": {
+      "type": "number",
+      "title": "Node Fade-out Time (ms)",
+      "minimum": 1,
+      "maximum": 3000
+    },
+    "volumeRampTime": {
+      "type": "number",
+      "title": "Volume Ramp Time (ms)",
+      "minimum": 1,
+      "maximum": 3000
+    },
+    "nodeSize": {
+      "type": "number",
+      "title": "Node Size",
+      "minimum": 1,
+      "maximum": 100
     }
   },
   "required": [
@@ -45,7 +69,11 @@
     "repulsionExponent",
     "repulsionStrength",
     "momentumDamping",
-    "maxVelocity"
+    "maxVelocity",
+    "volumeRampTime",
+    "nodeFadeInTime",
+    "nodeFadeOutTime",
+    "nodeSize"
   ],
   "additionalProperties": false
 }

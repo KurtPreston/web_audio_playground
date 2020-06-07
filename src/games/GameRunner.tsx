@@ -5,7 +5,7 @@ import {Context as AudioContext} from 'tone';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {Note} from '../audio/Note';
 import {emptyAudioData} from '../types/AudioData';
-import {DeviceOrientation, Dimensions, IPosition, WorldState} from '../types/State';
+import {DeviceOrientation, Dimensions, FRAME_RATE, IPosition, WorldState} from '../types/State';
 import {Game, GameInfo} from './Game';
 
 export interface GameRunnerProps {
@@ -299,7 +299,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const {gameLoop} = this.state;
     if (!gameLoop) {
       this.setState({
-        gameLoop: setInterval(this.tick, 25)
+        gameLoop: setInterval(this.tick, FRAME_RATE)
       });
     }
   }
