@@ -52,6 +52,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
       })
     );
     this.notes.set(midiNote, nodes);
+    this.onNotesUpdated();
   }
 
   private releaseNote(note: Note) {
@@ -59,6 +60,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
       this.noteGraph.deleteNode(node);
     });
     this.notes.delete(note);
+    this.onNotesUpdated();
   }
 
   public destroy() {

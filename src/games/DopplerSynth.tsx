@@ -38,8 +38,9 @@ export class DopplerSynthGame implements Game {
   private readonly channel: ToneAudioNode;
   private lastDimensions: Dimensions;
 
-  // Constants
+  // References
   private updateMenu: () => void;
+  private requestMidi: () => void;
 
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
     setContext(initializers.audioContext);
@@ -63,6 +64,7 @@ export class DopplerSynthGame implements Game {
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
+    this.requestMidi = initializers.midi;
   }
 
   public sprites(): Sprite[] {
@@ -137,10 +139,12 @@ export class DopplerSynthGame implements Game {
   public updateMode(mode: DopplerSynthMode) {
     this.noteGraphController.destroy();
     this.mode = mode;
-    this.noteGraphController =
-      mode === 'midi'
-        ? new NoteGraphMidiPlayer(this.noteGraph, this.updateMenu)
-        : new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
+    if (mode === 'midi') {
+      this.requestMidi();
+      this.noteGraphController = new NoteGraphMidiPlayer(this.noteGraph, this.updateMenu);
+    } else if (mode === 'auto') {
+      this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
+    }
   }
 
   public menu() {
