@@ -9,6 +9,7 @@ import {DopplerSettingsForm} from '../forms/DopplerSettingsForm';
 import {NoteGraphPhysicsForm} from '../forms/NoteGraphPhysicsForm';
 import {Microphone} from '../sprites/Microphone';
 import {NoteGraph, NoteNode} from '../sprites/NoteGraph';
+import {NoteGraphAutoplayer} from '../sprites/NoteGraphAutoplayer';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
 import {DopplerSettings} from '../types/DopplerSettings';
@@ -23,6 +24,7 @@ export class DopplerSynthGame implements Game {
 
   // Sprites
   private noteGraph: NoteGraph;
+  private noteGraphAutoplayer: NoteGraphAutoplayer;
   private readonly bg: Sprite;
   private readonly microphone: Microphone;
 
@@ -52,6 +54,7 @@ export class DopplerSynthGame implements Game {
       dimensions,
       channel: this.channel
     });
+    this.noteGraphAutoplayer = new NoteGraphAutoplayer(this.noteGraph);
     this.microphone = new Microphone({
       getNoteNodes: this.getNoteNodes,
       channel: this.channel
@@ -79,17 +82,17 @@ export class DopplerSynthGame implements Game {
   }
 
   public addNoteNode() {
-    this.noteGraph.createNode();
+    this.noteGraphAutoplayer.createNode();
     this.updateMenu();
   }
 
   public addNote() {
     const noteValue: NoteValue = random(0, 12);
     const unusedNotes = range(0, 12).filter(
-      (noteValue: NoteValue) => !this.noteGraph.notes.has(noteValue)
+      (noteValue: NoteValue) => !this.noteGraphAutoplayer.notes.has(noteValue)
     );
     if (unusedNotes.length) {
-      this.noteGraph.addNote(noteValue);
+      this.noteGraphAutoplayer.addNote(noteValue);
       this.updateMenu();
     }
   }
@@ -107,13 +110,13 @@ export class DopplerSynthGame implements Game {
   }
 
   public loadRelatedChord() {
-    const relatedChord = generateRelatedChord(this.noteGraph.notes);
-    this.noteGraph.setChord(relatedChord.notes);
+    const relatedChord = generateRelatedChord(this.noteGraphAutoplayer.notes);
+    this.noteGraphAutoplayer.setChord(relatedChord.notes);
     this.updateMenu();
   }
 
   public deleteNote() {
-    this.noteGraph.deleteNote(sample(Array.from(this.noteGraph.notes)) as Note);
+    this.noteGraphAutoplayer.deleteNote(sample(Array.from(this.noteGraphAutoplayer.notes)) as Note);
     this.updateMenu();
   }
 
@@ -143,6 +146,7 @@ export class DopplerSynthGame implements Game {
         dimensions: this.lastDimensions,
         channel: this.channel
       });
+      this.noteGraphAutoplayer = new NoteGraphAutoplayer(this.noteGraph);
       this.updateMenu();
     }, 1000);
   }
@@ -178,7 +182,7 @@ export class DopplerSynthGame implements Game {
       return null;
     }
 
-    const notesArray: NoteValue[] = Array.from(this.noteGraph.notes);
+    const notesArray: NoteValue[] = Array.from(this.noteGraphAutoplayer.notes);
 
     return (
       <div className='doppler-synth-menu'>
