@@ -5,6 +5,7 @@ export interface NoteGraphController {
   tick: (world: WorldState) => void;
   destroy: () => void;
   actions: NoteGraphAction[][];
+  controls?: () => React.ReactNode;
   noteValues: Set<NoteValue>;
 }
 

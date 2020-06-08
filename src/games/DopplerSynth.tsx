@@ -184,6 +184,7 @@ export class DopplerSynthGame implements Game {
               title: 'Mode'
             }}
           />
+          {this.noteGraphController.controls && this.noteGraphController.controls()}
         </fieldset>
         <fieldset>
           <label>Notes</label>

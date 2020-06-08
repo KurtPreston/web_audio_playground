@@ -1,18 +1,18 @@
-import {compact, random, times} from 'lodash';
+import {compact, omit, random, times} from 'lodash';
 import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
+import {JsonSchemaForm} from '../forms/JsonSchemaForm';
+import NoteGraphMidiPlayerOptionsSchema from '../schemas/NoteGraphMidiPlayerOptions.json';
+import {JsonSchema} from '../types/JsonSchema';
+import {NoteGraphMidiPlayerOptions} from '../types/NoteGraphMidiPlayerOptions.d';
 import {WorldState} from '../types/State';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
-
-interface NoteGraphMidiPlayerOptions {
-  autoRelease?: number;
-}
 
 export class NoteGraphMidiPlayer implements NoteGraphController {
   private notes = new Map<Note, NoteNode[]>();
 
   private options: NoteGraphMidiPlayerOptions = {
-    autoRelease: 150
+    autoRelease: 0
   };
 
   public readonly actions: NoteGraphAction[][] = [];
@@ -44,6 +44,18 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   }
 
   public tick(world: WorldState) {}
+
+  public controls() {
+    return JsonSchemaForm({
+      value: this.options,
+      onChange: (options) => {
+        this.options = options;
+        this.clearNotes();
+        this.onNotesUpdated(); // Update menu
+      },
+      schema: omit(NoteGraphMidiPlayerOptionsSchema as JsonSchema, 'title')
+    });
+  }
 
   public get noteValues(): Set<NoteValue> {
     const noteValues = new Set<NoteValue>();
@@ -87,11 +99,16 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
     this.onNotesUpdated();
   }
 
-  public destroy() {
+  private clearNotes() {
     this.notes.forEach((nodes: NoteNode[]) => {
       nodes.forEach((node: NoteNode) => {
         this.noteGraph.deleteNode(node);
       });
     });
+    this.notes.clear();
+  }
+
+  public destroy() {
+    this.clearNotes();
   }
 }
