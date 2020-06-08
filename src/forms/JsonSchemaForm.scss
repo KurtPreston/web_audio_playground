@@ -17,8 +17,14 @@
   }
 }
 
-.jsonschema-enum-form {
-  .jsonschema-enum-form-radio {
+.jsonschema-enum-radio {
+  .jsonschema-enum-radio-choice {
     margin-right: 0.25rem;
+  }
+}
+
+.jsonschema-enum-dropdown {
+  select {
+    display: block;
   }
 }

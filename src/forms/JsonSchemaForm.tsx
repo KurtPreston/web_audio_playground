@@ -15,7 +15,11 @@ const RANGE_PRECISION = 3;
 export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactElement {
   const {schema} = props;
   if (schema.enum) {
-    return JsonSchemaEnumForm(props as any);
+    if (schema.enum.length > 3) {
+      return JsonSchemaEnumDropdown(props as any);
+    } else {
+      return JsonSchemaEnumRadio(props as any);
+    }
   } else if (schema.type === 'object') {
     return JsonSchemaObjectForm(props as any);
   } else if (schema.type === 'number') {
@@ -105,11 +109,11 @@ function formStep(schema: JsonSchema): number | undefined {
   }
 }
 
-function JsonSchemaEnumForm(props: JsonSchemaFormProps<any>): React.ReactElement {
+function JsonSchemaEnumRadio(props: JsonSchemaFormProps<any>): React.ReactElement {
   const {onChange, schema, value} = props;
 
   return (
-    <div className='jsonschema-enum-form'>
+    <div className='jsonschema-enum-radio'>
       <label>{schema.title}</label>
       <div>
         {(props.schema.enum || []).map((enumValue, idx) => {
@@ -120,7 +124,7 @@ function JsonSchemaEnumForm(props: JsonSchemaFormProps<any>): React.ReactElement
           };
 
           return (
-            <label className='jsonschema-enum-form-radio' key={idx}>
+            <label className='jsonschema-enum-radio-choice' key={idx}>
               <input
                 type='radio'
                 value={enumValue as any}
@@ -132,6 +136,30 @@ function JsonSchemaEnumForm(props: JsonSchemaFormProps<any>): React.ReactElement
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function JsonSchemaEnumDropdown(props: JsonSchemaFormProps<any>): React.ReactElement {
+  const {onChange, schema, value} = props;
+
+  const onSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onChange(event.target.value);
+  };
+
+  return (
+    <div className='jsonschema-enum-dropdown'>
+      <label>{schema.title}</label>
+      <select value={value} onChange={onSelectionChange}>
+        {(schema.enum || []).map((choice, idx) => {
+          const title = schema.enumNames ? schema.enumNames[idx] : choice;
+          return (
+            <option key={idx} value={choice as string | number}>
+              {title}
+            </option>
+          );
+        })}
+      </select>
     </div>
   );
 }
