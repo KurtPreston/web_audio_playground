@@ -65,7 +65,8 @@ export class NoteGraph implements Sprite {
       volumeRampTime: 1000,
       nodeFadeInTime: 1000,
       nodeFadeOutTime: 500,
-      nodeSize: 25
+      nodeSize: 25,
+      rotationMode: params.dimensions.width > params.dimensions.height ? 'clockhoriz' : 'clockvert'
     };
   }
 
@@ -361,10 +362,34 @@ export class NoteGraph implements Sprite {
           exponent: this.physics.repulsionExponent
         });
 
-        node1.vector.xMomentum += xForce;
-        node1.vector.yMomentum += yForce;
-        node2.vector.yMomentum -= xForce;
-        node2.vector.yMomentum -= yForce;
+        switch (this.physics.rotationMode) {
+          case 'stable':
+            node1.vector.xMomentum += xForce;
+            node1.vector.yMomentum += yForce;
+            node2.vector.xMomentum -= xForce;
+            node2.vector.yMomentum -= yForce;
+            return;
+          case 'clockvert':
+            node1.vector.xMomentum += xForce;
+            node1.vector.yMomentum += yForce;
+            node2.vector.yMomentum -= xForce + yForce;
+            return;
+          case 'countervert':
+            node1.vector.xMomentum += xForce;
+            node1.vector.yMomentum += yForce;
+            node2.vector.yMomentum -= yForce - xForce;
+            return;
+          case 'counterhoriz':
+            node1.vector.xMomentum += xForce;
+            node1.vector.yMomentum += yForce;
+            node2.vector.xMomentum -= xForce + yForce;
+            return;
+          case 'clockhoriz':
+            node1.vector.xMomentum += xForce;
+            node1.vector.yMomentum += yForce;
+            node2.vector.xMomentum -= xForce - yForce;
+            return;
+        }
       });
     });
 

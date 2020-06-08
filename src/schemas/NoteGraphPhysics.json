@@ -2,6 +2,18 @@
   "type": "object",
   "title": "Note Graph Physics",
   "properties": {
+    "rotationMode": {
+      "type": "string",
+      "title": "Rotation",
+      "enum": ["stable", "clockvert", "countervert", "clockhoriz", "counterhoriz"],
+      "enumNames": [
+        "Stable",
+        "Clockwise Vertical",
+        "Counter-Clockwise Vertical",
+        "Clockwise Horizontal",
+        "Counter-Clockwise Horizontal"
+      ]
+    },
     "edgeLength": {
       "type": "number",
       "title": "Edge Length",
@@ -73,7 +85,8 @@
     "volumeRampTime",
     "nodeFadeInTime",
     "nodeFadeOutTime",
-    "nodeSize"
+    "nodeSize",
+    "rotationMode"
   ],
   "additionalProperties": false
 }
