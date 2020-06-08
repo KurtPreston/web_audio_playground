@@ -2,6 +2,7 @@ import {autobind} from 'core-decorators';
 import NoSleep from 'nosleep.js';
 import React from 'react';
 import {Context as AudioContext} from 'tone';
+import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {Note} from '../audio/Note';
 import {emptyAudioData} from '../types/AudioData';
@@ -14,7 +15,7 @@ export interface GameRunnerProps {
 }
 
 export interface GameRunnerState {
-  gameLoop: NodeJS.Timeout | undefined;
+  gameLoop: number | undefined;
   menuOpen: boolean;
   requireClickToStart: boolean;
 }
