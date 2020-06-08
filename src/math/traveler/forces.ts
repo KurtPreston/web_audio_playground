@@ -16,24 +16,24 @@ export const BounceOffEdge = (
   let {xMomentum, yMomentum} = vector;
 
   // Bounce off left
-  if (x < 0 && xMomentum < 0) {
+  if (x <= 0 && xMomentum < 0) {
     xMomentum *= -1;
     onBounce();
   }
 
   // Bounce off right
-  if (x > width && xMomentum > 0) {
+  if (x >= width && xMomentum > 0) {
     xMomentum *= -1;
     onBounce();
   }
 
   // Bounce off top
-  if (y < 0 && yMomentum < 0) {
+  if (y <= 0 && yMomentum < 0) {
     yMomentum *= -1;
     onBounce();
   }
 
-  if (y > height && yMomentum > 0) {
+  if (y >= height && yMomentum > 0) {
     yMomentum *= -1;
     onBounce();
   }

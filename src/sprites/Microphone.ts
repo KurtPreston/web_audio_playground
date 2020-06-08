@@ -189,6 +189,16 @@ export class Microphone implements Sprite {
     }
 
     updateTraveler(this.traveler, [this.bounceOffEdgeWithSound], world);
+    if (this.traveler.position.x < 0) {
+      this.traveler.position.x = 0;
+    } else if (this.traveler.position.x > world.dimensions.width) {
+      this.traveler.position.x = world.dimensions.width;
+    }
+    if (this.traveler.position.y < 0) {
+      this.traveler.position.y = 0;
+    } else if (this.traveler.position.y > world.dimensions.height) {
+      this.traveler.position.y = world.dimensions.height;
+    }
 
     this.angle += this.angularMomentum;
     this.bounceFill *= 0.9;
