@@ -61,7 +61,7 @@ export class NoteGraph implements Sprite {
       repulsionStrength: 5000,
       repulsionExponent: 1.5,
       momentumDamping: 0.8,
-      maxVelocity: 1000,
+      maxVelocity: 500,
       volumeRampTime: 1000,
       nodeFadeInTime: 1000,
       nodeFadeOutTime: 500,
