@@ -9,7 +9,7 @@ import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 
 export class NoteGraphMidiPlayer implements NoteGraphController {
-  private notes = new Map<Note, NoteNode[]>();
+  private notes = new Map<Note, Set<NoteNode>>();
 
   private options: NoteGraphMidiPlayerOptions = {
     autoRelease: 0
@@ -67,27 +67,31 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   }
 
   private playNote(midiNote: Note) {
-    const prevNodes: NoteNode[] = this.notes.get(midiNote) || [];
-    const newNodes: NoteNode[] = compact(
+    const nodeSet: Set<NoteNode> = this.notes.get(midiNote) || new Set<NoteNode>();
+    const newNodes = compact(
       times(random(2, 5), () => {
-        return this.noteGraph.createNode({
-          midiNote
-        });
+        return this.noteGraph.createNode({midiNote});
       })
     );
 
-    const nodes: NoteNode[] = [...prevNodes, ...newNodes];
+    newNodes.forEach((node) => {
+      nodeSet.add(node);
+    });
 
     if (this.options.autoRelease) {
       setTimeout(() => {
         newNodes.forEach((node) => {
           this.noteGraph.deleteNode(node);
+          nodeSet.delete(node);
         });
+        if (nodeSet.size === 0) {
+          this.notes.delete(midiNote);
+        }
         this.onNotesUpdated();
       }, this.options.autoRelease);
     }
 
-    this.notes.set(midiNote, nodes);
+    this.notes.set(midiNote, nodeSet);
     this.onNotesUpdated();
   }
 
@@ -100,7 +104,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   }
 
   private clearNotes() {
-    this.notes.forEach((nodes: NoteNode[]) => {
+    this.notes.forEach((nodes: Set<NoteNode>) => {
       nodes.forEach((node: NoteNode) => {
         this.noteGraph.deleteNode(node);
       });
