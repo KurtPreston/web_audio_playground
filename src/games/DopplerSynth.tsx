@@ -59,7 +59,8 @@ export class DopplerSynthGame implements Game {
     this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, updateMenu);
     this.microphone = new Microphone({
       getNoteNodes: this.getNoteNodes,
-      channel: this.channel
+      channel: this.channel,
+      dimensions: world.dimensions
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
@@ -175,7 +176,6 @@ export class DopplerSynthGame implements Game {
       <div className='doppler-synth-menu'>
         <fieldset className='doppler-synth-menu-mode'>
           <label>DopplerSynth</label>
-          <button onClick={this.reset}>Reset</button>
           <JsonSchemaForm
             value={this.mode}
             onChange={this.updateMode}
@@ -218,6 +218,9 @@ export class DopplerSynthGame implements Game {
             <div>
               <button onClick={this.splitConstellation}>Split Groups</button>
               <button onClick={this.mergeConstellations}>Merge Groups</button>
+            </div>
+            <div>
+              <button onClick={this.reset}>Reset</button>
             </div>
           </div>
         </fieldset>

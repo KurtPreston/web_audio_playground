@@ -167,7 +167,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       } else {
         return (
           <div className='menu menu-closed'>
-            <button onClick={this.openMenu}>ⓘ</button>
+            <button onClick={this.openMenu}>☰</button>
           </div>
         );
       }

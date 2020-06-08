@@ -12,7 +12,7 @@ import {updateTraveler} from '../math/traveler/updateTraveler';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
 import {DopplerMode, MicrophoneAudioSettings} from '../types/MicrophoneAudioSettings.d';
-import {ITraveler, WorldState} from '../types/State';
+import {Dimensions, ITraveler, WorldState} from '../types/State';
 import {NoteNode} from './NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
 import {drawRotated} from './renderHelpers/drawRotated';
@@ -21,6 +21,7 @@ import {Sprite} from './Sprite';
 interface MicrophoneParams {
   getNoteNodes: () => Set<NoteNode>;
   channel: ToneAudioNode;
+  dimensions: Dimensions;
 }
 
 const headphoneWamdagImage = new Image();
@@ -44,7 +45,7 @@ export class Microphone implements Sprite {
   constructor(params: MicrophoneParams) {
     this.traveler = {
       position: {
-        x: 0,
+        x: params.dimensions.width,
         y: 0
       },
       vector: {
