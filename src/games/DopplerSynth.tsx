@@ -40,7 +40,6 @@ export class DopplerSynthGame implements Game {
 
   // References
   private updateMenu: () => void;
-  private requestMidi: () => void;
 
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
     setContext(initializers.audioContext);
@@ -64,7 +63,6 @@ export class DopplerSynthGame implements Game {
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
-    this.requestMidi = initializers.midi;
   }
 
   public sprites(): Sprite[] {
@@ -140,7 +138,6 @@ export class DopplerSynthGame implements Game {
     this.noteGraphController.destroy();
     this.mode = mode;
     if (mode === 'midi') {
-      this.requestMidi();
       this.updateAudioSettings({
         ...this.microphone.audioSettings,
         maxAudibleDistance: 1500,

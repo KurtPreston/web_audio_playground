@@ -17,7 +17,6 @@ export interface GameClass {
 
 export interface ResourceInitializers {
   mic: () => void;
-  midi: () => void;
   deviceOrientation: () => void;
   audioContext: AudioContext;
   analyserNode: AnalyserNode;
