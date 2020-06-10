@@ -1,4 +1,5 @@
-import {compact, omit, random, times} from 'lodash';
+import {compact, isNumber, omit, random, times} from 'lodash';
+import MidiPlayer from 'midi-player-js';
 import {Oscillator, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
@@ -35,6 +36,28 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
     this.onNotesUpdated = params.onNotesUpdated;
     this.channel = params.channel;
     this.initializeMidi();
+
+    this.playMidiTrack();
+  }
+
+  private async playMidiTrack() {
+    const Player = new MidiPlayer.Player();
+    const response = await fetch('/moonlight_sonata.mid');
+    const blob = await response.blob();
+    const buffer = await (blob as any).arrayBuffer();
+    Player.loadArrayBuffer(buffer);
+    Player.on('midiEvent', (event: MidiPlayer.Event) => {
+      const {name, noteNumber, velocity} = event;
+      if (!noteNumber) {
+        return;
+      }
+      if (name === 'Note on' && noteNumber && isNumber(velocity)) {
+        this.playNote(noteNumber, velocity);
+      } else if (name === 'Note off' && noteNumber) {
+        this.releaseNote(noteNumber);
+      }
+    });
+    Player.play();
   }
 
   private async initializeMidi() {

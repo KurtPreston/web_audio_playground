@@ -7,6 +7,7 @@
     "core-decorators": "^0.20.0",
     "json-schema-to-typescript": "^9.1.0",
     "lodash": "^4.17.15",
+    "midi-player-js": "^2.0.13",
     "node-sass": "^4.14.0",
     "nosleep.js": "^0.11.0",
     "react": "^16.13.1",
