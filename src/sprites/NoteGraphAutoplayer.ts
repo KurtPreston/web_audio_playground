@@ -108,17 +108,15 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       const angleToNode = angleBetween(noteNode.position, position);
       const distanceToNode = distanceBetween(position, noteNode.position);
 
-      let adjustedFreq = audioSettings
-        ? doppler({
-            source: {
-              freq,
-              position: noteNode.position,
-              vector: noteNode.vector
-            },
-            target: traveler,
-            settings: audioSettings
-          })
-        : freq;
+      let adjustedFreq = doppler({
+        source: {
+          freq,
+          position: noteNode.position,
+          vector: noteNode.vector
+        },
+        target: traveler,
+        settings: audioSettings
+      });
 
       // Apply freq bounds
       if (adjustedFreq < 0) {
