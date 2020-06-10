@@ -132,16 +132,17 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   }
 
   private deleteNode(node: NoteNode) {
+    const releaseTime = 3000;
     this.noteGraph.deleteNode(node);
     const nodeMap = this.notes.get(node.note);
     if (nodeMap) {
       const synth = nodeMap.get(node);
       if (synth) {
-        synth.volume.exponentialRampTo(-200, 0.1);
+        synth.volume.exponentialRampTo(-200, releaseTime / 1000);
         setTimeout(() => {
           synth.disconnect();
           synth.dispose();
-        }, 1000);
+        }, releaseTime);
       }
 
       nodeMap.delete(node);
