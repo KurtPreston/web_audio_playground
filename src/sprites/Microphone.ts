@@ -53,8 +53,8 @@ export class Microphone implements Sprite {
     this.audioSettings = {
       dopplerMode: DopplerMode.On,
       speedOfSound: 3000,
-      distanceVolumeRolloff: 4,
-      maxAudibleDistance: 600,
+      distanceVolumeRolloff: 3,
+      maxAudibleDistance: Math.min(params.dimensions.width, params.dimensions.height),
       maxNodeVolume: -4
     };
 
