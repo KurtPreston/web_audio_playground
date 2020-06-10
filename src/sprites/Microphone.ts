@@ -5,12 +5,8 @@ import {midiNoteToFreq} from '../audio/midi';
 import {noteToNoteValue, NoteValue} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
 import headphoneWamdag from '../images/astroWamdag.svg';
-import {doppler} from '../math/physics/doppler';
-import {OverflowMode, scale} from '../math/scale';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
-import {angleBetween} from '../math/trig/angleBetween';
-import {distanceBetween} from '../math/trig/distanceBetween';
 import {DopplerMode, MicrophoneAudioSettings} from '../types/MicrophoneAudioSettings.d';
 import {Dimensions, ITraveler, WorldState} from '../types/State';
 import {NoteNode} from './NoteGraph';
@@ -29,7 +25,7 @@ headphoneWamdagImage.src = headphoneWamdag;
 
 export class Microphone implements Sprite {
   // Variables
-  private traveler: ITraveler;
+  public traveler: ITraveler;
   private angle: number = 0;
   private angularMomentum: number = 0.01;
 
@@ -86,7 +82,7 @@ export class Microphone implements Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    const {angle, audioSettings} = this;
+    const {angle} = this;
     const {position} = this.traveler;
     if (!position) {
       return;
@@ -114,56 +110,6 @@ export class Microphone implements Sprite {
         const wamSize = 100;
         canvas.drawImage(headphoneWamdagImage, -wamSize / 2, -wamSize / 2, wamSize, wamSize);
       }
-    });
-
-    // Play the audio
-    const noteNodes = this.getNoteNodes();
-    noteNodes.forEach((noteNode: NoteNode) => {
-      const {note, synth, panVol} = noteNode;
-      const freq = midiNoteToFreq(note);
-      const angleToNode = angleBetween(noteNode.position, position);
-      const distanceToNode = distanceBetween(position, noteNode.position);
-
-      let adjustedFreq = audioSettings
-        ? doppler({
-            source: {
-              freq,
-              position: noteNode.position,
-              vector: noteNode.vector
-            },
-            target: {
-              position: this.traveler.position,
-              vector: this.traveler.vector
-            },
-            settings: audioSettings
-          })
-        : freq;
-
-      // Apply freq bounds
-      if (adjustedFreq < 0) {
-        adjustedFreq = 0;
-      } else if (adjustedFreq > world.audio.sampleRate) {
-        adjustedFreq = world.audio.sampleRate;
-      }
-
-      const volume = scale({
-        input: distanceToNode,
-        inputMin: 0,
-        inputMax: audioSettings.maxAudibleDistance,
-        outputMin: -4,
-        outputMax: -75,
-        logarithmic: audioSettings.distanceVolumeRolloff,
-        overflowMode: OverflowMode.Constrain
-      });
-
-      // Let quiet nodes be for performance
-      if (panVol.volume.value < -30 && volume < -30) {
-        return;
-      }
-
-      // panVol.volume.rampTo(volume);
-      // panVol.pan.rampTo(Math.cos(angleToNode) * -1);
-      synth.frequency.value = adjustedFreq;
     });
   }
 

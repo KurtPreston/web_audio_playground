@@ -55,15 +55,16 @@ export class DopplerSynthGame implements Game {
     this.noteGraph = new NoteGraph({
       dimensions
     });
-    this.noteGraphController = new NoteGraphAutoplayer({
-      noteGraph: this.noteGraph,
-      onNotesUpdated: updateMenu,
-      channel: this.channel
-    });
     this.microphone = new Microphone({
       getNoteNodes: this.getNoteNodes,
       channel: this.channel,
       dimensions: world.dimensions
+    });
+    this.noteGraphController = new NoteGraphAutoplayer({
+      noteGraph: this.noteGraph,
+      onNotesUpdated: updateMenu,
+      channel: this.channel,
+      microphone: this.microphone
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
@@ -87,11 +88,6 @@ export class DopplerSynthGame implements Game {
     times(random(1, 5), () => {
       this.noteGraph.deleteEdge();
     });
-  }
-
-  public deleteNoteNode() {
-    this.noteGraph.deleteNode();
-    this.updateMenu();
   }
 
   public splitConstellation() {
@@ -120,7 +116,8 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        channel: this.channel
+        channel: this.channel,
+        microphone: this.microphone
       });
       this.updateMenu();
     }, 1000);
@@ -172,7 +169,8 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        channel: this.channel
+        channel: this.channel,
+        microphone: this.microphone
       });
     }
 

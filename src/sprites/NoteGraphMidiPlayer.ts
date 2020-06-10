@@ -1,5 +1,6 @@
 import {compact, omit, random, times} from 'lodash';
-import {ToneAudioNode} from 'tone';
+import {Oscillator, ToneAudioNode} from 'tone';
+import {midiNoteToFreq} from '../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
 import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {JsonSchemaForm} from '../forms/JsonSchemaForm';
@@ -18,7 +19,7 @@ export interface NoteGraphParams {
 }
 
 export class NoteGraphMidiPlayer implements NoteGraphController {
-  private readonly notes = new Map<Note, Set<NoteNode>>();
+  private readonly notes = new Map<Note, Map<NoteNode, Oscillator>>();
   private readonly noteGraph: NoteGraph;
   private readonly onNotesUpdated: () => void;
   private readonly channel: ToneAudioNode;
@@ -82,60 +83,81 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   }
 
   private playNote(midiNote: Note, velocity: number) {
-    const nodeSet: Set<NoteNode> = this.notes.get(midiNote) || new Set<NoteNode>();
+    const nodeMap: Map<NoteNode, Oscillator> =
+      this.notes.get(midiNote) || new Map<NoteNode, Oscillator>();
     const newNodes = compact(
       times(random(2, 5), () => {
-        console.log(velocity);
-        return this.noteGraph.createNode({
-          oscillator: {
-            ...randomSustainOscillatorOptions(),
-            volume: scale({
-              input: velocity,
-              inputMin: 0,
-              inputMax: 127,
-              outputMin: -25,
-              outputMax: 0,
-              logarithmic: 3
-            })
-          },
-          midiNote,
-          channel: this.channel
+        const synth = new Oscillator({
+          ...randomSustainOscillatorOptions(),
+          frequency: midiNoteToFreq(midiNote),
+          detune: random(-1, 1, true),
+          volume: scale({
+            input: velocity,
+            inputMin: 0,
+            inputMax: 127,
+            outputMin: -25,
+            outputMax: 0,
+            logarithmic: 3
+          })
         });
+        synth.start();
+        const node = this.noteGraph.createNode({
+          midiNote
+        });
+        synth.connect(this.channel);
+        return {
+          synth,
+          node
+        };
       })
     );
 
-    newNodes.forEach((node) => {
-      nodeSet.add(node);
+    newNodes.forEach(({node, synth}) => {
+      nodeMap.set(node, synth);
     });
 
     if (this.options.autoRelease) {
       setTimeout(() => {
-        newNodes.forEach((node) => {
-          this.noteGraph.deleteNode(node);
-          nodeSet.delete(node);
+        newNodes.forEach(({node}) => {
+          this.deleteNode(node);
         });
-        if (nodeSet.size === 0) {
-          this.notes.delete(midiNote);
-        }
         this.onNotesUpdated();
       }, this.options.autoRelease);
     }
 
-    this.notes.set(midiNote, nodeSet);
+    this.notes.set(midiNote, nodeMap);
     this.onNotesUpdated();
   }
 
+  private deleteNode(node: NoteNode) {
+    this.noteGraph.deleteNode(node);
+    const nodeMap = this.notes.get(node.note);
+    if (nodeMap) {
+      const synth = nodeMap.get(node);
+      if (synth) {
+        synth.disconnect();
+        synth.dispose();
+      }
+
+      nodeMap.delete(node);
+
+      if (nodeMap.size === 0) {
+        this.notes.delete(node.note);
+      }
+    }
+  }
+
   private releaseNote(note: Note) {
-    this.notes.get(note)?.forEach((node) => {
-      this.noteGraph.deleteNode(node);
+    this.notes.get(note)?.forEach((synth, node) => {
+      this.deleteNode(node);
     });
     this.notes.delete(note);
     this.onNotesUpdated();
   }
 
   private clearNotes() {
-    this.notes.forEach((nodes: Set<NoteNode>) => {
-      nodes.forEach((node: NoteNode) => {
+    this.notes.forEach((nodeMap) => {
+      nodeMap.forEach((synth, node) => {
         this.noteGraph.deleteNode(node);
       });
     });

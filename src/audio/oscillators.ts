@@ -23,7 +23,8 @@ export function randomSustainOscillator(): NonCustomOscillatorType {
 export function randomSustainOscillatorOptions() {
   return {
     type: randomSustainOscillator(),
-    partialCount: random(0, 10)
+    partialCount: random(0, 10),
+    phase: random(0, Math.PI * 2, true)
   };
 }
 

@@ -1,10 +1,6 @@
 import {autobind} from 'core-decorators';
 import {maxBy, random, sample, sampleSize, times, without} from 'lodash';
-import {Oscillator, PanVol, ToneAudioNode} from 'tone';
-import {ToneOscillatorConstructorOptions} from 'tone/build/esm/source/oscillator/OscillatorInterface';
-import {midiNoteToFreq} from '../audio/midi';
 import {getNoteInfo, Note, NoteValue} from '../audio/Note';
-import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {nodeGroups} from '../math/graph/nodeGroups';
 import {electricalForce} from '../math/physics/electricalForce';
 import {springForce} from '../math/physics/springForce';
@@ -24,8 +20,6 @@ export interface NoteNode {
   position: IPosition;
   vector: IVector;
   size: number;
-  synth: Oscillator;
-  panVol: PanVol;
   flaggedForDelete?: boolean;
 }
 
@@ -38,8 +32,6 @@ interface NoteEdge {
 }
 
 interface NodeOptions {
-  oscillator?: Partial<ToneOscillatorConstructorOptions>;
-  channel: ToneAudioNode;
   midiNote: Note;
 }
 
@@ -68,27 +60,9 @@ export class NoteGraph implements Sprite {
     };
   }
 
-  public createNode(options: NodeOptions): NoteNode | undefined {
-    const oscillator = options.oscillator || randomSustainOscillatorOptions();
+  public createNode(options: NodeOptions): NoteNode {
     const note = options.midiNote;
-    if (!note) {
-      return;
-    }
     const {width, height} = this.dimensions;
-
-    // Create the node
-    const synth = new Oscillator({
-      ...oscillator,
-      detune: random(-1, 1, true),
-      phase: random(0, Math.PI * 2, true),
-      frequency: midiNoteToFreq(note)
-    });
-    // synth.volume.value = -100;
-    synth.start();
-    // synth.volume.exponentialRampTo(0, this.physics.volumeRampTime / 1000);
-    const panVol = new PanVol();
-    synth.connect(panVol);
-    panVol.connect(options.channel);
 
     // Create the node
     const node: NoteNode = {
@@ -101,9 +75,7 @@ export class NoteGraph implements Sprite {
         x: random(0, width),
         y: random(0, height)
       },
-      size: 0,
-      synth,
-      panVol
+      size: 0
     };
 
     // Connect the node to the graph
@@ -200,31 +172,23 @@ export class NoteGraph implements Sprite {
     }
   }
 
-  public deleteNode(node?: NoteNode) {
-    node = node || sample(Array.from(this.nodes));
-    if (node) {
-      node.flaggedForDelete = true;
-      node.synth.volume.rampTo(-200, 1);
-      this.edges.forEach((edge: NoteEdge) => {
-        if (edge.node1 === node || edge.node2 === node) {
-          edge.flaggedForDelete = true;
-        }
-      });
-      setTimeout(() => {
-        if (node) {
-          node.panVol.disconnect();
-          node.synth.disconnect();
-          node.panVol.dispose();
-          node.synth.dispose();
-          this.nodes.delete(node);
-          this.edges.forEach((edge: NoteEdge) => {
-            if (edge.node1 === node || edge.node2 === node) {
-              this.edges.delete(edge);
-            }
-          });
-        }
-      }, this.physics.nodeFadeOutTime);
-    }
+  public deleteNode(node: NoteNode) {
+    node.flaggedForDelete = true;
+    this.edges.forEach((edge: NoteEdge) => {
+      if (edge.node1 === node || edge.node2 === node) {
+        edge.flaggedForDelete = true;
+      }
+    });
+    setTimeout(() => {
+      if (node) {
+        this.nodes.delete(node);
+        this.edges.forEach((edge: NoteEdge) => {
+          if (edge.node1 === node || edge.node2 === node) {
+            this.edges.delete(edge);
+          }
+        });
+      }
+    }, this.physics.nodeFadeOutTime);
   }
 
   public deleteEdge(edge?: NoteEdge) {
@@ -451,12 +415,6 @@ export class NoteGraph implements Sprite {
   }
 
   public destroy() {
-    this.nodes.forEach((node) => {
-      node.panVol.disconnect();
-      node.synth.disconnect();
-      node.panVol.dispose();
-      node.synth.dispose();
-    });
     this.nodes.clear();
     this.edges.clear();
   }
