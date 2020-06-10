@@ -10,7 +10,7 @@ import {doppler} from '../math/physics/doppler';
 import {OverflowMode, scale} from '../math/scale';
 import {angleBetween} from '../math/trig/angleBetween';
 import {distanceBetween} from '../math/trig/distanceBetween';
-import {WorldState} from '../types/State';
+import {FRAME_RATE, WorldState} from '../types/State';
 import {Microphone} from './Microphone';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
@@ -145,7 +145,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
       panVol.volume.rampTo(volume);
       panVol.pan.rampTo(Math.cos(angleToNode) * -1);
-      synth.frequency.value = adjustedFreq;
+      synth.frequency.rampTo(adjustedFreq, 1 / FRAME_RATE);
     });
 
     // Perform random actions
