@@ -158,7 +158,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   private clearNotes() {
     this.notes.forEach((nodeMap) => {
       nodeMap.forEach((synth, node) => {
-        this.noteGraph.deleteNode(node);
+        this.deleteNode(node);
       });
     });
     this.notes.clear();

@@ -190,7 +190,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     // If any remaining old notes, scrap 'm
     yesterNotes.forEach((oldNote: NoteValue) => {
       const oldNodes = this.nodesWithNote(oldNote);
-      oldNodes.forEach((oldNode) => this.noteGraph.deleteNode(oldNode));
+      oldNodes.forEach((oldNode) => this.deleteNode(oldNode));
       this.noteValues.delete(oldNote);
     });
 
@@ -257,10 +257,10 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     }
   }
 
-  private deleteNote(note: NoteValue) {
-    this.noteValues.delete(note);
+  private deleteNote(noteValue: NoteValue) {
+    this.noteValues.delete(noteValue);
     this.noteGraph.nodes.forEach((node) => {
-      if (noteToNoteValue(node.note) === note) {
+      if (noteToNoteValue(node.note) === noteValue) {
         this.deleteNode(node);
       }
     });
