@@ -91,16 +91,18 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
           ...randomSustainOscillatorOptions(),
           frequency: midiNoteToFreq(midiNote),
           detune: random(-1, 1, true),
-          volume: scale({
-            input: velocity,
-            inputMin: 0,
-            inputMax: 127,
-            outputMin: -25,
-            outputMax: 0,
-            logarithmic: 3
-          })
+          volume: Number.NEGATIVE_INFINITY
+        });
+        const volume = scale({
+          input: velocity,
+          inputMin: 0,
+          inputMax: 127,
+          outputMin: -30,
+          outputMax: 0,
+          logarithmic: 3
         });
         synth.start();
+        synth.volume.exponentialRampTo(volume, 0.007);
         const node = this.noteGraph.createNode({
           midiNote
         });
@@ -135,8 +137,11 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
     if (nodeMap) {
       const synth = nodeMap.get(node);
       if (synth) {
-        synth.disconnect();
-        synth.dispose();
+        synth.volume.exponentialRampTo(-200, 0.1);
+        setTimeout(() => {
+          synth.disconnect();
+          synth.dispose();
+        }, 1000);
       }
 
       nodeMap.delete(node);
