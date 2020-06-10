@@ -211,10 +211,15 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       });
       const synth = new Oscillator({
         ...randomSustainOscillatorOptions(),
+        volume: Number.NEGATIVE_INFINITY,
         detune: random(-1, 1, true),
         frequency: midiNoteToFreq(midiNote)
       });
       const panVol = new PanVol();
+      synth.connect(panVol);
+      panVol.connect(this.channel);
+      synth.start();
+      synth.volume.exponentialRampTo(0, 1);
 
       this.nodeSynths.set(node, {
         synth,
