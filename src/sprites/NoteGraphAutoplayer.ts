@@ -136,11 +136,6 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       });
 
       const {synth, panVol} = nodeSynth;
-      // Let quiet nodes be for performance
-      if (panVol.volume.value < -30 && volume < -30) {
-        return;
-      }
-
       panVol.volume.rampTo(volume);
       panVol.pan.rampTo(Math.cos(angleToNode) * -1);
       synth.frequency.rampTo(adjustedFreq, 1 / FRAME_RATE);
