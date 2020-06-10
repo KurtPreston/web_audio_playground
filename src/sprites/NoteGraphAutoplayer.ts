@@ -1,10 +1,17 @@
 import {autobind} from 'core-decorators';
 import {difference, isNumber, pull, random, range, sample, times} from 'lodash';
+import {ToneAudioNode} from 'tone';
 import {randomChord} from '../audio/chords';
 import {generateRelatedChord} from '../audio/harmony';
 import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
+
+export interface NoteGraphAutoplayerParams {
+  noteGraph: NoteGraph;
+  onNotesUpdated: () => void;
+  channel: ToneAudioNode;
+}
 
 @autobind
 export class NoteGraphAutoplayer implements NoteGraphController {
@@ -12,18 +19,20 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   public readonly noteValues = new Set<NoteValue>();
 
   public readonly actions: NoteGraphAction[][];
-  private randomActions = new Map<() => void, number>();
+  private readonly randomActions = new Map<() => void, number>();
+  private readonly channel: ToneAudioNode;
+  private readonly noteGraph: NoteGraph;
+  private readonly onNotesUpdated: () => void;
 
-  constructor(private readonly noteGraph: NoteGraph, private readonly onNotesUpdated: () => void) {
+  constructor(params: NoteGraphAutoplayerParams) {
+    this.noteGraph = params.noteGraph;
+    this.channel = params.channel;
+    this.onNotesUpdated = params.onNotesUpdated;
+
     // Create nodes
     const numNodes = random(8, 16);
     this.noteValues = randomChord().notes;
-    times(numNodes, () => {
-      const midiNote = this.randomNote();
-      if (midiNote) {
-        this.noteGraph.createNode({midiNote});
-      }
-    });
+    times(numNodes, this.createNode);
 
     // Set publicly accessible actions
     this.actions = [
@@ -124,7 +133,10 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   public createNode() {
     const midiNote = this.randomNote();
     if (midiNote) {
-      this.noteGraph.createNode({midiNote});
+      this.noteGraph.createNode({
+        midiNote,
+        channel: this.channel
+      });
     }
   }
 
@@ -154,7 +166,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       times(numNodes, () => {
         const midiNote = this.randomNote(noteValue);
         if (isNumber(midiNote)) {
-          this.noteGraph.createNode({midiNote});
+          this.noteGraph.createNode({midiNote, channel: this.channel});
         }
       });
     }

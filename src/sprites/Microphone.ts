@@ -161,8 +161,8 @@ export class Microphone implements Sprite {
         return;
       }
 
-      panVol.volume.rampTo(volume);
-      panVol.pan.rampTo(Math.cos(angleToNode) * -1);
+      // panVol.volume.rampTo(volume);
+      // panVol.pan.rampTo(Math.cos(angleToNode) * -1);
       synth.frequency.value = adjustedFreq;
     });
   }

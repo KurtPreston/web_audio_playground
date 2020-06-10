@@ -1,6 +1,9 @@
 import {compact, omit, random, times} from 'lodash';
+import {ToneAudioNode} from 'tone';
 import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
+import {randomSustainOscillatorOptions} from '../audio/oscillators';
 import {JsonSchemaForm} from '../forms/JsonSchemaForm';
+import {scale} from '../math/scale';
 import NoteGraphMidiPlayerOptionsSchema from '../schemas/NoteGraphMidiPlayerOptions.json';
 import {JsonSchema} from '../types/JsonSchema';
 import {NoteGraphMidiPlayerOptions} from '../types/NoteGraphMidiPlayerOptions.d';
@@ -8,8 +11,17 @@ import {WorldState} from '../types/State';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 
+export interface NoteGraphParams {
+  noteGraph: NoteGraph;
+  onNotesUpdated: () => void;
+  channel: ToneAudioNode;
+}
+
 export class NoteGraphMidiPlayer implements NoteGraphController {
-  private notes = new Map<Note, Set<NoteNode>>();
+  private readonly notes = new Map<Note, Set<NoteNode>>();
+  private readonly noteGraph: NoteGraph;
+  private readonly onNotesUpdated: () => void;
+  private readonly channel: ToneAudioNode;
 
   private options: NoteGraphMidiPlayerOptions = {
     autoRelease: 0
@@ -17,7 +29,10 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
 
   public readonly actions: NoteGraphAction[][] = [];
 
-  constructor(private readonly noteGraph: NoteGraph, private readonly onNotesUpdated: () => void) {
+  constructor(params: NoteGraphParams) {
+    this.noteGraph = params.noteGraph;
+    this.onNotesUpdated = params.onNotesUpdated;
+    this.channel = params.channel;
     this.initializeMidi();
   }
 
@@ -36,7 +51,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
           if (value === 0) {
             this.releaseNote(midiNote);
           } else {
-            this.playNote(midiNote);
+            this.playNote(midiNote, value);
           }
         }
       });
@@ -66,11 +81,26 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
     return noteValues;
   }
 
-  private playNote(midiNote: Note) {
+  private playNote(midiNote: Note, velocity: number) {
     const nodeSet: Set<NoteNode> = this.notes.get(midiNote) || new Set<NoteNode>();
     const newNodes = compact(
       times(random(2, 5), () => {
-        return this.noteGraph.createNode({midiNote});
+        console.log(velocity);
+        return this.noteGraph.createNode({
+          oscillator: {
+            ...randomSustainOscillatorOptions(),
+            volume: scale({
+              input: velocity,
+              inputMin: 0,
+              inputMax: 127,
+              outputMin: -25,
+              outputMax: 0,
+              logarithmic: 3
+            })
+          },
+          midiNote,
+          channel: this.channel
+        });
       })
     );
 

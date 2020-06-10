@@ -37,7 +37,7 @@ describe('scale', () => {
       inputMax: 10,
       outputMin: 50,
       outputMax: 100,
-      logarithmic: true
+      logarithmic: true as true
     };
 
     expect(

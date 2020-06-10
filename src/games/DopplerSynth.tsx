@@ -53,10 +53,13 @@ export class DopplerSynthGame implements Game {
 
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
-      dimensions,
+      dimensions
+    });
+    this.noteGraphController = new NoteGraphAutoplayer({
+      noteGraph: this.noteGraph,
+      onNotesUpdated: updateMenu,
       channel: this.channel
     });
-    this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, updateMenu);
     this.microphone = new Microphone({
       getNoteNodes: this.getNoteNodes,
       channel: this.channel,
@@ -112,10 +115,13 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController.destroy();
       this.mode = 'auto';
       this.noteGraph = new NoteGraph({
-        dimensions: this.lastDimensions,
+        dimensions: this.lastDimensions
+      });
+      this.noteGraphController = new NoteGraphAutoplayer({
+        noteGraph: this.noteGraph,
+        onNotesUpdated: this.updateMenu,
         channel: this.channel
       });
-      this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
       this.updateMenu();
     }, 1000);
   }
@@ -148,7 +154,11 @@ export class DopplerSynthGame implements Game {
         ...this.noteGraph.physics,
         volumeRampTime: 10
       });
-      this.noteGraphController = new NoteGraphMidiPlayer(this.noteGraph, this.updateMenu);
+      this.noteGraphController = new NoteGraphMidiPlayer({
+        noteGraph: this.noteGraph,
+        onNotesUpdated: this.updateMenu,
+        channel: this.channel
+      });
     } else if (mode === 'auto') {
       this.updateAudioSettings({
         ...this.microphone.audioSettings,
@@ -159,7 +169,11 @@ export class DopplerSynthGame implements Game {
         ...this.noteGraph.physics,
         volumeRampTime: 1000
       });
-      this.noteGraphController = new NoteGraphAutoplayer(this.noteGraph, this.updateMenu);
+      this.noteGraphController = new NoteGraphAutoplayer({
+        noteGraph: this.noteGraph,
+        onNotesUpdated: this.updateMenu,
+        channel: this.channel
+      });
     }
 
     this.updateMenu();

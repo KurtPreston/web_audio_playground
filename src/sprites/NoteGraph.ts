@@ -15,7 +15,6 @@ import {Sprite} from './Sprite';
 
 export interface NoteGraphParams {
   dimensions: Dimensions;
-  channel: ToneAudioNode;
   notes?: Set<NoteValue>;
   numNodes?: number;
 }
@@ -40,6 +39,7 @@ interface NoteEdge {
 
 interface NodeOptions {
   oscillator?: Partial<ToneOscillatorConstructorOptions>;
+  channel: ToneAudioNode;
   midiNote: Note;
 }
 
@@ -48,12 +48,10 @@ export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
   private edges = new Set<NoteEdge>();
 
-  private readonly channel: ToneAudioNode;
   private dimensions: Dimensions;
   public physics: NoteGraphPhysics;
 
   constructor(params: NoteGraphParams) {
-    this.channel = params.channel;
     this.dimensions = params.dimensions;
     this.physics = {
       edgeLength: 150,
@@ -85,13 +83,12 @@ export class NoteGraph implements Sprite {
       phase: random(0, Math.PI * 2, true),
       frequency: midiNoteToFreq(note)
     });
-    synth.volume.value = -100;
+    // synth.volume.value = -100;
     synth.start();
-    synth.volume.exponentialRampTo(0, this.physics.volumeRampTime / 1000);
+    // synth.volume.exponentialRampTo(0, this.physics.volumeRampTime / 1000);
     const panVol = new PanVol();
-
-    panVol.connect(this.channel);
     synth.connect(panVol);
+    panVol.connect(options.channel);
 
     // Create the node
     const node: NoteNode = {
