@@ -12,6 +12,7 @@ import {IMidiSubscriber} from '../midi/subscribers/MidiSubscriber';
 import {MidiSynth} from '../midi/subscribers/MidiSynth';
 import {NoteGraphMidiPlayer} from '../midi/subscribers/NoteGraphMidiController';
 import {NoteGraph} from '../sprites/NoteGraph';
+import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
 import {JsonSchema} from '../types/JsonSchema';
 import {WorldState} from '../types/State';
@@ -47,6 +48,7 @@ export class CablesGame implements Game {
   private options: CableSettings = {};
 
   private noteGraph: NoteGraph;
+  private background: OuterSpace;
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource | undefined;
   private readonly midiListeners: IMidiSubscriber[];
@@ -60,6 +62,7 @@ export class CablesGame implements Game {
     channel.toDestination();
     channel.connect(initializers.analyserNode);
 
+    this.background = new OuterSpace(world.dimensions);
     this.midiNoteBus = new MidiNoteBus();
     this.noteGraph = new NoteGraph({
       dimensions: world.dimensions
@@ -76,7 +79,7 @@ export class CablesGame implements Game {
   public gameTick(world: WorldState) {}
 
   public sprites(): Sprite[] {
-    return [this.noteGraph];
+    return [this.background, this.noteGraph];
   }
 
   public menu(): React.ReactNode {
