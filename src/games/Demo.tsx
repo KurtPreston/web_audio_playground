@@ -233,6 +233,5 @@ export const Demo: GameInfo = {
   title: 'Demo',
   url: '/demo',
   description: 'Space for testing new sprites and visualizations',
-  dataSources: ['mic'],
   game: DemoGame
 };

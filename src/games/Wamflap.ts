@@ -80,6 +80,5 @@ export const Wamflap: GameInfo = {
   title: 'Wamflap',
   description: 'Move the wambird by singing notes to collect the wisps',
   url: '/wamflap',
-  dataSources: ['mic'],
   game: WamflapGame
 };

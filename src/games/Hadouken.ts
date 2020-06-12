@@ -65,6 +65,5 @@ export const Hadouken: GameInfo = {
   title: 'Hadouken',
   url: '/hadouken',
   description: 'Charge your fireball like a super-saiyan',
-  dataSources: ['mic'],
   game: HadoukenGame
 };

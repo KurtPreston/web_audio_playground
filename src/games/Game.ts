@@ -7,7 +7,6 @@ export interface GameInfo {
   title: string;
   description: React.ReactNode;
   url: string;
-  dataSources: GameDataSource[];
   game: GameClass;
 }
 
@@ -29,5 +28,3 @@ export interface Game {
   sprites: () => Sprite[];
   info: GameInfo;
 }
-
-export type GameDataSource = 'mic';

@@ -42,6 +42,5 @@ export const Tadpole: GameInfo = {
   title: 'Tadpoles',
   url: '/tadpole',
   description: 'The tadpoles come to the surface when called',
-  dataSources: ['mic'],
   game: TadpoleGame
 };

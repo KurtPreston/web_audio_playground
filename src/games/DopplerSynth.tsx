@@ -259,6 +259,5 @@ export const DopplerSynth: GameInfo = {
       <p>place the wamdag so we don't have to find out.</p>
     </div>
   ),
-  dataSources: [],
   game: DopplerSynthGame
 };
