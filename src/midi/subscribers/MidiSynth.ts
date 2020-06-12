@@ -2,9 +2,10 @@ import {autobind} from 'core-decorators';
 import {PolySynth, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../../audio/midi';
 import {MidiNoteEvent, MidiNoteSubscribe, UnsubscribeFn} from '../MidiNoteBus';
+import {IMidiSubscriber} from './MidiSubscriber';
 
 @autobind
-export class MidiSynth {
+export class MidiSynth implements IMidiSubscriber {
   private readonly synth: PolySynth;
   private readonly subscription: UnsubscribeFn;
 
