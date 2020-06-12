@@ -2,6 +2,7 @@ import {autobind} from 'core-decorators';
 import React from 'react';
 import {BrowserRouter as Router, Link, Route, Switch} from 'react-router-dom';
 import './App.scss';
+import {Cables} from './games/Cables';
 import {Demo} from './games/Demo';
 import {DopplerSynth} from './games/DopplerSynth';
 import {GameInfo} from './games/Game';
@@ -15,7 +16,7 @@ export interface AppState {
   dimensions: Dimensions;
 }
 
-const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo];
+const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo, Cables];
 
 @autobind
 export class App extends React.Component<{}, AppState> {
