@@ -64,9 +64,6 @@ export class CablesGame implements Game {
       dimensions: world.dimensions
     });
     this.midiListeners = [new MidiSynth(this.midiNoteBus.subscribe, channel)];
-    this.midiNoteBus.subscribe((event) => {
-      console.log('Test', event);
-    });
   }
 
   public gameTick(world: WorldState) {}
