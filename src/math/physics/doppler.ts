@@ -1,4 +1,4 @@
-import {DopplerMode} from '../../types/MicrophoneAudioSettings.d';
+import {DopplerMode} from '../../sprites/Microphone/MicrophoneAudioSettings.generated';
 import {IPosition, IVector} from '../../types/State';
 import {angleBetween} from '../trig/angleBetween';
 

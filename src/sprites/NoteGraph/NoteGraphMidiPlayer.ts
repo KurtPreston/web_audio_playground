@@ -6,12 +6,12 @@ import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {scale} from '../../math/scale';
-import NoteGraphMidiPlayerOptionsSchema from '../../schemas/NoteGraphMidiPlayerOptions.json';
 import {JsonSchema} from '../../types/JsonSchema';
 import {WorldState} from '../../types/State';
-import {NoteGraphMidiPlayerOptions} from '../types/NoteGraphMidiPlayerOptions.d';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
+import {NoteGraphMidiPlayerOptions} from './NoteGraphMidiPlayerOptions.generated';
+import NoteGraphMidiPlayerOptionsSchema from './NoteGraphMidiPlayerOptions.schema.json';
 
 export interface NoteGraphParams {
   noteGraph: NoteGraph;

@@ -1,36 +1,24 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Compressor, setContext} from 'tone';
-import {JsonSchemaForm} from '../forms/JsonSchemaForm';
-import {MidiNoteBus} from '../midi/MidiNoteBus';
-import {AutoChordMidiSource} from '../midi/sources/AutoChordMidiSource';
-import {MidiFileSource} from '../midi/sources/MidiFileSource';
-import {MidiInputSource} from '../midi/sources/MidiInputSource';
-import {IMidiSource, MidiSourceClass} from '../midi/sources/MidiSource';
-import {PitchfinderMidiSource} from '../midi/sources/PitchfinderMidiSource';
-import {IMidiSubscriber} from '../midi/subscribers/MidiSubscriber';
-import {MidiSynth} from '../midi/subscribers/MidiSynth';
-import {NoteGraphMidiPlayer} from '../midi/subscribers/NoteGraphMidiController';
-import {NoteGraph} from '../sprites/NoteGraph/NoteGraph';
-import {OuterSpace} from '../sprites/OuterSpace';
-import {Sprite} from '../sprites/Sprite';
-import {JsonSchema} from '../types/JsonSchema';
-import {WorldState} from '../types/State';
-import {Game, GameInfo, ResourceInitializers} from './Game';
-
-const CablesSettingsSchema: JsonSchema = {
-  title: 'Cables',
-  type: 'object',
-  properties: {
-    midiSourceType: {
-      title: 'MIDI source',
-      type: 'string',
-      enum: ['midiInstrument', 'midiFile', 'pitchfinder', 'autoChord']
-    }
-  }
-};
-
-type MidiSource = 'midiInstrument' | 'midiFile' | 'pitchfinder' | 'autoChord';
+import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
+import {MidiNoteBus} from '../../midi/MidiNoteBus';
+import {AutoChordMidiSource} from '../../midi/sources/AutoChordMidiSource';
+import {MidiFileSource} from '../../midi/sources/MidiFileSource';
+import {MidiInputSource} from '../../midi/sources/MidiInputSource';
+import {IMidiSource, MidiSourceClass} from '../../midi/sources/MidiSource';
+import {PitchfinderMidiSource} from '../../midi/sources/PitchfinderMidiSource';
+import {IMidiSubscriber} from '../../midi/subscribers/MidiSubscriber';
+import {MidiSynth} from '../../midi/subscribers/MidiSynth';
+import {NoteGraphMidiPlayer} from '../../midi/subscribers/NoteGraphMidiController';
+import {NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
+import {OuterSpace} from '../../sprites/OuterSpace';
+import {Sprite} from '../../sprites/Sprite';
+import {JsonSchema} from '../../types/JsonSchema';
+import {WorldState} from '../../types/State';
+import {Game, GameInfo, ResourceInitializers} from '../Game';
+import {MidiSource} from './CablesOptions.generated';
+import CablesSettingsSchema from './CablesOptions.schema.json';
 
 interface CableSettings {
   midiSourceType?: MidiSource;
@@ -87,7 +75,7 @@ export class CablesGame implements Game {
       <JsonSchemaForm
         value={this.options}
         onChange={this.updateSettings}
-        schema={CablesSettingsSchema}
+        schema={CablesSettingsSchema as JsonSchema}
       />
     );
   }

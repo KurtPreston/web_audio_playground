@@ -1,18 +1,18 @@
 import {autobind} from 'core-decorators';
 import {sample} from 'lodash';
 import {FeedbackDelay, Reverb, Synth, ToneAudioNode} from 'tone';
-import {midiNoteToFreq} from '../audio/midi';
-import {noteToNoteValue, NoteValue} from '../audio/Note';
-import {pingOscillator} from '../audio/oscillators';
-import headphoneWamdag from '../images/astroWamdag.svg';
-import {BounceOffEdge, IForce} from '../math/traveler/forces';
-import {updateTraveler} from '../math/traveler/updateTraveler';
-import {DopplerMode, MicrophoneAudioSettings} from '../types/MicrophoneAudioSettings.d';
-import {Dimensions, ITraveler, WorldState} from '../types/State';
-import {NoteNode} from './NoteGraph/NoteGraph';
-import {circularPath} from './renderHelpers/circularPath';
-import {drawRotated} from './renderHelpers/drawRotated';
-import {Sprite} from './Sprite';
+import {midiNoteToFreq} from '../../audio/midi';
+import {noteToNoteValue, NoteValue} from '../../audio/Note';
+import {pingOscillator} from '../../audio/oscillators';
+import headphoneWamdag from '../../images/astroWamdag.svg';
+import {BounceOffEdge, IForce} from '../../math/traveler/forces';
+import {updateTraveler} from '../../math/traveler/updateTraveler';
+import {Dimensions, ITraveler, WorldState} from '../../types/State';
+import {NoteNode} from '../NoteGraph/NoteGraph';
+import {circularPath} from '../renderHelpers/circularPath';
+import {drawRotated} from '../renderHelpers/drawRotated';
+import {Sprite} from '../Sprite';
+import {DopplerMode, MicrophoneAudioSettings} from './MicrophoneAudioSettings.generated';
 
 interface MicrophoneParams {
   getNoteNodes: () => Set<NoteNode>;

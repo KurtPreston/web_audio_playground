@@ -7,7 +7,7 @@ import {springForce} from '../../math/physics/springForce';
 import {Dimensions, FRAME_RATE, IPosition, IVector, WorldState} from '../../types/State';
 import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
-import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
+import {NoteGraphPhysics} from './NoteGraphPhysics.generated';
 
 export interface NoteGraphParams {
   dimensions: Dimensions;

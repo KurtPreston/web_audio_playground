@@ -27,7 +27,7 @@ yarn-error.log*
 .vscode/
 
 # Generates types
-src/types/*.d.ts
+src/**/*.generated.ts
 
 # Certificates
 .cert/

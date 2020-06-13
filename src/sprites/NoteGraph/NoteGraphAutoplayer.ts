@@ -11,7 +11,7 @@ import {OverflowMode, scale} from '../../math/scale';
 import {angleBetween} from '../../math/trig/angleBetween';
 import {distanceBetween} from '../../math/trig/distanceBetween';
 import {FRAME_RATE, WorldState} from '../../types/State';
-import {Microphone} from '../Microphone';
+import {Microphone} from '../Microphone/Microphone';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 

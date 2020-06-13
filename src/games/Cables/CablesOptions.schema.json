@@ -1,0 +1,12 @@
+{
+  "title": "Cables Options",
+  "type": "object",
+  "properties": {
+    "midiSourceType": {
+      "title": "Midi Source",
+      "type": "string",
+      "enum": ["midiInstrument", "midiFile", "pitchfinder", "autoChord"]
+    }
+  },
+  "additionalProperties": false
+}

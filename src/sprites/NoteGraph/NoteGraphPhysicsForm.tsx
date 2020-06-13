@@ -1,7 +1,7 @@
-import NoteGraphPhysicsSchema from '../schemas/NoteGraphPhysics.json';
-import {JSONSchema6} from '../types/JsonSchema';
-import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
-import {JsonSchemaForm} from './JsonSchemaForm';
+import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
+import {JSONSchema6} from '../../types/JsonSchema';
+import {NoteGraphPhysics} from './NoteGraphPhysics.generated';
+import NoteGraphPhysicsSchema from './NoteGraphPhysics.schema.json';
 
 interface NoteGraphPhysicsFormProps {
   value: NoteGraphPhysics;
