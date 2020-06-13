@@ -8,6 +8,7 @@ export interface JsonSchemaFormProps<T> {
   value: T;
   onChange: (value: T) => void;
   schema: JsonSchema;
+  required?: boolean;
 }
 
 const RANGE_PRECISION = 3;
@@ -40,12 +41,14 @@ function JsonSchemaObjectForm(props: JsonSchemaFormProps<Dictionary<any>>): Reac
     };
 
     const subValue: any = value[key];
+    const required = (schema.required || []).includes(key);
     return (
       <React.Fragment key={key}>
         {JsonSchemaForm({
           onChange: onSubValueChanged,
           value: subValue,
-          schema: subSchema
+          schema: subSchema,
+          required
         })}
       </React.Fragment>
     );
@@ -140,22 +143,37 @@ function JsonSchemaEnumRadio(props: JsonSchemaFormProps<any>): React.ReactElemen
   );
 }
 
+interface DropdownOption {
+  value: string | number | undefined;
+  label: string;
+}
+
 function JsonSchemaEnumDropdown(props: JsonSchemaFormProps<any>): React.ReactElement {
-  const {onChange, schema, value} = props;
+  const {required, onChange, schema, value} = props;
 
   const onSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(event.target.value);
   };
 
+  const options: DropdownOption[] = [
+    ...(required ? [] : [{value: undefined, label: ''}]),
+    ...(schema.enum || []).map(
+      (value, idx) =>
+        ({
+          value,
+          label: (schema.enumNames && schema.enumNames[idx]) || value
+        } as DropdownOption)
+    )
+  ];
+
   return (
     <div className='jsonschema-enum-dropdown'>
       <label>{schema.title}</label>
       <select value={value} onChange={onSelectionChange}>
-        {(schema.enum || []).map((choice, idx) => {
-          const title = schema.enumNames ? schema.enumNames[idx] : choice;
+        {options.map(({label, value}, idx) => {
           return (
-            <option key={idx} value={choice as string | number}>
-              {title}
+            <option key={idx} value={value}>
+              {label}
             </option>
           );
         })}
