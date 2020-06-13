@@ -1,0 +1,46 @@
+{
+  "title": "Envelope Options",
+  "type": "object",
+  "properties": {
+    "attack": {
+      "title": "Attack",
+      "type": "number",
+      "minimum": 0.01,
+      "maximum": 2
+    },
+    "attackCurve": {
+      "title": "Attack Curve",
+      "type": "string",
+      "enum": ["linear", "exponential", "bounce", "ripple", "step", "cosine", "sine"]
+    },
+    "decay": {
+      "title": "Decay",
+      "type": "number",
+      "minimum": 0.01,
+      "maximum": 2
+    },
+    "decayCurve": {
+      "title": "Decay Curve",
+      "type": "string",
+      "enum": ["linear", "exponential"]
+    },
+    "sustain": {
+      "title": "Sustain",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "release": {
+      "title": "Release",
+      "type": "number",
+      "minimum": 0.01,
+      "maximum": 4
+    },
+    "releaseCurve": {
+      "title": "Release Curve",
+      "type": "string",
+      "enum": ["linear", "exponential", "bounce", "ripple", "step", "cosine", "sine"]
+    }
+  },
+  "additionalProperties": false
+}

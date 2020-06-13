@@ -1,0 +1,19 @@
+{
+  "title": "Midi Synth Options",
+  "type": "object",
+  "properties": {
+    "oscillator": {
+      "$ref": "OscillatorOptions"
+    },
+    "envelope": {
+      "$ref": "EnvelopeOptions"
+    },
+    "volume": {
+      "title": "Volume (db)",
+      "type": "number",
+      "minimum": -200,
+      "maximum": 0
+    }
+  },
+  "additionalProperties": false
+}

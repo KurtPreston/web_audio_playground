@@ -1,32 +1,29 @@
 import {autobind} from 'core-decorators';
 import {PolySynth, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../../audio/midi';
+import {MidiSynthOptions} from '../../games/Cables/CablesOptions.generated';
 import {MidiNoteEvent, MidiNoteSubscribe, UnsubscribeFn} from '../MidiNoteBus';
 import {IMidiSubscriber} from './MidiSubscriber';
 
+interface MidiSynthParams {
+  midiNoteSubscribe: MidiNoteSubscribe;
+  channel: ToneAudioNode;
+  options: MidiSynthOptions;
+}
+
 @autobind
 export class MidiSynth implements IMidiSubscriber {
-  private readonly synth: PolySynth;
+  private synth: PolySynth;
   private readonly subscription: UnsubscribeFn;
 
-  constructor(midiNoteSubscribe: MidiNoteSubscribe, channel: ToneAudioNode) {
-    this.synth = new PolySynth(Synth, {
-      oscillator: {
-        partials: [0, 2, 3, 4]
-      },
-      envelope: {
-        attack: 0.01,
-        attackCurve: 'linear',
-        decay: 0.1,
-        decayCurve: 'exponential',
-        sustain: 0.3,
-        release: 1,
-        releaseCurve: 'exponential'
-      },
-      volume: -40
-    });
-    this.synth.connect(channel);
-    this.subscription = midiNoteSubscribe(this.onMidiEvent);
+  constructor(params: MidiSynthParams) {
+    this.synth = new PolySynth(Synth, params.options);
+    this.synth.connect(params.channel);
+    this.subscription = params.midiNoteSubscribe(this.onMidiEvent);
+  }
+
+  public updateSynth(options: MidiSynthOptions) {
+    this.synth.set(options);
   }
 
   private onMidiEvent(event: MidiNoteEvent) {

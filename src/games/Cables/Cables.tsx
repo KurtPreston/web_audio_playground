@@ -29,16 +29,37 @@ const midiSourceMap: {[source in MidiSource]: MidiSourceClass} = {
 @autobind
 export class CablesGame implements Game {
   private options: CablesOptions = {
-    midiSource: {}
+    midiSource: {},
+    synth: {
+      oscillator: {
+        type: 'triangle',
+        partialCount: 3
+      },
+      envelope: {
+        attack: 0.01,
+        attackCurve: 'linear',
+        decay: 0.1,
+        decayCurve: 'exponential',
+        sustain: 0.3,
+        release: 1,
+        releaseCurve: 'exponential'
+      },
+      volume: -40
+    }
   };
 
   private noteGraph: NoteGraph;
   private background: OuterSpace;
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource | undefined;
+  private readonly midiSynth: MidiSynth;
   private readonly midiListeners: IMidiSubscriber[];
 
-  constructor(world: WorldState, initializers: ResourceInitializers) {
+  constructor(
+    world: WorldState,
+    initializers: ResourceInitializers,
+    private readonly updateMenu: () => void
+  ) {
     setContext(initializers.audioContext);
     const channel = new Compressor({
       threshold: -10,
@@ -52,8 +73,13 @@ export class CablesGame implements Game {
     this.noteGraph = new NoteGraph({
       dimensions: world.dimensions
     });
+    this.midiSynth = new MidiSynth({
+      options: this.options.synth,
+      channel,
+      midiNoteSubscribe: this.midiNoteBus.subscribe
+    });
     this.midiListeners = [
-      new MidiSynth(this.midiNoteBus.subscribe, channel),
+      this.midiSynth,
       new NoteGraphMidiPlayer({
         noteGraph: this.noteGraph,
         subscribe: this.midiNoteBus.subscribe
@@ -89,7 +115,11 @@ export class CablesGame implements Game {
         ? new midiSourceMap[midiSourceType](this.midiNoteBus.publish)
         : undefined;
     }
+
+    this.midiSynth.updateSynth(options.synth);
+
     this.options = options;
+    this.updateMenu();
   }
 
   public info = Cables;

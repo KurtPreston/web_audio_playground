@@ -4,8 +4,11 @@
   "properties": {
     "midiSource": {
       "$ref": "MidiSourceConfig"
+    },
+    "synth": {
+      "$ref": "MidiSynthOptions"
     }
   },
-  "required": ["midiSource"],
+  "required": ["midiSource", "synth"],
   "additionalProperties": false
 }

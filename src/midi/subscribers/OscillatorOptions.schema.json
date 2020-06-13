@@ -1,0 +1,18 @@
+{
+  "title": "Oscillator Options",
+  "type": "object",
+  "properties": {
+    "type": {
+      "title": "Wave",
+      "type": "string",
+      "enum": ["sine", "square", "sawtooth", "triangle"]
+    },
+    "partialCount": {
+      "title": "Partials",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 64
+    }
+  },
+  "additionalProperties": false
+}

@@ -37,7 +37,7 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
     }
   } else if (schema.type === 'object') {
     return JsonSchemaObjectForm(props as any);
-  } else if (schema.type === 'number') {
+  } else if (schema.type === 'number' || schema.type === 'integer') {
     return JsonSchemaNumberForm(props as any);
   } else {
     throw new Error(`Unspported type ${schema.type}`);
