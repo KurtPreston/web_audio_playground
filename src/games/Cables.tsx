@@ -11,7 +11,7 @@ import {PitchfinderMidiSource} from '../midi/sources/PitchfinderMidiSource';
 import {IMidiSubscriber} from '../midi/subscribers/MidiSubscriber';
 import {MidiSynth} from '../midi/subscribers/MidiSynth';
 import {NoteGraphMidiPlayer} from '../midi/subscribers/NoteGraphMidiController';
-import {NoteGraph} from '../sprites/NoteGraph';
+import {NoteGraph} from '../sprites/NoteGraph/NoteGraph';
 import {OuterSpace} from '../sprites/OuterSpace';
 import {Sprite} from '../sprites/Sprite';
 import {JsonSchema} from '../types/JsonSchema';

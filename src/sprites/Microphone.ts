@@ -9,7 +9,7 @@ import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
 import {DopplerMode, MicrophoneAudioSettings} from '../types/MicrophoneAudioSettings.d';
 import {Dimensions, ITraveler, WorldState} from '../types/State';
-import {NoteNode} from './NoteGraph';
+import {NoteNode} from './NoteGraph/NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
 import {drawRotated} from './renderHelpers/drawRotated';
 import {Sprite} from './Sprite';

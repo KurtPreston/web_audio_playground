@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import {random, times} from 'lodash';
 import {Note} from '../../audio/Note';
-import {NoteGraph, NoteNode} from '../../sprites/NoteGraph';
-import {NoteGraphAction} from '../../sprites/NoteGraphController';
+import {NoteGraph, NoteNode} from '../../sprites/NoteGraph/NoteGraph';
+import {NoteGraphAction} from '../../sprites/NoteGraph/NoteGraphController';
 import {MidiNoteEvent, MidiNoteSubscribe} from '../MidiNoteBus';
 import {IMidiSubscriber} from './MidiSubscriber';
 

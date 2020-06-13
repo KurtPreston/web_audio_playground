@@ -1,13 +1,13 @@
 import {autobind} from 'core-decorators';
 import {maxBy, random, sample, sampleSize, times, without} from 'lodash';
-import {getNoteInfo, Note, NoteValue} from '../audio/Note';
-import {nodeGroups} from '../math/graph/nodeGroups';
-import {electricalForce} from '../math/physics/electricalForce';
-import {springForce} from '../math/physics/springForce';
+import {getNoteInfo, Note, NoteValue} from '../../audio/Note';
+import {nodeGroups} from '../../math/graph/nodeGroups';
+import {electricalForce} from '../../math/physics/electricalForce';
+import {springForce} from '../../math/physics/springForce';
+import {Dimensions, FRAME_RATE, IPosition, IVector, WorldState} from '../../types/State';
+import {noteColor} from '../renderHelpers/noteColor';
+import {Sprite} from '../Sprite';
 import {NoteGraphPhysics} from '../types/NoteGraphPhysics.d';
-import {Dimensions, FRAME_RATE, IPosition, IVector, WorldState} from '../types/State';
-import {noteColor} from './renderHelpers/noteColor';
-import {Sprite} from './Sprite';
 
 export interface NoteGraphParams {
   dimensions: Dimensions;

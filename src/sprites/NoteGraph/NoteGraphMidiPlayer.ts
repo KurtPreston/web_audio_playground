@@ -1,15 +1,15 @@
 import {compact, isNumber, omit, random, times} from 'lodash';
 import MidiPlayer from 'midi-player-js';
 import {Oscillator, ToneAudioNode} from 'tone';
-import {midiNoteToFreq} from '../audio/midi';
-import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
-import {randomSustainOscillatorOptions} from '../audio/oscillators';
-import {JsonSchemaForm} from '../forms/JsonSchemaForm';
-import {scale} from '../math/scale';
-import NoteGraphMidiPlayerOptionsSchema from '../schemas/NoteGraphMidiPlayerOptions.json';
-import {JsonSchema} from '../types/JsonSchema';
+import {midiNoteToFreq} from '../../audio/midi';
+import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
+import {randomSustainOscillatorOptions} from '../../audio/oscillators';
+import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
+import {scale} from '../../math/scale';
+import NoteGraphMidiPlayerOptionsSchema from '../../schemas/NoteGraphMidiPlayerOptions.json';
+import {JsonSchema} from '../../types/JsonSchema';
+import {WorldState} from '../../types/State';
 import {NoteGraphMidiPlayerOptions} from '../types/NoteGraphMidiPlayerOptions.d';
-import {WorldState} from '../types/State';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 

@@ -1,5 +1,5 @@
-import {NoteValue} from '../audio/Note';
-import {WorldState} from '../types/State';
+import {NoteValue} from '../../audio/Note';
+import {WorldState} from '../../types/State';
 
 export interface NoteGraphController {
   tick: (world: WorldState) => void;

@@ -1,17 +1,17 @@
 import {autobind} from 'core-decorators';
 import {difference, isNumber, pull, random, range, sample, times} from 'lodash';
 import {Oscillator, PanVol, ToneAudioNode} from 'tone';
-import {randomChord} from '../audio/chords';
-import {generateRelatedChord} from '../audio/harmony';
-import {midiNoteToFreq} from '../audio/midi';
-import {Note, noteToNoteValue, NoteValue} from '../audio/Note';
-import {randomSustainOscillatorOptions} from '../audio/oscillators';
-import {doppler} from '../math/physics/doppler';
-import {OverflowMode, scale} from '../math/scale';
-import {angleBetween} from '../math/trig/angleBetween';
-import {distanceBetween} from '../math/trig/distanceBetween';
-import {FRAME_RATE, WorldState} from '../types/State';
-import {Microphone} from './Microphone';
+import {randomChord} from '../../audio/chords';
+import {generateRelatedChord} from '../../audio/harmony';
+import {midiNoteToFreq} from '../../audio/midi';
+import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
+import {randomSustainOscillatorOptions} from '../../audio/oscillators';
+import {doppler} from '../../math/physics/doppler';
+import {OverflowMode, scale} from '../../math/scale';
+import {angleBetween} from '../../math/trig/angleBetween';
+import {distanceBetween} from '../../math/trig/distanceBetween';
+import {FRAME_RATE, WorldState} from '../../types/State';
+import {Microphone} from '../Microphone';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 
