@@ -1,0 +1,55 @@
+{
+  "title": "Midi Source Config",
+  "type": "object",
+  "properties": {
+    "selected": {
+      "title": "Midi Source",
+      "type": "string",
+      "enum": ["midiInstrument", "midiFile", "pitchfinder", "autoChord"],
+      "enumNames": ["MIDI instrument", "MIDI file", "Mic", "Autoplay Chords"]
+    },
+    "midiInstrument": {
+      "title": "Midi Instrument Options",
+      "type": "object",
+      "properties": {
+        "autoRelease": {
+          "type": "number",
+          "title": "Auto-release note (ms)",
+          "minimum": 0,
+          "maximum": 3000
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "midiFile": {
+      "title": "Midi File Options",
+      "type": "object",
+      "properties": {
+        "midiFileUri": {
+          "type": "string",
+          "format": "uri-reference",
+          "title": "Midi File"
+        }
+      },
+      "required": ["midiFileUri"],
+      "additionalProperties": false
+    },
+    "pitchfinder": {
+      "title": "Mic Pitch Detection Options",
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "autoChord": {
+      "title": "Chord Generator Options",
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "required": ["selected"],
+  "additionalProperties": false
+}

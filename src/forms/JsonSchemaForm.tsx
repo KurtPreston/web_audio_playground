@@ -15,6 +15,7 @@ const RANGE_PRECISION = 3;
 
 export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactElement {
   const {schema} = props;
+
   if (schema.enum) {
     if (schema.enum.length > 3) {
       return JsonSchemaEnumDropdown(props as any);
@@ -26,6 +27,7 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
   } else if (schema.type === 'number') {
     return JsonSchemaNumberForm(props as any);
   } else {
+    debugger;
     throw new Error(`Unspported type ${schema.type}`);
   }
 }

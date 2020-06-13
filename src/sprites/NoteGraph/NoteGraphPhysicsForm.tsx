@@ -1,7 +1,7 @@
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
-import {JSONSchema6} from '../../types/JsonSchema';
+import {JsonSchema} from '../../types/JsonSchema';
+import {NoteGraphPhysicsSchema} from '../../types/schemas.generated';
 import {NoteGraphPhysics} from './NoteGraphPhysics.generated';
-import NoteGraphPhysicsSchema from './NoteGraphPhysics.schema.json';
 
 interface NoteGraphPhysicsFormProps {
   value: NoteGraphPhysics;
@@ -10,8 +10,8 @@ interface NoteGraphPhysicsFormProps {
 
 export function NoteGraphPhysicsForm(props: NoteGraphPhysicsFormProps): React.ReactElement {
   const {value, onChange} = props;
-  const schema: JSONSchema6 = {
-    ...(NoteGraphPhysicsSchema as JSONSchema6),
+  const schema: JsonSchema = {
+    ...NoteGraphPhysicsSchema,
     title: 'Physics'
   };
   return JsonSchemaForm({

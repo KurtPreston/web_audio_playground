@@ -14,11 +14,10 @@ import {NoteGraphMidiPlayer} from '../../midi/subscribers/NoteGraphMidiControlle
 import {NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
-import {JsonSchema} from '../../types/JsonSchema';
+import {CablesOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import {MidiSource} from './CablesOptions.generated';
-import CablesSettingsSchema from './CablesOptions.schema.json';
 
 interface CableSettings {
   midiSourceType?: MidiSource;
@@ -75,7 +74,7 @@ export class CablesGame implements Game {
       <JsonSchemaForm
         value={this.options}
         onChange={this.updateSettings}
-        schema={CablesSettingsSchema as JsonSchema}
+        schema={CablesOptionsSchema}
       />
     );
   }

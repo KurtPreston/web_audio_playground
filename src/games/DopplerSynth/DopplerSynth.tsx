@@ -7,7 +7,6 @@ import {getNoteName, NoteValue} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Microphone} from '../../sprites/Microphone/Microphone';
 import {MicrophoneAudioSettings} from '../../sprites/Microphone/MicrophoneAudioSettings.generated';
-import MicrophoneAudioSettingsSchema from '../../sprites/Microphone/MicrophoneAudioSettings.schema.json';
 import {NoteGraph, NoteNode} from '../../sprites/NoteGraph/NoteGraph';
 import {NoteGraphAutoplayer} from '../../sprites/NoteGraph/NoteGraphAutoplayer';
 import {NoteGraphAction, NoteGraphController} from '../../sprites/NoteGraph/NoteGraphController';
@@ -16,12 +15,12 @@ import {NoteGraphPhysics} from '../../sprites/NoteGraph/NoteGraphPhysics.generat
 import {NoteGraphPhysicsForm} from '../../sprites/NoteGraph/NoteGraphPhysicsForm';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
-import {JsonSchema} from '../../types/JsonSchema';
+import {DopplerSynthModeSchema, MicrophoneAudioSettingsSchema} from '../../types/schemas.generated';
 import {Dimensions, WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import './DopplerSynth.scss';
 import {DopplerSynthMode} from './DopplerSynthMode.generated';
-import DopplerSynthModeSchema from './DopplerSynthMode.schema.json';
+tingsSchema} from '../../types/schemas.generated';
 
 @autobind
 export class DopplerSynthGame implements Game {
@@ -192,7 +191,7 @@ export class DopplerSynthGame implements Game {
             value={this.mode}
             onChange={this.updateMode}
             schema={{
-              ...(DopplerSynthModeSchema as JsonSchema),
+              ...DopplerSynthModeSchema,
               title: 'Mode'
             }}
           />
@@ -240,7 +239,7 @@ export class DopplerSynthGame implements Game {
           value={this.microphone.audioSettings}
           onChange={this.updateAudioSettings}
           schema={{
-            ...(MicrophoneAudioSettingsSchema as JsonSchema),
+            ...MicrophoneAudioSettingsSchema,
             title: 'Audio'
           }}
         />

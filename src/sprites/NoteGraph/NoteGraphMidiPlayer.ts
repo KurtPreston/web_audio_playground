@@ -6,12 +6,12 @@ import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {scale} from '../../math/scale';
-import {JsonSchema} from '../../types/JsonSchema';
+import {NoteGraphMidiPlayerOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 import {NoteGraphMidiPlayerOptions} from './NoteGraphMidiPlayerOptions.generated';
-import NoteGraphMidiPlayerOptionsSchema from './NoteGraphMidiPlayerOptions.schema.json';
+tionsSchema} from '../../types/schemas.generated';
 
 export interface NoteGraphParams {
   noteGraph: NoteGraph;
@@ -92,7 +92,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
         this.clearNotes();
         this.onNotesUpdated(); // Update menu
       },
-      schema: omit(NoteGraphMidiPlayerOptionsSchema as JsonSchema, 'title')
+      schema: omit(NoteGraphMidiPlayerOptionsSchema, 'title')
     });
   }
 
