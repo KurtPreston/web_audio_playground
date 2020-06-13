@@ -29,7 +29,8 @@
         "midiFileUri": {
           "type": "string",
           "format": "uri-reference",
-          "title": "Midi File"
+          "title": "Midi File",
+          "enum": ["/moonlight_sonata.mid"]
         }
       },
       "required": ["midiFileUri"],
@@ -50,6 +51,6 @@
       "additionalProperties": false
     }
   },
-  "required": ["selected"],
+  "required": [],
   "additionalProperties": false
 }

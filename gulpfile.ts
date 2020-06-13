@@ -23,10 +23,11 @@ gulp.task('jsonschema', async () => {
   });
   const generatedSchemaTypescript = [
     "import {JsonSchema} from './JsonSchema'",
+    `export const refSchemaMap: {[$ref: string]: JsonSchema} = ${JSON.stringify(schemas)}`,
     ...map(
       schemas,
       (schema: JsonSchema, $id) =>
-        `export const ${$id.replace(/^#/, '')}Schema: JsonSchema = ${JSON.stringify(schema)}`
+        `export const ${$id}Schema: JsonSchema = ${JSON.stringify(schema)}`
     )
   ].join('\n');
   const prettified = prettier.format(
@@ -64,5 +65,5 @@ gulp.task('clean', async () => {
 });
 
 function fileToId(filename: string): string {
-  return `#${basename(filename, '.schema.json')}`;
+  return basename(filename, '.schema.json');
 }

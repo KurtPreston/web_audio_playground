@@ -11,7 +11,6 @@ import {WorldState} from '../../types/State';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 import {NoteGraphMidiPlayerOptions} from './NoteGraphMidiPlayerOptions.generated';
-tionsSchema} from '../../types/schemas.generated';
 
 export interface NoteGraphParams {
   noteGraph: NoteGraph;

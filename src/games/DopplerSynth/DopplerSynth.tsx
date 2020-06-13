@@ -20,7 +20,6 @@ import {Dimensions, WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import './DopplerSynth.scss';
 import {DopplerSynthMode} from './DopplerSynthMode.generated';
-tingsSchema} from '../../types/schemas.generated';
 
 @autobind
 export class DopplerSynthGame implements Game {

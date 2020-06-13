@@ -1,7 +1,8 @@
 import {Dictionary, map, round} from 'lodash';
 import React from 'react';
-import {isNumber} from 'util';
+import {isNumber, isObject} from 'util';
 import {JsonSchema} from '../types/JsonSchema';
+import {refSchemaMap} from '../types/schemas.generated';
 import './JsonSchemaForm.scss';
 
 export interface JsonSchemaFormProps<T> {
@@ -14,7 +15,19 @@ export interface JsonSchemaFormProps<T> {
 const RANGE_PRECISION = 3;
 
 export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactElement {
-  const {schema} = props;
+  let {schema} = props;
+  if (schema.$ref) {
+    const refdSchema = refSchemaMap[schema.$ref];
+    if (refdSchema) {
+      schema = refdSchema;
+      props = {
+        ...props,
+        schema
+      };
+    } else {
+      throw new Error(`Could not find $ref ${schema.$ref}`);
+    }
+  }
 
   if (schema.enum) {
     if (schema.enum.length > 3) {
@@ -27,7 +40,6 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
   } else if (schema.type === 'number') {
     return JsonSchemaNumberForm(props as any);
   } else {
-    debugger;
     throw new Error(`Unspported type ${schema.type}`);
   }
 }
@@ -42,7 +54,7 @@ function JsonSchemaObjectForm(props: JsonSchemaFormProps<Dictionary<any>>): Reac
       });
     };
 
-    const subValue: any = value[key];
+    const subValue: any = isObject(value) ? value[key] : undefined;
     const required = (schema.required || []).includes(key);
     return (
       <React.Fragment key={key}>

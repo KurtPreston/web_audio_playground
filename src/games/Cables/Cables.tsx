@@ -17,11 +17,7 @@ import {Sprite} from '../../sprites/Sprite';
 import {CablesOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
-import {MidiSource} from './CablesOptions.generated';
-
-interface CableSettings {
-  midiSourceType?: MidiSource;
-}
+import {CablesOptions, MidiSource} from './CablesOptions.generated';
 
 const midiSourceMap: {[source in MidiSource]: MidiSourceClass} = {
   midiInstrument: MidiInputSource,
@@ -32,7 +28,9 @@ const midiSourceMap: {[source in MidiSource]: MidiSourceClass} = {
 
 @autobind
 export class CablesGame implements Game {
-  private options: CableSettings = {};
+  private options: CablesOptions = {
+    midiSource: {}
+  };
 
   private noteGraph: NoteGraph;
   private background: OuterSpace;
@@ -79,9 +77,9 @@ export class CablesGame implements Game {
     );
   }
 
-  private updateSettings(options: CableSettings) {
-    const {midiSourceType} = options;
-    if (midiSourceType !== this.options.midiSourceType) {
+  private updateSettings(options: CablesOptions) {
+    const midiSourceType = options.midiSource.selected;
+    if (midiSourceType !== this.options.midiSource.selected) {
       this.midiNoteBus.reset();
       if (this.midiSource) {
         this.midiSource.destroy();

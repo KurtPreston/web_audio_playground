@@ -6,5 +6,6 @@
       "$ref": "MidiSourceConfig"
     }
   },
+  "required": ["midiSource"],
   "additionalProperties": false
 }
