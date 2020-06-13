@@ -23,7 +23,7 @@ export class MidiSynth implements IMidiSubscriber {
         release: 1,
         releaseCurve: 'exponential'
       },
-      volume: -10
+      volume: -40
     });
     this.synth.connect(channel);
     this.subscription = midiNoteSubscribe(this.onMidiEvent);
@@ -35,7 +35,7 @@ export class MidiSynth implements IMidiSubscriber {
     if (velocity) {
       this.synth.triggerAttack(freq, 0, velocity);
     } else {
-      this.synth.triggerRelease(freq, 0);
+      this.synth.triggerRelease(freq, '+.1');
     }
   }
 
