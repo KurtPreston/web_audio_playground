@@ -50,8 +50,8 @@
     "wav-decoder": "^1.3.0"
   },
   "scripts": {
-    "start": "git checkout tsconfig.json && gulp jsonschema && react-scripts start",
-    "build": "git checkout tsconfig.json && gulp jsonschema && react-scripts build",
+    "start": "gulp jsonschema && react-scripts start",
+    "build": "gulp jsonschema && react-scripts build",
     "jsonschema": "json2ts -i src/schemas/**/* -o src/types/ --no-enableConstEnums",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
