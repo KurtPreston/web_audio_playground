@@ -1,5 +1,6 @@
 import {autobind} from 'core-decorators';
-import {PolySynth, Synth, ToneAudioNode} from 'tone';
+import {PolySynth, Synth, SynthOptions, ToneAudioNode} from 'tone';
+import {RecursivePartial} from 'tone/build/esm/core/util/Interface';
 import {midiNoteToFreq} from '../../audio/midi';
 import {MidiSynthOptions} from '../../games/Cables/CablesOptions.generated';
 import {MidiNoteEvent, MidiNoteSubscribe, UnsubscribeFn} from '../MidiNoteBus';
@@ -17,13 +18,13 @@ export class MidiSynth implements IMidiSubscriber {
   private readonly subscription: UnsubscribeFn;
 
   constructor(params: MidiSynthParams) {
-    this.synth = new PolySynth(Synth, params.options);
+    this.synth = new PolySynth(Synth, convertOptions(params.options));
     this.synth.connect(params.channel);
     this.subscription = params.midiNoteSubscribe(this.onMidiEvent);
   }
 
   public updateSynth(options: MidiSynthOptions) {
-    this.synth.set(options);
+    this.synth.set(convertOptions(options));
   }
 
   private onMidiEvent(event: MidiNoteEvent) {
@@ -32,11 +33,22 @@ export class MidiSynth implements IMidiSubscriber {
     if (velocity) {
       this.synth.triggerAttack(freq, 0, velocity);
     } else {
-      this.synth.triggerRelease(freq, '+.1');
+      this.synth.triggerRelease(freq, '+0.01');
     }
   }
 
   public destroy() {
     this.subscription();
   }
+}
+
+// Converts internal object to tone.js native options
+function convertOptions(options: MidiSynthOptions): RecursivePartial<SynthOptions> {
+  return {
+    ...options,
+    envelope: {
+      ...(options.envelope || {}),
+      attack: `+${options.envelope.attack}`
+    }
+  };
 }

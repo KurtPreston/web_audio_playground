@@ -15,5 +15,6 @@
       "maximum": 0
     }
   },
+  "required": ["oscillator", "envelope", "volume"],
   "additionalProperties": false
 }
