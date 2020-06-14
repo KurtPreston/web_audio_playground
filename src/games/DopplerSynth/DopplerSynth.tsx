@@ -145,10 +145,6 @@ export class DopplerSynthGame implements Game {
         maxAudibleDistance: 1500,
         maxNodeVolume: -12
       });
-      this.updatePhysics({
-        ...this.noteGraph.options,
-        volumeRampTime: 10
-      });
       this.noteGraphController = new NoteGraphMidiPlayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
@@ -159,10 +155,6 @@ export class DopplerSynthGame implements Game {
         ...this.microphone.audioSettings,
         maxAudibleDistance: 600,
         maxNodeVolume: -4
-      });
-      this.updatePhysics({
-        ...this.noteGraph.options,
-        volumeRampTime: 1000
       });
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,

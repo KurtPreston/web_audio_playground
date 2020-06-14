@@ -41,9 +41,8 @@ export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOption
     edgeStrength: 0.1,
     repulsionStrength: 5000,
     repulsionExponent: 1.5,
-    momentumDamping: 0.8,
+    intertia: 0.8,
     maxVelocity: 500,
-    volumeRampTime: 1000,
     nodeFadeInTime: 1000,
     nodeFadeOutTime: 500,
     nodeSize: 25,
@@ -376,7 +375,7 @@ export class NoteGraph implements Sprite {
     });
 
     // Apply damping
-    const dampingCoefficient = this.options.momentumDamping;
+    const dampingCoefficient = this.options.intertia;
     this.nodes.forEach(({vector}) => {
       // Apply damping
       vector.xMomentum *= dampingCoefficient;

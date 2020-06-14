@@ -2,6 +2,18 @@
   "type": "object",
   "title": "Note Graph Options",
   "properties": {
+    "intertia": {
+      "type": "number",
+      "title": "Inertia",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "maxVelocity": {
+      "type": "number",
+      "title": "Max Velocity",
+      "minimum": 1,
+      "maximum": 1000
+    },
     "rotationMode": {
       "type": "string",
       "title": "Rotation",
@@ -38,18 +50,6 @@
       "minimum": 0,
       "maximum": 20000
     },
-    "momentumDamping": {
-      "type": "number",
-      "title": "Inertia",
-      "minimum": 0,
-      "maximum": 1
-    },
-    "maxVelocity": {
-      "type": "number",
-      "title": "Max Velocity",
-      "minimum": 1,
-      "maximum": 1000
-    },
     "nodeFadeInTime": {
       "type": "number",
       "title": "Node Fade-in Time (ms)",
@@ -59,12 +59,6 @@
     "nodeFadeOutTime": {
       "type": "number",
       "title": "Node Fade-out Time (ms)",
-      "minimum": 1,
-      "maximum": 3000
-    },
-    "volumeRampTime": {
-      "type": "number",
-      "title": "Volume Ramp Time (ms)",
       "minimum": 1,
       "maximum": 3000
     },
@@ -80,9 +74,8 @@
     "edgeStrength",
     "repulsionExponent",
     "repulsionStrength",
-    "momentumDamping",
+    "intertia",
     "maxVelocity",
-    "volumeRampTime",
     "nodeFadeInTime",
     "nodeFadeOutTime",
     "nodeSize",
