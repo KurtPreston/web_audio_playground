@@ -6,7 +6,10 @@ import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Microphone} from '../../sprites/Microphone/Microphone';
-import {MicrophoneAudioSettings} from '../../sprites/Microphone/MicrophoneAudioSettings.generated';
+import {
+  DopplerMode,
+  MicrophoneAudioSettings
+} from '../../sprites/Microphone/MicrophoneAudioSettings.generated';
 import {NoteGraph, NoteNode} from '../../sprites/NoteGraph/NoteGraph';
 import {NoteGraphAutoplayer} from '../../sprites/NoteGraph/NoteGraphAutoplayer';
 import {NoteGraphAction, NoteGraphController} from '../../sprites/NoteGraph/NoteGraphController';
@@ -33,6 +36,7 @@ export class DopplerSynthGame implements Game {
 
   // Other state
   private mode: DopplerSynthMode = 'auto';
+  private audioSettings: MicrophoneAudioSettings;
   private readonly channel: ToneAudioNode;
   private lastDimensions: Dimensions;
 
@@ -49,6 +53,13 @@ export class DopplerSynthGame implements Game {
     this.channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
+    this.audioSettings = {
+      dopplerMode: DopplerMode.On,
+      speedOfSound: 3000,
+      distanceVolumeRolloff: 3,
+      maxAudibleDistance: Math.min(world.dimensions.width, world.dimensions.height),
+      maxNodeVolume: -4
+    };
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
       dimensions
@@ -62,7 +73,8 @@ export class DopplerSynthGame implements Game {
       noteGraph: this.noteGraph,
       onNotesUpdated: updateMenu,
       channel: this.channel,
-      microphone: this.microphone
+      microphone: this.microphone,
+      audioSettings: this.audioSettings
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
@@ -115,7 +127,8 @@ export class DopplerSynthGame implements Game {
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
         channel: this.channel,
-        microphone: this.microphone
+        microphone: this.microphone,
+        audioSettings: this.audioSettings
       });
       this.updateMenu();
     }, 1000);
@@ -126,8 +139,8 @@ export class DopplerSynthGame implements Game {
     this.noteGraphController.tick(world);
   }
 
-  private updateAudioSettings(settings: MicrophoneAudioSettings) {
-    this.microphone.updateAudioSettings(settings);
+  private updateAudioSettings(settings: Partial<MicrophoneAudioSettings>) {
+    Object.assign(this.audioSettings, settings);
     this.updateMenu();
   }
 
@@ -141,18 +154,18 @@ export class DopplerSynthGame implements Game {
     this.mode = mode;
     if (mode === 'midi') {
       this.updateAudioSettings({
-        ...this.microphone.audioSettings,
+        ...this.noteGraphController.audioSettings,
         maxAudibleDistance: 1500,
         maxNodeVolume: -12
       });
       this.noteGraphController = new NoteGraphMidiPlayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        channel: this.channel
+        channel: this.channel,
+        dimensions: this.lastDimensions
       });
     } else if (mode === 'auto') {
       this.updateAudioSettings({
-        ...this.microphone.audioSettings,
         maxAudibleDistance: 600,
         maxNodeVolume: -4
       });
@@ -160,7 +173,8 @@ export class DopplerSynthGame implements Game {
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
         channel: this.channel,
-        microphone: this.microphone
+        microphone: this.microphone,
+        audioSettings: this.audioSettings
       });
     }
 
@@ -227,7 +241,7 @@ export class DopplerSynthGame implements Game {
           </div>
         </fieldset>
         <JsonSchemaForm
-          value={this.microphone.audioSettings}
+          value={this.audioSettings}
           onChange={this.updateAudioSettings}
           schema={{
             ...MicrophoneAudioSettingsSchema,

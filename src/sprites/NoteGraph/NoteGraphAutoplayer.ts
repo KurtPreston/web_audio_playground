@@ -12,6 +12,7 @@ import {angleBetween} from '../../math/trig/angleBetween';
 import {distanceBetween} from '../../math/trig/distanceBetween';
 import {FRAME_RATE, WorldState} from '../../types/State';
 import {Microphone} from '../Microphone/Microphone';
+import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 
@@ -20,6 +21,7 @@ export interface NoteGraphAutoplayerParams {
   onNotesUpdated: () => void;
   channel: ToneAudioNode;
   microphone: Microphone;
+  audioSettings: MicrophoneAudioSettings;
 }
 
 interface NodeSynth {
@@ -32,6 +34,9 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   // Store which notes are currently being played
   public readonly noteValues = new Set<NoteValue>();
   private readonly nodeSynths = new Map<NoteNode, NodeSynth>();
+
+  // Settings
+  public readonly audioSettings: MicrophoneAudioSettings;
 
   // References
   private readonly noteGraph: NoteGraph;
@@ -47,6 +52,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     this.microphone = params.microphone;
     this.channel = params.channel;
     this.onNotesUpdated = params.onNotesUpdated;
+    this.audioSettings = params.audioSettings;
 
     // Create nodes
     const numNodes = random(8, 16);
@@ -98,7 +104,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     // Play the audio
     this.noteGraph.nodes.forEach((noteNode: NoteNode) => {
       const {note} = noteNode;
-      const {audioSettings, traveler} = this.microphone;
+      const {traveler} = this.microphone;
       const {position} = traveler;
       const nodeSynth = this.nodeSynths.get(noteNode);
       if (!nodeSynth) {
@@ -115,7 +121,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
           vector: noteNode.vector
         },
         target: traveler,
-        settings: audioSettings
+        settings: this.audioSettings
       });
 
       // Apply freq bounds
@@ -128,10 +134,10 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       const volume = scale({
         input: distanceToNode,
         inputMin: 0,
-        inputMax: audioSettings.maxAudibleDistance,
+        inputMax: this.audioSettings.maxAudibleDistance,
         outputMin: -4,
         outputMax: -75,
-        logarithmic: audioSettings.distanceVolumeRolloff,
+        logarithmic: this.audioSettings.distanceVolumeRolloff,
         overflowMode: OverflowMode.Constrain
       });
 

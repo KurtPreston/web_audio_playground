@@ -7,15 +7,20 @@ import {randomSustainOscillatorOptions} from '../../audio/oscillators';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {scale} from '../../math/scale';
 import {NoteGraphMidiPlayerOptionsSchema} from '../../types/schemas.generated';
-import {WorldState} from '../../types/State';
+import {Dimensions, WorldState} from '../../types/State';
+import {
+  DopplerMode,
+  MicrophoneAudioSettings
+} from '../Microphone/MicrophoneAudioSettings.generated';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 import {NoteGraphMidiPlayerOptions} from './NoteGraphMidiPlayerOptions.generated';
 
-export interface NoteGraphParams {
+export interface NoteGraphMidiPlayerParams {
   noteGraph: NoteGraph;
   onNotesUpdated: () => void;
   channel: ToneAudioNode;
+  dimensions: Dimensions;
 }
 
 export class NoteGraphMidiPlayer implements NoteGraphController {
@@ -23,6 +28,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
   private readonly noteGraph: NoteGraph;
   private readonly onNotesUpdated: () => void;
   private readonly channel: ToneAudioNode;
+  public readonly audioSettings: MicrophoneAudioSettings;
 
   private options: NoteGraphMidiPlayerOptions = {
     autoRelease: 0
@@ -30,12 +36,23 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
 
   public readonly actions: NoteGraphAction[][] = [];
 
-  constructor(params: NoteGraphParams) {
+  constructor(params: NoteGraphMidiPlayerParams) {
+    // Load params
     this.noteGraph = params.noteGraph;
     this.onNotesUpdated = params.onNotesUpdated;
     this.channel = params.channel;
-    this.initializeMidi();
 
+    // Initialize audio
+    this.audioSettings = {
+      dopplerMode: DopplerMode.On,
+      speedOfSound: 3000,
+      distanceVolumeRolloff: 3,
+      maxAudibleDistance: Math.min(params.dimensions.width, params.dimensions.height),
+      maxNodeVolume: -4
+    };
+
+    // Start MIDI
+    this.initializeMidi();
     this.playMidiTrack();
   }
 

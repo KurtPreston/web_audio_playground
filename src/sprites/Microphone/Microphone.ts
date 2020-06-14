@@ -1,4 +1,3 @@
-import {autobind} from 'core-decorators';
 import {sample} from 'lodash';
 import {FeedbackDelay, Reverb, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../../audio/midi';
@@ -12,7 +11,6 @@ import {NoteNode} from '../NoteGraph/NoteGraph';
 import {circularPath} from '../renderHelpers/circularPath';
 import {drawRotated} from '../renderHelpers/drawRotated';
 import {Sprite} from '../Sprite';
-import {DopplerMode, MicrophoneAudioSettings} from './MicrophoneAudioSettings.generated';
 
 interface MicrophoneParams {
   getNoteNodes: () => Set<NoteNode>;
@@ -34,7 +32,6 @@ export class Microphone implements Sprite {
   private readonly color = 'white';
 
   // Doppler settings
-  public audioSettings: MicrophoneAudioSettings;
   private bounceSynth: Synth;
   private bounceFill: number = 0;
 
@@ -50,13 +47,6 @@ export class Microphone implements Sprite {
       }
     };
     this.getNoteNodes = params.getNoteNodes;
-    this.audioSettings = {
-      dopplerMode: DopplerMode.On,
-      speedOfSound: 3000,
-      distanceVolumeRolloff: 3,
-      maxAudibleDistance: Math.min(params.dimensions.width, params.dimensions.height),
-      maxNodeVolume: -4
-    };
 
     // Create synth
     this.bounceSynth = new Synth({
@@ -74,11 +64,6 @@ export class Microphone implements Sprite {
     this.bounceSynth.connect(delay);
     delay.connect(reverb);
     reverb.connect(params.channel);
-  }
-
-  @autobind
-  public updateAudioSettings(value: MicrophoneAudioSettings) {
-    this.audioSettings = value;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
