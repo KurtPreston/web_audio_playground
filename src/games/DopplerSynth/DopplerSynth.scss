@@ -1,26 +1,7 @@
-.doppler-synth-menu {
+.menu {
   .doppler-synth-menu-mode {
     label {
       display: block;
     }
-  }
-
-  fieldset {
-    border: none;
-    border-radius: 0.25rem;
-    background-color: rgba(255, 255, 255, 0.2);
-    margin: 0.5rem 0;
-
-    > label {
-      display: block;
-      text-align: center;
-      font-weight: bolder;
-      font-variant: small-caps;
-      padding-bottom: 0.5rem;
-    }
-  }
-
-  label {
-    font-weight: 600;
   }
 }
