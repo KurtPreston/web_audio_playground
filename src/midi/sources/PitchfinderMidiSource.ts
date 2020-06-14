@@ -6,6 +6,7 @@ import {IMidiSource, MidiSourceClass} from './MidiSource';
 
 export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSource {
   private readonly audioContext: AudioContext;
+  private running = true;
   private note: Note | null = null;
 
   constructor(private readonly publish: MidiNotePublish) {
@@ -22,7 +23,7 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
     audioSource.connect(analyser);
     const buffer = new Float32Array(analyser.fftSize);
 
-    while (true) {
+    while (this.running) {
       analyser.getFloatTimeDomainData(buffer);
       const freq: Note | null = await pitchDetectionWorker.detectPitch(
         this.audioContext.sampleRate,
@@ -48,7 +49,9 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
     }
   }
 
-  public destroy() {}
+  public destroy() {
+    this.running = false;
+  }
 
   public menu(): React.ReactNode {
     return 'Pitchfinder';
