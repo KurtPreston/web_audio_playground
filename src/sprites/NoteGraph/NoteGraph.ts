@@ -35,6 +35,22 @@ interface NodeOptions {
   midiNote: Note;
 }
 
+export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOptions {
+  return {
+    edgeLength: 150,
+    edgeStrength: 0.1,
+    repulsionStrength: 5000,
+    repulsionExponent: 1.5,
+    momentumDamping: 0.8,
+    maxVelocity: 500,
+    volumeRampTime: 1000,
+    nodeFadeInTime: 1000,
+    nodeFadeOutTime: 500,
+    nodeSize: 25,
+    rotationMode: dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert'
+  };
+}
+
 @autobind
 export class NoteGraph implements Sprite {
   public nodes = new Set<NoteNode>();
@@ -45,19 +61,7 @@ export class NoteGraph implements Sprite {
 
   constructor(params: NoteGraphParams) {
     this.dimensions = params.dimensions;
-    this.options = {
-      edgeLength: 150,
-      edgeStrength: 0.1,
-      repulsionStrength: 5000,
-      repulsionExponent: 1.5,
-      momentumDamping: 0.8,
-      maxVelocity: 500,
-      volumeRampTime: 1000,
-      nodeFadeInTime: 1000,
-      nodeFadeOutTime: 500,
-      nodeSize: 25,
-      rotationMode: params.dimensions.width > params.dimensions.height ? 'clockhoriz' : 'clockvert'
-    };
+    this.options = defaultNoteGraphOptions(params.dimensions);
   }
 
   public createNode(options: NodeOptions): NoteNode {

@@ -11,7 +11,7 @@ import {PitchfinderMidiSource} from '../../midi/sources/PitchfinderMidiSource';
 import {IMidiSubscriber} from '../../midi/subscribers/MidiSubscriber';
 import {MidiSynth} from '../../midi/subscribers/MidiSynth';
 import {NoteGraphMidiPlayer} from '../../midi/subscribers/NoteGraphMidiController';
-import {NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
+import {defaultNoteGraphOptions, NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
 import {CablesOptionsSchema} from '../../types/schemas.generated';
@@ -28,27 +28,9 @@ const midiSourceMap: {[source in MidiSource]: MidiSourceClass} = {
 
 @autobind
 export class CablesGame implements Game {
-  private options: CablesOptions = {
-    midiSource: {},
-    synth: {
-      oscillator: {
-        type: 'triangle',
-        partialCount: 3
-      },
-      envelope: {
-        attack: 0.01,
-        attackCurve: 'linear',
-        decay: 0.1,
-        decayCurve: 'exponential',
-        sustain: 0.3,
-        release: 1,
-        releaseCurve: 'exponential'
-      },
-      volume: -40
-    }
-  };
+  private options: CablesOptions;
 
-  private noteGraph: NoteGraph;
+  private readonly noteGraph: NoteGraph;
   private background: OuterSpace;
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource | undefined;
@@ -60,6 +42,29 @@ export class CablesGame implements Game {
     initializers: ResourceInitializers,
     private readonly updateMenu: () => void
   ) {
+    // Build options
+    this.options = {
+      midiSource: {},
+      synth: {
+        oscillator: {
+          type: 'triangle',
+          partialCount: 3
+        },
+        envelope: {
+          attack: 0.01,
+          attackCurve: 'linear',
+          decay: 0.1,
+          decayCurve: 'exponential',
+          sustain: 0.3,
+          release: 1,
+          releaseCurve: 'exponential'
+        },
+        volume: -40
+      },
+      noteGraph: defaultNoteGraphOptions(world.dimensions)
+    };
+
+    // Setup audio
     setContext(initializers.audioContext);
     const channel = new Compressor({
       threshold: -10,
@@ -68,6 +73,7 @@ export class CablesGame implements Game {
     channel.toDestination();
     channel.connect(initializers.analyserNode);
 
+    // Build sprites
     this.background = new OuterSpace(world.dimensions);
     this.midiNoteBus = new MidiNoteBus();
     this.noteGraph = new NoteGraph({
@@ -117,6 +123,7 @@ export class CablesGame implements Game {
     }
 
     this.midiSynth.updateSynth(options.synth);
+    Object.assign(this.noteGraph.options, options.noteGraph);
 
     this.options = options;
     this.updateMenu();
