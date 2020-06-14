@@ -117,8 +117,8 @@ export class DopplerSynthGame implements Game {
     });
     this.updateMenu();
     setTimeout(() => {
-      this.noteGraph.destroy();
       this.noteGraphController.destroy();
+      this.noteGraph.destroy();
       this.mode = 'auto';
       this.noteGraph = new NoteGraph({
         dimensions: this.lastDimensions

@@ -102,14 +102,13 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   public tick(world: WorldState) {
     // Play the audio
-    this.noteGraph.nodes.forEach((noteNode: NoteNode) => {
+    this.nodeSynths.forEach((nodeSynth, noteNode: NoteNode) => {
+      if (!this.noteGraph.hasNode(noteNode)) {
+        this.deleteNode(noteNode);
+      }
       const {note} = noteNode;
       const {traveler} = this.astronaut;
       const {position} = traveler;
-      const nodeSynth = this.nodeSynths.get(noteNode);
-      if (!nodeSynth) {
-        return;
-      }
       const freq = midiNoteToFreq(note);
       const angleToNode = angleBetween(noteNode.position, position);
       const distanceToNode = distanceBetween(position, noteNode.position);

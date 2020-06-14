@@ -46,7 +46,7 @@ export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOption
     nodeFadeInTime: 1000,
     nodeFadeOutTime: 500,
     nodeSize: 25,
-    edgeWidth: 1,
+    edgeWidth: 1.5,
     rotationMode: dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert'
   };
 }
@@ -419,6 +419,10 @@ export class NoteGraph implements Sprite {
     //     position.y = world.dimensions.height;
     //   }
     // });
+  }
+
+  public hasNode(noteNode: NoteNode) {
+    return this.nodes.has(noteNode);
   }
 
   public destroy() {
