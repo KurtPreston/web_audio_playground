@@ -1,4 +1,5 @@
-import {Dictionary, findKey, get, isEqual, map, omit, round} from 'lodash';
+import {autobind} from 'core-decorators';
+import {Dictionary, findKey, get, isEmpty, isEqual, map, omit, round} from 'lodash';
 import React from 'react';
 import {isNumber, isObject, isUndefined} from 'util';
 import {JsonSchema} from '../types/JsonSchema';
@@ -10,6 +11,7 @@ export interface JsonSchemaFormProps<T> {
   onChange: (value: T) => void;
   schema: JsonSchema;
   required?: boolean;
+  level?: number;
 }
 
 const RANGE_PRECISION = 3;
@@ -36,7 +38,7 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
       return JsonSchemaEnumRadio(props as any);
     }
   } else if (schema.type === 'object') {
-    return JsonSchemaObjectForm(props as any);
+    return <JsonSchemaObjectForm {...(props as any)} />;
   } else if (schema.type === 'number' || schema.type === 'integer') {
     return JsonSchemaNumberForm(props as any);
   } else {
@@ -44,58 +46,91 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
   }
 }
 
-function JsonSchemaObjectForm(props: JsonSchemaFormProps<Dictionary<any>>): React.ReactElement {
-  const onChange = props.onChange;
-  const value = props.value || {};
-  let schema = props.schema;
+interface JsonSchemaObjectFormState {
+  collapsed: boolean;
+}
+@autobind
+class JsonSchemaObjectForm extends React.Component<
+  JsonSchemaFormProps<Dictionary<any>>,
+  JsonSchemaObjectFormState
+> {
+  public state: JsonSchemaObjectFormState = {
+    collapsed: this.collapsible
+  };
 
-  if (schema.oneOf) {
-    const key = findKey(schema.properties, (p) => p.enum) as string;
-    if (key) {
-      const selectedSchema = schema.oneOf.find((optionSchema: JsonSchema) =>
-        isEqual(get(optionSchema, ['properties', key, 'enum']), [value[key]])
-      );
-
-      if (selectedSchema) {
-        schema = {
-          ...schema,
-          properties: {
-            ...schema.properties,
-            ...omit(selectedSchema.properties, key)
-          }
-        };
-      }
-    }
+  private get collapsible(): boolean {
+    return (this.props.level || 0) >= 1;
   }
 
-  function renderSubObject<T>(subSchema: JsonSchema, key: string): React.ReactNode {
-    const onSubValueChanged = (subValue: T) => {
-      onChange({
-        ...value,
-        [key]: subValue
-      });
+  public render() {
+    const onChange = this.props.onChange;
+    const value = this.props.value || {};
+    let schema = this.props.schema;
+
+    if (isEmpty(schema.properties)) {
+      return null;
+    }
+
+    if (schema.oneOf) {
+      const key = findKey(schema.properties, (p) => p.enum) as string;
+      if (key) {
+        const selectedSchema = schema.oneOf.find((optionSchema: JsonSchema) =>
+          isEqual(get(optionSchema, ['properties', key, 'enum']), [value[key]])
+        );
+
+        if (selectedSchema) {
+          schema = {
+            ...schema,
+            properties: {
+              ...schema.properties,
+              ...omit(selectedSchema.properties, key)
+            }
+          };
+        }
+      }
+    }
+
+    const renderSubObject = (subSchema: JsonSchema, key: string): React.ReactNode => {
+      const onSubValueChanged = (subValue: any) => {
+        onChange({
+          ...value,
+          [key]: subValue
+        });
+      };
+
+      const subValue: any = isObject(value) ? value[key] : undefined;
+      const required = (schema.required || []).includes(key);
+      return (
+        <React.Fragment key={key}>
+          {JsonSchemaForm({
+            onChange: onSubValueChanged,
+            value: subValue,
+            schema: subSchema,
+            required,
+            level: (this.props.level || 0) + 1
+          })}
+        </React.Fragment>
+      );
     };
 
-    const subValue: any = isObject(value) ? value[key] : undefined;
-    const required = (schema.required || []).includes(key);
     return (
-      <React.Fragment key={key}>
-        {JsonSchemaForm({
-          onChange: onSubValueChanged,
-          value: subValue,
-          schema: subSchema,
-          required
-        })}
-      </React.Fragment>
+      <fieldset>
+        <label>
+          {schema.title}
+          {this.collapsible ? (
+            <button onClick={this.toggleCollapsed}>{this.state.collapsed ? '+' : '-'}</button>
+          ) : null}
+        </label>
+        {this.state.collapsed ? null : map(schema.properties || {}, renderSubObject)}
+      </fieldset>
     );
   }
 
-  return (
-    <fieldset>
-      <label>{schema.title}</label>
-      {map(schema.properties || {}, renderSubObject)}
-    </fieldset>
-  );
+  private toggleCollapsed() {
+    this.setState({
+      collapsed: !this.state.collapsed
+    });
+  }
 }
 
 function JsonSchemaNumberForm(props: JsonSchemaFormProps<number>): React.ReactElement {

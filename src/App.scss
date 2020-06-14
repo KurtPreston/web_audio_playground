@@ -65,7 +65,8 @@ main {
         margin: 0.5rem 0;
 
         > label {
-          display: block;
+          display: flex;
+          justify-content: space-around;
           text-align: center;
           font-weight: bolder;
           font-variant: small-caps;
