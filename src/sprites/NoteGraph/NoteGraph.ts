@@ -46,6 +46,7 @@ export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOption
     nodeFadeInTime: 1000,
     nodeFadeOutTime: 500,
     nodeSize: 25,
+    edgeWidth: 1,
     rotationMode: dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert'
   };
 }
@@ -207,15 +208,18 @@ export class NoteGraph implements Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Draw edges
     canvas.strokeStyle = 'white';
-    this.edges.forEach((edge: NoteEdge) => {
-      const {node1, node2, lineWidth} = edge;
-      canvas.lineWidth = lineWidth;
-      canvas.beginPath();
-      canvas.moveTo(node1.position.x, node1.position.y);
-      canvas.lineTo(node2.position.x, node2.position.y);
-      canvas.stroke();
-      canvas.closePath();
-    });
+
+    if (this.options.edgeWidth) {
+      this.edges.forEach((edge: NoteEdge) => {
+        const {node1, node2, lineWidth} = edge;
+        canvas.lineWidth = lineWidth;
+        canvas.beginPath();
+        canvas.moveTo(node1.position.x, node1.position.y);
+        canvas.lineTo(node2.position.x, node2.position.y);
+        canvas.stroke();
+        canvas.closePath();
+      });
+    }
 
     this.nodes.forEach((node: NoteNode) => {
       const {position, note, size} = node;
@@ -266,7 +270,7 @@ export class NoteGraph implements Sprite {
     });
 
     // Grow edges to target strength
-    const edgeWidth = 3;
+    const edgeWidth = this.options.edgeWidth;
 
     const springGrowthRate = this.options.edgeStrength / fadeInFrames;
     const springDecayRate = (this.options.edgeStrength / fadeOutFrames) * 3;
@@ -291,7 +295,7 @@ export class NoteGraph implements Sprite {
           edge.springConstant += springGrowthRate;
         }
 
-        if (edge.lineWidth < 3) {
+        if (edge.lineWidth < edgeWidth) {
           edge.lineWidth += lineGrowthRate;
         }
       }
