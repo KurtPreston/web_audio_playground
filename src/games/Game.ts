@@ -25,6 +25,7 @@ export interface ResourceInitializers {
 export interface Game {
   menu?: () => React.ReactNode;
   gameTick?: (world: WorldState) => void;
+  destroy?: () => void;
   sprites: () => Sprite[];
   info: GameInfo;
 }

@@ -111,6 +111,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     this.pauseGame();
     this.audio?.audioContext.close();
     this.noSleep.disable();
+    if (this.game?.destroy) {
+      this.game.destroy();
+    }
   }
 
   public render(): React.ReactNode {

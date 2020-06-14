@@ -5,6 +5,7 @@ import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
 import {buildMidiSource} from '../../midi/sources/buildMidiSource';
 import {IMidiSource} from '../../midi/sources/MidiSource';
+import {IMidiSubscriber} from '../../midi/subscribers/MidiSubscriber';
 import {MidiSynth} from '../../midi/subscribers/MidiSynth';
 import {NoteGraphMidiPlayer} from '../../midi/subscribers/NoteGraphMidiController';
 import {defaultNoteGraphOptions, NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
@@ -24,6 +25,7 @@ export class CablesGame implements Game {
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource | undefined;
   private readonly midiSynth: MidiSynth;
+  private readonly midiListeners: IMidiSubscriber[];
 
   constructor(
     world: WorldState,
@@ -71,13 +73,20 @@ export class CablesGame implements Game {
       channel,
       midiNoteSubscribe: this.midiNoteBus.subscribe
     });
-    new NoteGraphMidiPlayer({
-      noteGraph: this.noteGraph,
-      subscribe: this.midiNoteBus.subscribe
-    });
+    this.midiListeners = [
+      this.midiSynth,
+      new NoteGraphMidiPlayer({
+        noteGraph: this.noteGraph,
+        subscribe: this.midiNoteBus.subscribe
+      })
+    ];
 
     // Initialize midi
     this.updateSettings(this.options);
+  }
+
+  public destroy() {
+    this.midiListeners.forEach((listener: IMidiSubscriber) => listener.destroy());
   }
 
   public gameTick(world: WorldState) {}
