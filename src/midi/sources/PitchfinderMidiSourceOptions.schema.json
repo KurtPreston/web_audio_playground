@@ -1,0 +1,7 @@
+{
+  "title": "Mic Pitch Detection Options",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false
+}

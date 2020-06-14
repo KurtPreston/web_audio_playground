@@ -3,12 +3,8 @@ import React from 'react';
 import {Compressor, setContext} from 'tone';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
-import {AutoChordMidiSource} from '../../midi/sources/AutoChordMidiSource';
-import {MidiFileSource} from '../../midi/sources/MidiFileSource';
-import {MidiInputSource} from '../../midi/sources/MidiInputSource';
-import {IMidiSource, MidiSourceClass} from '../../midi/sources/MidiSource';
-import {PitchfinderMidiSource} from '../../midi/sources/PitchfinderMidiSource';
-import {IMidiSubscriber} from '../../midi/subscribers/MidiSubscriber';
+import {buildMidiSource} from '../../midi/sources/buildMidiSource';
+import {IMidiSource} from '../../midi/sources/MidiSource';
 import {MidiSynth} from '../../midi/subscribers/MidiSynth';
 import {NoteGraphMidiPlayer} from '../../midi/subscribers/NoteGraphMidiController';
 import {defaultNoteGraphOptions, NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
@@ -17,14 +13,7 @@ import {Sprite} from '../../sprites/Sprite';
 import {CablesOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
-import {CablesOptions, MidiSource} from './CablesOptions.generated';
-
-const midiSourceMap: {[source in MidiSource]: MidiSourceClass} = {
-  midiInstrument: MidiInputSource,
-  midiFile: MidiFileSource,
-  pitchfinder: PitchfinderMidiSource,
-  autoChord: AutoChordMidiSource
-};
+import {CablesOptions} from './CablesOptions.generated';
 
 @autobind
 export class CablesGame implements Game {
@@ -35,7 +24,6 @@ export class CablesGame implements Game {
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource | undefined;
   private readonly midiSynth: MidiSynth;
-  private readonly midiListeners: IMidiSubscriber[];
 
   constructor(
     world: WorldState,
@@ -44,7 +32,6 @@ export class CablesGame implements Game {
   ) {
     // Build options
     this.options = {
-      midiSource: {},
       synth: {
         oscillator: {
           type: 'triangle',
@@ -84,13 +71,13 @@ export class CablesGame implements Game {
       channel,
       midiNoteSubscribe: this.midiNoteBus.subscribe
     });
-    this.midiListeners = [
-      this.midiSynth,
-      new NoteGraphMidiPlayer({
-        noteGraph: this.noteGraph,
-        subscribe: this.midiNoteBus.subscribe
-      })
-    ];
+    new NoteGraphMidiPlayer({
+      noteGraph: this.noteGraph,
+      subscribe: this.midiNoteBus.subscribe
+    });
+
+    // Initialize midi
+    this.updateSettings(this.options);
   }
 
   public gameTick(world: WorldState) {}
@@ -110,16 +97,19 @@ export class CablesGame implements Game {
   }
 
   private updateSettings(options: CablesOptions) {
-    const midiSourceType = options.midiSource.selected;
-    if (midiSourceType !== this.options.midiSource.selected) {
-      this.midiNoteBus.reset();
-      if (this.midiSource) {
-        this.midiSource.destroy();
-      }
+    if (options.midiSource) {
+      const midiSourceType = options.midiSource.source;
+      if (midiSourceType !== this.options?.midiSource?.source) {
+        this.midiNoteBus.reset();
+        if (this.midiSource) {
+          this.midiSource.destroy();
+        }
 
-      this.midiSource = midiSourceType
-        ? new midiSourceMap[midiSourceType](this.midiNoteBus.publish)
-        : undefined;
+        this.midiSource = buildMidiSource({
+          config: options.midiSource,
+          publish: this.midiNoteBus.publish
+        });
+      }
     }
 
     this.midiSynth.updateSynth(options.synth);

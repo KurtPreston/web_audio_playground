@@ -1,0 +1,14 @@
+{
+  "title": "Midi File Options",
+  "type": "object",
+  "properties": {
+    "midiFileUri": {
+      "type": "string",
+      "format": "uri-reference",
+      "title": "Midi File",
+      "enum": ["/moonlight_sonata.mid"]
+    }
+  },
+  "required": ["midiFileUri"],
+  "additionalProperties": false
+}

@@ -16,4 +16,5 @@ export interface JsonSchema {
   maximum?: number;
   required?: string[];
   additionalProperties?: boolean;
+  oneOf?: JsonSchema[];
 }

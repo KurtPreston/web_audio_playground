@@ -1,0 +1,14 @@
+{
+  "title": "Midi Input Source Options",
+  "type": "object",
+  "properties": {
+    "autoRelease": {
+      "type": "number",
+      "title": "Auto-release note (ms)",
+      "minimum": 0,
+      "maximum": 3000
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

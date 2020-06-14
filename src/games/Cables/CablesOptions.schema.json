@@ -12,6 +12,6 @@
       "$ref": "NoteGraphOptions"
     }
   },
-  "required": ["midiSource", "synth", "noteGraph"],
+  "required": ["synth", "noteGraph"],
   "additionalProperties": false
 }

@@ -47,6 +47,9 @@ gulp.task('jsonschema', async () => {
               read: (file) => {
                 const $id = fileToId(file.url);
                 const refdSchema: JsonSchema = schemas[$id];
+                if (!refdSchema) {
+                  throw new Error(`No schema found with id '$id'`);
+                }
                 return JSON.stringify(refdSchema);
               }
             }

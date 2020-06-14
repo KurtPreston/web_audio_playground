@@ -2,55 +2,66 @@
   "title": "Midi Source Config",
   "type": "object",
   "properties": {
-    "selected": {
+    "source": {
       "title": "Midi Source",
       "type": "string",
-      "enum": ["midiInstrument", "midiFile", "pitchfinder", "autoChord"],
+      "enum": ["midiInput", "midiFile", "pitchfinder", "autoChord"],
       "enumNames": ["MIDI instrument", "MIDI file", "Mic", "Autoplay Chords"]
     },
-    "midiInstrument": {
-      "title": "Midi Instrument Options",
-      "type": "object",
-      "properties": {
-        "autoRelease": {
-          "type": "number",
-          "title": "Auto-release note (ms)",
-          "minimum": 0,
-          "maximum": 3000
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "midiFile": {
-      "title": "Midi File Options",
-      "type": "object",
-      "properties": {
-        "midiFileUri": {
-          "type": "string",
-          "format": "uri-reference",
-          "title": "Midi File",
-          "enum": ["/moonlight_sonata.mid"]
-        }
-      },
-      "required": ["midiFileUri"],
-      "additionalProperties": false
-    },
-    "pitchfinder": {
-      "title": "Mic Pitch Detection Options",
-      "type": "object",
-      "properties": {},
-      "required": [],
-      "additionalProperties": false
-    },
-    "autoChord": {
-      "title": "Chord Generator Options",
-      "type": "object",
-      "properties": {},
-      "required": [],
-      "additionalProperties": false
+    "options": {
+      "type": "object"
     }
   },
-  "required": [],
+  "oneOf": [
+    {
+      "properties": {
+        "source": {
+          "enum": ["midiInput"]
+        },
+        "options": {
+          "$ref": "MidiInputSourceOptions"
+        }
+      },
+      "required": ["source", "options"],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "source": {
+          "enum": ["midiFile"]
+        },
+        "options": {
+          "$ref": "MidiFileSourceOptions"
+        }
+      },
+      "required": ["source", "options"],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "source": {
+          "enum": ["pitchfinder"]
+        },
+        "options": {
+          "$ref": "PitchfinderMidiSourceOptions"
+        }
+      },
+      "required": ["source", "options"],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "source": {
+          "enum": ["autoChord"]
+        },
+        "options": {
+          "$ref": "AutoChordMidiSourceOptions"
+        }
+      },
+      "required": ["source", "options"],
+      "additionalProperties": false
+    }
+  ],
+  "required": ["source", "options"],
   "additionalProperties": false
 }

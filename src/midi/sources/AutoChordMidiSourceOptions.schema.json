@@ -1,0 +1,7 @@
+{
+  "title": "Chord Generator Options",
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false
+}

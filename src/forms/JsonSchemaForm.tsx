@@ -1,4 +1,4 @@
-import {Dictionary, map, round} from 'lodash';
+import {Dictionary, findKey, get, isEqual, map, omit, round} from 'lodash';
 import React from 'react';
 import {isNumber, isObject} from 'util';
 import {JsonSchema} from '../types/JsonSchema';
@@ -45,7 +45,29 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
 }
 
 function JsonSchemaObjectForm(props: JsonSchemaFormProps<Dictionary<any>>): React.ReactElement {
-  const {schema, value, onChange} = props;
+  const onChange = props.onChange;
+  const value = props.value || {};
+  let schema = props.schema;
+
+  if (schema.oneOf) {
+    const key = findKey(schema.properties, (p) => p.enum) as string;
+    if (key) {
+      const selectedSchema = schema.oneOf.find((optionSchema: JsonSchema) =>
+        isEqual(get(optionSchema, ['properties', key, 'enum']), [value[key]])
+      );
+
+      if (selectedSchema) {
+        schema = {
+          ...schema,
+          properties: {
+            ...schema.properties,
+            ...omit(selectedSchema.properties, key)
+          }
+        };
+      }
+    }
+  }
+
   function renderSubObject<T>(subSchema: JsonSchema, key: string): React.ReactNode {
     const onSubValueChanged = (subValue: T) => {
       onChange({
