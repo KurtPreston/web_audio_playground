@@ -1,18 +1,18 @@
 import {sample} from 'lodash';
 import {FeedbackDelay, Reverb, Synth, ToneAudioNode} from 'tone';
-import {midiNoteToFreq} from '../../audio/midi';
-import {noteToNoteValue, NoteValue} from '../../audio/Note';
-import {pingOscillator} from '../../audio/oscillators';
-import headphoneWamdag from '../../images/astroWamdag.svg';
-import {BounceOffEdge, IForce} from '../../math/traveler/forces';
-import {updateTraveler} from '../../math/traveler/updateTraveler';
-import {Dimensions, ITraveler, WorldState} from '../../types/State';
-import {NoteNode} from '../NoteGraph/NoteGraph';
-import {circularPath} from '../renderHelpers/circularPath';
-import {drawRotated} from '../renderHelpers/drawRotated';
-import {Sprite} from '../Sprite';
+import {midiNoteToFreq} from '../audio/midi';
+import {noteToNoteValue, NoteValue} from '../audio/Note';
+import {pingOscillator} from '../audio/oscillators';
+import headphoneWamdag from '../images/astroWamdag.svg';
+import {BounceOffEdge, IForce} from '../math/traveler/forces';
+import {updateTraveler} from '../math/traveler/updateTraveler';
+import {Dimensions, ITraveler, WorldState} from '../types/State';
+import {NoteNode} from './NoteGraph/NoteGraph';
+import {circularPath} from './renderHelpers/circularPath';
+import {drawRotated} from './renderHelpers/drawRotated';
+import {Sprite} from './Sprite';
 
-interface MicrophoneParams {
+interface AstronautParams {
   getNoteNodes: () => Set<NoteNode>;
   channel: ToneAudioNode;
   dimensions: Dimensions;
@@ -21,7 +21,7 @@ interface MicrophoneParams {
 const headphoneWamdagImage = new Image();
 headphoneWamdagImage.src = headphoneWamdag;
 
-export class Microphone implements Sprite {
+export class Astronaut implements Sprite {
   // Variables
   public traveler: ITraveler;
   private angle: number = 0;
@@ -35,7 +35,7 @@ export class Microphone implements Sprite {
   private bounceSynth: Synth;
   private bounceFill: number = 0;
 
-  constructor(params: MicrophoneParams) {
+  constructor(params: AstronautParams) {
     this.traveler = {
       position: {
         x: params.dimensions.width,

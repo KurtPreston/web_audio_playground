@@ -11,7 +11,7 @@ import {OverflowMode, scale} from '../../math/scale';
 import {angleBetween} from '../../math/trig/angleBetween';
 import {distanceBetween} from '../../math/trig/distanceBetween';
 import {FRAME_RATE, WorldState} from '../../types/State';
-import {Microphone} from '../Microphone/Microphone';
+import {Astronaut} from '../Astronaut';
 import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
@@ -20,7 +20,7 @@ export interface NoteGraphAutoplayerParams {
   noteGraph: NoteGraph;
   onNotesUpdated: () => void;
   channel: ToneAudioNode;
-  microphone: Microphone;
+  astronaut: Astronaut;
   audioSettings: MicrophoneAudioSettings;
 }
 
@@ -40,7 +40,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   // References
   private readonly noteGraph: NoteGraph;
-  private readonly microphone: Microphone;
+  private readonly astronaut: Astronaut;
 
   public readonly actions: NoteGraphAction[][];
   private readonly randomActions = new Map<() => void, number>();
@@ -49,7 +49,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   constructor(params: NoteGraphAutoplayerParams) {
     this.noteGraph = params.noteGraph;
-    this.microphone = params.microphone;
+    this.astronaut = params.astronaut;
     this.channel = params.channel;
     this.onNotesUpdated = params.onNotesUpdated;
     this.audioSettings = params.audioSettings;
@@ -104,7 +104,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     // Play the audio
     this.noteGraph.nodes.forEach((noteNode: NoteNode) => {
       const {note} = noteNode;
-      const {traveler} = this.microphone;
+      const {traveler} = this.astronaut;
       const {position} = traveler;
       const nodeSynth = this.nodeSynths.get(noteNode);
       if (!nodeSynth) {

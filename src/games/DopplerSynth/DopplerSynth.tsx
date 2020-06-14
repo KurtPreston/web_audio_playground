@@ -5,7 +5,7 @@ import {Compressor, setContext, ToneAudioNode} from 'tone';
 import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
-import {Microphone} from '../../sprites/Microphone/Microphone';
+import {Astronaut} from '../../sprites/Astronaut';
 import {
   DopplerMode,
   MicrophoneAudioSettings
@@ -32,7 +32,7 @@ export class DopplerSynthGame implements Game {
   private noteGraph: NoteGraph;
   private noteGraphController: NoteGraphController;
   private readonly bg: Sprite;
-  private readonly microphone: Microphone;
+  private readonly astronaut: Astronaut;
 
   // Other state
   private mode: DopplerSynthMode = 'auto';
@@ -64,7 +64,7 @@ export class DopplerSynthGame implements Game {
     this.noteGraph = new NoteGraph({
       dimensions
     });
-    this.microphone = new Microphone({
+    this.astronaut = new Astronaut({
       getNoteNodes: this.getNoteNodes,
       channel: this.channel,
       dimensions: world.dimensions
@@ -73,7 +73,7 @@ export class DopplerSynthGame implements Game {
       noteGraph: this.noteGraph,
       onNotesUpdated: updateMenu,
       channel: this.channel,
-      microphone: this.microphone,
+      astronaut: this.astronaut,
       audioSettings: this.audioSettings
     });
     this.lastDimensions = world.dimensions;
@@ -81,7 +81,7 @@ export class DopplerSynthGame implements Game {
   }
 
   public sprites(): Sprite[] {
-    return [this.bg, this.microphone, this.noteGraph];
+    return [this.bg, this.astronaut, this.noteGraph];
   }
 
   public getNoteNodes(): Set<NoteNode> {
@@ -127,7 +127,7 @@ export class DopplerSynthGame implements Game {
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
         channel: this.channel,
-        microphone: this.microphone,
+        astronaut: this.astronaut,
         audioSettings: this.audioSettings
       });
       this.updateMenu();
@@ -173,7 +173,7 @@ export class DopplerSynthGame implements Game {
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
         channel: this.channel,
-        microphone: this.microphone,
+        astronaut: this.astronaut,
         audioSettings: this.audioSettings
       });
     }
@@ -182,7 +182,7 @@ export class DopplerSynthGame implements Game {
   }
 
   public menu() {
-    if (!this.microphone) {
+    if (!this.astronaut) {
       return null;
     }
 
