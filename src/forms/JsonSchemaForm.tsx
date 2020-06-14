@@ -1,6 +1,6 @@
 import {Dictionary, findKey, get, isEqual, map, omit, round} from 'lodash';
 import React from 'react';
-import {isNumber, isObject} from 'util';
+import {isNumber, isObject, isUndefined} from 'util';
 import {JsonSchema} from '../types/JsonSchema';
 import {refSchemaMap} from '../types/schemas.generated';
 import './JsonSchemaForm.scss';
@@ -192,7 +192,7 @@ function JsonSchemaEnumDropdown(props: JsonSchemaFormProps<any>): React.ReactEle
   };
 
   const options: DropdownOption[] = [
-    ...(required ? [] : [{value: undefined, label: ''}]),
+    ...(required && !isUndefined(value) ? [] : [{value: undefined, label: ''}]),
     ...(schema.enum || []).map(
       (value, idx) =>
         ({
