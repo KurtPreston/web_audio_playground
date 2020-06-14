@@ -22,7 +22,7 @@
     },
     "dopplerMode": {
       "title": "Doppler Mode",
-      "type": "integer",
+      "type": "string",
       "enum": ["Off", "On", "Invert"],
       "enumNames": ["Off", "On", "Invert"],
       "tsEnumNames": ["Off", "On", "Invert"],
