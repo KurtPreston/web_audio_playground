@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "title": "Note Graph Physics",
+  "title": "Note Graph Options",
   "properties": {
     "rotationMode": {
       "type": "string",

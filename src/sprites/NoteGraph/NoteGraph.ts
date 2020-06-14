@@ -7,7 +7,7 @@ import {springForce} from '../../math/physics/springForce';
 import {Dimensions, FRAME_RATE, IPosition, IVector, WorldState} from '../../types/State';
 import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
-import {NoteGraphPhysics} from './NoteGraphPhysics.generated';
+import {NoteGraphOptions} from './NoteGraphOptions.generated';
 
 export interface NoteGraphParams {
   dimensions: Dimensions;
@@ -41,11 +41,11 @@ export class NoteGraph implements Sprite {
   private edges = new Set<NoteEdge>();
 
   private dimensions: Dimensions;
-  public physics: NoteGraphPhysics;
+  public options: NoteGraphOptions;
 
   constructor(params: NoteGraphParams) {
     this.dimensions = params.dimensions;
-    this.physics = {
+    this.options = {
       edgeLength: 150,
       edgeStrength: 0.1,
       repulsionStrength: 5000,
@@ -188,7 +188,7 @@ export class NoteGraph implements Sprite {
           }
         });
       }
-    }, this.physics.nodeFadeOutTime);
+    }, this.options.nodeFadeOutTime);
   }
 
   public deleteEdge(edge?: NoteEdge) {
@@ -246,17 +246,17 @@ export class NoteGraph implements Sprite {
     this.dimensions = dimensions;
 
     // Grow new nodes to target size
-    const fadeInFrames = (this.physics.nodeFadeInTime / 1000) * FRAME_RATE;
-    const fadeOutFrames = (this.physics.nodeFadeOutTime / 1000) * FRAME_RATE;
-    const nodeGrowthRate = this.physics.nodeSize / fadeInFrames;
-    const nodeDecayRate = this.physics.nodeSize / fadeOutFrames;
+    const fadeInFrames = (this.options.nodeFadeInTime / 1000) * FRAME_RATE;
+    const fadeOutFrames = (this.options.nodeFadeOutTime / 1000) * FRAME_RATE;
+    const nodeGrowthRate = this.options.nodeSize / fadeInFrames;
+    const nodeDecayRate = this.options.nodeSize / fadeOutFrames;
     this.nodes.forEach((node) => {
       if (node.flaggedForDelete) {
         if (node.size > 0) {
           node.size -= nodeDecayRate;
         }
       } else {
-        if (node.size < this.physics.nodeSize) {
+        if (node.size < this.options.nodeSize) {
           node.size += nodeGrowthRate;
         }
       }
@@ -265,8 +265,8 @@ export class NoteGraph implements Sprite {
     // Grow edges to target strength
     const edgeWidth = 3;
 
-    const springGrowthRate = this.physics.edgeStrength / fadeInFrames;
-    const springDecayRate = (this.physics.edgeStrength / fadeOutFrames) * 3;
+    const springGrowthRate = this.options.edgeStrength / fadeInFrames;
+    const springDecayRate = (this.options.edgeStrength / fadeOutFrames) * 3;
     const lineGrowthRate = edgeWidth / fadeInFrames;
     const lineDecayRate = edgeWidth / fadeOutFrames;
 
@@ -284,7 +284,7 @@ export class NoteGraph implements Sprite {
           this.edges.delete(edge);
         }
       } else {
-        if (edge.springConstant < this.physics.edgeStrength) {
+        if (edge.springConstant < this.options.edgeStrength) {
           edge.springConstant += springGrowthRate;
         }
 
@@ -299,8 +299,8 @@ export class NoteGraph implements Sprite {
       const {xForce, yForce} = springForce({
         point1: node1.position,
         point2: node2.position,
-        springConstant: this.physics.edgeStrength,
-        targetDistance: this.physics.edgeLength
+        springConstant: this.options.edgeStrength,
+        targetDistance: this.options.edgeLength
       });
 
       node1.vector.xMomentum += xForce;
@@ -319,11 +319,11 @@ export class NoteGraph implements Sprite {
         const {xForce, yForce} = electricalForce({
           point1: node1.position,
           point2: node2.position,
-          coefficient: -this.physics.repulsionStrength, // repel,
-          exponent: this.physics.repulsionExponent
+          coefficient: -this.options.repulsionStrength, // repel,
+          exponent: this.options.repulsionExponent
         });
 
-        switch (this.physics.rotationMode) {
+        switch (this.options.rotationMode) {
           case 'stable':
             node1.vector.xMomentum += xForce;
             node1.vector.yMomentum += yForce;
@@ -372,7 +372,7 @@ export class NoteGraph implements Sprite {
     });
 
     // Apply damping
-    const dampingCoefficient = this.physics.momentumDamping;
+    const dampingCoefficient = this.options.momentumDamping;
     this.nodes.forEach(({vector}) => {
       // Apply damping
       vector.xMomentum *= dampingCoefficient;
@@ -384,7 +384,7 @@ export class NoteGraph implements Sprite {
     this.nodes.forEach(({vector}) => {
       // Apply max velocity
       const velocity = Math.sqrt(Math.pow(vector.xMomentum, 2) + Math.pow(vector.yMomentum, 2));
-      const ratio = this.physics.maxVelocity / velocity;
+      const ratio = this.options.maxVelocity / velocity;
       if (ratio < 1) {
         vector.xMomentum *= ratio;
         vector.yMomentum *= ratio;

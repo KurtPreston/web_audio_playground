@@ -11,8 +11,8 @@ import {NoteGraph, NoteNode} from '../../sprites/NoteGraph/NoteGraph';
 import {NoteGraphAutoplayer} from '../../sprites/NoteGraph/NoteGraphAutoplayer';
 import {NoteGraphAction, NoteGraphController} from '../../sprites/NoteGraph/NoteGraphController';
 import {NoteGraphMidiPlayer} from '../../sprites/NoteGraph/NoteGraphMidiPlayer';
-import {NoteGraphPhysics} from '../../sprites/NoteGraph/NoteGraphPhysics.generated';
-import {NoteGraphPhysicsForm} from '../../sprites/NoteGraph/NoteGraphPhysicsForm';
+import {NoteGraphOptions} from '../../sprites/NoteGraph/NoteGraphOptions.generated';
+import {NoteGraphOptionsForm} from '../../sprites/NoteGraph/NoteGraphOptionsForm';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
 import {DopplerSynthModeSchema, MicrophoneAudioSettingsSchema} from '../../types/schemas.generated';
@@ -131,8 +131,8 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
-  private updatePhysics(physics: NoteGraphPhysics) {
-    this.noteGraph.physics = physics;
+  private updatePhysics(physics: NoteGraphOptions) {
+    this.noteGraph.options = physics;
     this.updateMenu();
   }
 
@@ -146,7 +146,7 @@ export class DopplerSynthGame implements Game {
         maxNodeVolume: -12
       });
       this.updatePhysics({
-        ...this.noteGraph.physics,
+        ...this.noteGraph.options,
         volumeRampTime: 10
       });
       this.noteGraphController = new NoteGraphMidiPlayer({
@@ -161,7 +161,7 @@ export class DopplerSynthGame implements Game {
         maxNodeVolume: -4
       });
       this.updatePhysics({
-        ...this.noteGraph.physics,
+        ...this.noteGraph.options,
         volumeRampTime: 1000
       });
       this.noteGraphController = new NoteGraphAutoplayer({
@@ -242,7 +242,7 @@ export class DopplerSynthGame implements Game {
             title: 'Audio'
           }}
         />
-        <NoteGraphPhysicsForm value={this.noteGraph.physics} onChange={this.updatePhysics} />
+        <NoteGraphOptionsForm value={this.noteGraph.options} onChange={this.updatePhysics} />
       </div>
     );
   }
