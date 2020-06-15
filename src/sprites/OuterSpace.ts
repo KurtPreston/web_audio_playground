@@ -14,7 +14,7 @@ function randomStarColor(): tinycolor.ColorFormats.HSL {
   const white = '#fff';
   const blue = '#acd0e5';
 
-  const colorPct = random(0.2, 0.8, true);
+  const colorPct = random(0.27, 0.8, true);
   if (colorPct < 0.5) {
     return tinycolor.mix(red, white, colorPct * 200).toHsl();
   } else {
