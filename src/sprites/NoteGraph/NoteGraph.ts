@@ -267,6 +267,12 @@ export class NoteGraph implements Sprite {
           node.size += nodeGrowthRate;
         }
       }
+
+      if (node.size > this.options.nodeSize) {
+        node.size = this.options.nodeSize;
+      } else if (node.size < 0) {
+        node.size = 0;
+      }
     });
 
     // Grow edges to target strength
