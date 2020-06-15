@@ -102,6 +102,12 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   public tick(world: WorldState) {
     // Play the audio
+    this.noteGraph.nodes.forEach((node) => {
+      if (!this.nodeSynths.has(node)) {
+        this.createSynthForNode(node);
+      }
+    });
+
     this.nodeSynths.forEach((nodeSynth, noteNode: NoteNode) => {
       if (!this.noteGraph.hasNode(noteNode)) {
         this.deleteNode(noteNode);
@@ -207,23 +213,28 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       const node = this.noteGraph.createNode({
         midiNote
       });
-      const synth = new Oscillator({
-        ...randomSustainOscillatorOptions(),
-        volume: Number.NEGATIVE_INFINITY,
-        detune: random(-1, 1, true),
-        frequency: midiNoteToFreq(midiNote)
-      });
-      const panVol = new PanVol();
-      synth.connect(panVol);
-      panVol.connect(this.channel);
-      synth.start();
-      synth.volume.exponentialRampTo(0, 1);
 
-      this.nodeSynths.set(node, {
-        synth,
-        panVol
-      });
+      this.createSynthForNode(node);
     }
+  }
+
+  private createSynthForNode(node: NoteNode) {
+    const synth = new Oscillator({
+      ...randomSustainOscillatorOptions(),
+      volume: Number.NEGATIVE_INFINITY,
+      detune: random(-1, 1, true),
+      frequency: midiNoteToFreq(node.note)
+    });
+    const panVol = new PanVol();
+    synth.connect(panVol);
+    panVol.connect(this.channel);
+    synth.start();
+    synth.volume.exponentialRampTo(0, 1);
+
+    this.nodeSynths.set(node, {
+      synth,
+      panVol
+    });
   }
 
   public deleteRandomNode() {
