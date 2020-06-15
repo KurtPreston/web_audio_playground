@@ -73,6 +73,9 @@
       "title": "Edge Width",
       "minimum": 0,
       "maximum": 20
+    },
+    "mixBlendMode": {
+      "$ref": "CanvasBlendMode"
     }
   },
   "required": [
@@ -86,7 +89,8 @@
     "nodeFadeOutTime",
     "nodeSize",
     "rotationMode",
-    "edgeWidth"
+    "edgeWidth",
+    "mixBlendMode"
   ],
   "additionalProperties": false
 }

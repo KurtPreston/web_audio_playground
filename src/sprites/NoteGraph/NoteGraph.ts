@@ -47,7 +47,8 @@ export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOption
     nodeFadeOutTime: 500,
     nodeSize: 25,
     edgeWidth: 1.5,
-    rotationMode: dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert'
+    rotationMode: dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert',
+    mixBlendMode: 'source-over'
   };
 }
 
@@ -227,6 +228,7 @@ export class NoteGraph implements Sprite {
       const {letter, accidental} = getNoteInfo(note);
 
       // Draw nodes
+      canvas.globalCompositeOperation = this.options.mixBlendMode;
       const nodeSize = Math.max(size, 0.001);
       const fontSize = 0.8 * size;
       canvas.beginPath();

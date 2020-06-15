@@ -1,7 +1,8 @@
 import {isFinite, random} from 'lodash';
 import {randomWalkFactory} from '../frameTickers/randomWalk';
 import {scale} from '../math/scale';
-import {CanvasBlendMode, Dimensions, IWanderer, SpriteTicker, WorldState} from '../types/State';
+import {CanvasBlendMode} from '../types/CanvasBlendMode.generated';
+import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types/State';
 import {randomColor} from '../util/color';
 import {Sprite} from './Sprite';
 

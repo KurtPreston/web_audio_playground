@@ -17,4 +17,7 @@ export interface JsonSchema {
   required?: string[];
   additionalProperties?: boolean;
   oneOf?: JsonSchema[];
+
+  // Custom props
+  logarithm?: number; // specifies how to render range inputs
 }
