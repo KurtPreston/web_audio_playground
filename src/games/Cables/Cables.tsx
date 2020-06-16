@@ -17,6 +17,27 @@ import {CablesOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import {CablesOptions} from './CablesOptions.generated';
+import {zip} from '../../math/zip';
+
+const defaultCablesOptions: CablesOptions = {
+  synth: {
+    oscillator: {
+      type: 'triangle',
+      partialCount: 3
+    },
+    envelope: {
+      attack: 0.01,
+      attackCurve: 'linear',
+      decay: 0.1,
+      decayCurve: 'exponential',
+      sustain: 0.3,
+      release: 1,
+      releaseCurve: 'exponential'
+    },
+    volume: -40
+  },
+  noteGraph: defaultNoteGraphOptions()
+};
 
 @autobind
 export class CablesGame implements Game {
@@ -40,25 +61,9 @@ export class CablesGame implements Game {
   ) {
     // Build options
     this.options = {
-      synth: {
-        oscillator: {
-          type: 'triangle',
-          partialCount: 3
-        },
-        envelope: {
-          attack: 0.01,
-          attackCurve: 'linear',
-          decay: 0.1,
-          decayCurve: 'exponential',
-          sustain: 0.3,
-          release: 1,
-          releaseCurve: 'exponential'
-        },
-        volume: -40
-      },
+      ...defaultCablesOptions,
       noteGraph: defaultNoteGraphOptions(world.dimensions)
     };
-
     // Setup audio
     const channel = new Compressor({
       threshold: -10,
@@ -134,6 +139,9 @@ export class CablesGame implements Game {
 
     this.options = options;
     this.updateMenu();
+
+    const di;
+    console.log(zip(options));
   }
 }
 

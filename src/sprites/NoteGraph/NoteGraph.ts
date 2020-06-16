@@ -36,7 +36,7 @@ interface NodeOptions {
   midiNote: Note;
 }
 
-export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOptions {
+export function defaultNoteGraphOptions(dimensions?: Dimensions): NoteGraphOptions {
   return {
     edgeLength: 150,
     edgeStrength: 0.1,
@@ -48,7 +48,7 @@ export function defaultNoteGraphOptions(dimensions: Dimensions): NoteGraphOption
     nodeFadeOutTime: 500,
     nodeSize: 25,
     edgeWidth: 1.5,
-    rotationMode: dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert',
+    rotationMode: dimensions && dimensions.width > dimensions.height ? 'clockhoriz' : 'clockvert',
     mixBlendMode: 'source-over'
   };
 }
