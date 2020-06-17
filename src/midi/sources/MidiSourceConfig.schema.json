@@ -5,8 +5,8 @@
     "source": {
       "title": "Midi Source",
       "type": "string",
-      "enum": ["midiInput", "midiFile", "pitchfinder", "autoChord"],
-      "enumNames": ["MIDI instrument", "MIDI file", "Mic", "Autoplay Chords"]
+      "enum": ["midiInput", "midiFile", "pitchfinder", "autoChord", "computerKeyboard"],
+      "enumNames": ["MIDI instrument", "MIDI file", "Mic", "Autoplay Chords", "Computer Keyboard"]
     },
     "options": {
       "type": "object"
@@ -56,6 +56,18 @@
         },
         "options": {
           "$ref": "AutoChordMidiSourceOptions"
+        }
+      },
+      "required": ["source", "options"],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "source": {
+          "enum": ["computerKeyboard"]
+        },
+        "options": {
+          "$ref": "TypewriterMidiSourceOptions"
         }
       },
       "required": ["source", "options"],

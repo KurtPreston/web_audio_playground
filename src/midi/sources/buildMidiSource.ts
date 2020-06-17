@@ -5,6 +5,7 @@ import {MidiFileSource} from './MidiFileSource';
 import {MidiInputSource} from './MidiInputSource';
 import {IMidiSource} from './MidiSource';
 import {PitchfinderMidiSource} from './PitchfinderMidiSource';
+import {TypewriteMidiSource} from './TypewriterMidiSource';
 
 interface BuildMidiSourceParams {
   config: MidiSourceConfig;
@@ -22,6 +23,8 @@ export function buildMidiSource(params: BuildMidiSourceParams): IMidiSource {
       return new AutoChordMidiSource(publish);
     case 'pitchfinder':
       return new PitchfinderMidiSource(publish);
+    case 'computerKeyboard':
+      return new TypewriteMidiSource(publish);
     default:
       throw new Error('Unexpected midi source type');
   }
