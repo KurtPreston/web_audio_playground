@@ -1,6 +1,6 @@
 import {autobind} from 'core-decorators';
 import {random, sampleSize} from 'lodash';
-import {circleOfFifths, minorTwoFiveOne} from '../../audio/chordProgression';
+import {circleOfFifths, minorProgression} from '../../audio/chordProgression';
 import {Chord} from '../../audio/chords';
 import {generateRelatedChord} from '../../audio/harmony';
 import {Note, NoteValue} from '../../audio/Note';
@@ -14,7 +14,7 @@ export class AutoChordMidiSource implements IMidiSource {
   private chord = new Map<NoteValue, Note[]>();
   private chordChangeInterval: NodeJS.Timeout;
   private progressionIdx: number = 0;
-  private progression: Chord[] = circleOfFifths(minorTwoFiveOne, NoteValue.C);
+  private progression: Chord[] = circleOfFifths(minorProgression([1, 6, 4, 5]), NoteValue.C);
 
   constructor(private readonly publish: MidiNotePublish) {
     this.setChord(this.progression[0].notes);
