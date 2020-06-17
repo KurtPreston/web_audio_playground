@@ -1,9 +1,12 @@
 import {range} from 'lodash';
 import {getNoteInfo, Note, noteAccidental} from '../audio/Note';
+import {MidiNoteBus} from '../midi/MidiNoteBus';
 import {WorldState} from '../types/State';
 import {Sprite} from './Sprite';
 
 export class Keyboard implements Sprite {
+  constructor(private readonly noteBus: MidiNoteBus) {}
+
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {width, height} = world.dimensions;
     const whiteKeyHeight = 60;
@@ -19,12 +22,14 @@ export class Keyboard implements Sprite {
 
     canvas.textAlign = 'center';
 
+    const activeNotes = this.noteBus.notes;
+
     // Draw white keys
     let startX = 0;
     notes.forEach((note: Note) => {
       const {accidental, letter} = getNoteInfo(note);
       if (!accidental) {
-        canvas.fillStyle = 'white';
+        canvas.fillStyle = activeNotes.has(note) ? 'blue' : 'white';
         canvas.strokeStyle = 'black';
         canvas.fillRect(startX, startY, keyWidth, whiteKeyHeight);
         canvas.strokeRect(startX, startY, keyWidth, whiteKeyHeight);
@@ -46,7 +51,7 @@ export class Keyboard implements Sprite {
       const {letter, accidental} = getNoteInfo(note, 'b');
       if (accidental) {
         // Black key
-        canvas.fillStyle = 'black';
+        canvas.fillStyle = activeNotes.has(note) ? 'blue' : 'black';
         canvas.strokeStyle = 'white';
         canvas.fillRect(startX - keyWidth / 2, startY, keyWidth, blackKeyHeight);
         canvas.strokeRect(startX - keyWidth / 2, startY, keyWidth, blackKeyHeight);

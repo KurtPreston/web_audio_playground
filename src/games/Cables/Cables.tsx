@@ -78,7 +78,7 @@ export class CablesGame implements Game {
       channel,
       midiNoteSubscribe: this.midiNoteBus.subscribe
     });
-    this.keyboard = new Keyboard();
+    this.keyboard = new Keyboard(this.midiNoteBus);
     this.midiListeners = [
       this.midiSynth,
       new NoteGraphMidiPlayer({
