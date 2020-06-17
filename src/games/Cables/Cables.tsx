@@ -8,6 +8,7 @@ import {IMidiSource} from '../../midi/sources/MidiSource';
 import {IMidiSubscriber} from '../../midi/subscribers/MidiSubscriber';
 import {MidiSynth} from '../../midi/subscribers/MidiSynth';
 import {NoteGraphMidiPlayer} from '../../midi/subscribers/NoteGraphMidiController';
+import {Keyboard} from '../../sprites/Keyboard';
 import {defaultNoteGraphOptions, NoteGraph} from '../../sprites/NoteGraph/NoteGraph';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
@@ -20,8 +21,12 @@ import {CablesOptions} from './CablesOptions.generated';
 export class CablesGame implements Game {
   private options: CablesOptions;
 
+  // Sprites
   private readonly noteGraph: NoteGraph;
-  private background: OuterSpace;
+  private readonly keyboard: Keyboard;
+  private readonly background: OuterSpace;
+
+  // Midi
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource | undefined;
   private readonly midiSynth: MidiSynth;
@@ -73,6 +78,7 @@ export class CablesGame implements Game {
       channel,
       midiNoteSubscribe: this.midiNoteBus.subscribe
     });
+    this.keyboard = new Keyboard();
     this.midiListeners = [
       this.midiSynth,
       new NoteGraphMidiPlayer({
@@ -92,7 +98,7 @@ export class CablesGame implements Game {
   public gameTick(world: WorldState) {}
 
   public sprites(): Sprite[] {
-    return [this.background, this.noteGraph];
+    return [this.background, this.noteGraph, this.keyboard];
   }
 
   public menu(): React.ReactNode {
