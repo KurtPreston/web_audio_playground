@@ -11,7 +11,10 @@ export class TypewriteMidiSource implements IMidiSource {
   private keys = new Map<Key, Note>();
 
   private keyboardMap: {[key: string]: NoteValue} = {
-    s: NoteValue.B,
+    q: NoteValue.Aflat - 12,
+    a: NoteValue.A - 12,
+    w: NoteValue.Bflat - 12,
+    s: NoteValue.B - 12,
     d: NoteValue.C,
     r: NoteValue.Csharp,
     f: NoteValue.D,
@@ -23,7 +26,11 @@ export class TypewriteMidiSource implements IMidiSource {
     i: NoteValue.Gsharp,
     k: NoteValue.A,
     o: NoteValue.Asharp,
-    l: NoteValue.B
+    l: NoteValue.B,
+    ';': NoteValue.C + 12,
+    '[': NoteValue.Csharp + 12,
+    "'": NoteValue.D + 12,
+    ']': NoteValue.Dsharp + 12
   };
 
   constructor(private readonly publish: MidiNotePublish) {
