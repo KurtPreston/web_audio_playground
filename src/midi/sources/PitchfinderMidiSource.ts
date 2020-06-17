@@ -8,6 +8,7 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
   private readonly audioContext: AudioContext;
   private running = true;
   private note: Note | null = null;
+  private readonly lastNotes = new Array<Note | null>();
 
   constructor(private readonly publish: MidiNotePublish) {
     this.audioContext = new AudioContext();
@@ -20,6 +21,7 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
     });
     const audioSource = this.audioContext.createMediaStreamSource(stream);
     const analyser = this.audioContext.createAnalyser();
+    analyser.fftSize = 2048;
     audioSource.connect(analyser);
     const buffer = new Float32Array(analyser.fftSize);
 
@@ -29,7 +31,12 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
         this.audioContext.sampleRate,
         buffer
       );
-      const note = freq ? freqToMidiNote(freq) : null;
+      const calculatedNote = freq ? freqToMidiNote(freq) : null;
+      this.lastNotes.push(calculatedNote);
+      if (this.lastNotes.length > 10) {
+        this.lastNotes.shift();
+      }
+      const note = this.avgNote();
       if (note !== this.note) {
         if (this.note) {
           this.publish({
@@ -47,6 +54,28 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
         }
       }
     }
+  }
+
+  private avgNote(): Note | null {
+    const pts = new Map<Note, number>();
+    this.lastNotes.forEach((note: Note | null, idx: number) => {
+      if (note) {
+        // More recent nodes are more highly weighted
+        const numPoints = this.lastNotes.length - idx;
+        const prev = pts.get(note) || 0;
+        pts.set(note, prev + numPoints);
+      }
+    });
+
+    let maxNote: Note | null = null;
+    const maxPts = 0;
+    pts.forEach((points, note) => {
+      if (points > maxPts) {
+        points = maxPts;
+        maxNote = note;
+      }
+    });
+    return maxNote;
   }
 
   public destroy() {
