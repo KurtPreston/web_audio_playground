@@ -1,5 +1,6 @@
 import {autobind} from 'core-decorators';
 import {maxBy, random, sample, sampleSize, times, without} from 'lodash';
+import tinycolor from 'tinycolor2';
 import {getNoteInfo, Note, NoteValue} from '../../audio/Note';
 import {nodeGroups} from '../../math/graph/nodeGroups';
 import {electricalForce} from '../../math/physics/electricalForce';
@@ -228,19 +229,20 @@ export class NoteGraph implements Sprite {
       const {letter, accidental} = getNoteInfo(note);
 
       // Draw nodes
+      const color = noteColor(note, 0.7);
       canvas.globalCompositeOperation = this.options.mixBlendMode;
       const nodeSize = Math.max(size, 0.001);
       const fontSize = 0.8 * size;
       canvas.beginPath();
       canvas.arc(x, y, nodeSize, 0, 2 * Math.PI);
-      canvas.fillStyle = noteColor(note, 0.5);
+      canvas.fillStyle = color;
       canvas.fill();
       canvas.closePath();
 
       // Draw letters
       if (!node.flaggedForDelete) {
         canvas.font = `${fontSize}px sans-serif`;
-        canvas.fillStyle = 'white';
+        canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
         canvas.textAlign = 'center';
         canvas.textBaseline = 'middle';
         canvas.fillText(`${letter}${accidental ? '♯' : ''}`, x, y);

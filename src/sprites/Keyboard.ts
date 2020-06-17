@@ -1,7 +1,9 @@
 import {range} from 'lodash';
+import tinycolor from 'tinycolor2';
 import {getNoteInfo, Note, noteAccidental} from '../audio/Note';
 import {MidiNoteBus} from '../midi/MidiNoteBus';
 import {WorldState} from '../types/State';
+import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 
 export class Keyboard implements Sprite {
@@ -29,12 +31,13 @@ export class Keyboard implements Sprite {
     notes.forEach((note: Note) => {
       const {accidental, letter} = getNoteInfo(note);
       if (!accidental) {
-        canvas.fillStyle = activeNotes.has(note) ? 'blue' : 'white';
+        const color = activeNotes.has(note) ? noteColor(note, 0.7) : 'white';
+        canvas.fillStyle = color;
         canvas.strokeStyle = 'black';
         canvas.fillRect(startX, startY, keyWidth, whiteKeyHeight);
         canvas.strokeRect(startX, startY, keyWidth, whiteKeyHeight);
 
-        canvas.fillStyle = 'black';
+        canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
         canvas.fillText(
           `${letter}${accidental || ''}`,
           startX + keyWidth / 2,
@@ -51,12 +54,13 @@ export class Keyboard implements Sprite {
       const {letter, accidental} = getNoteInfo(note, 'b');
       if (accidental) {
         // Black key
-        canvas.fillStyle = activeNotes.has(note) ? 'blue' : 'black';
+        const color = activeNotes.has(note) ? noteColor(note, 0.7) : 'black';
+        canvas.fillStyle = color;
         canvas.strokeStyle = 'white';
         canvas.fillRect(startX - keyWidth / 2, startY, keyWidth, blackKeyHeight);
         canvas.strokeRect(startX - keyWidth / 2, startY, keyWidth, blackKeyHeight);
 
-        canvas.fillStyle = 'white';
+        canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
         canvas.fillText(`${letter}${accidental || ''}`, startX, height - 40, keyWidth);
       } else {
         startX += keyWidth;
