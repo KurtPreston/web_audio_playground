@@ -17,7 +17,10 @@ export enum ChordType {
   major6,
   sus2,
   sus4,
-  five
+  five,
+  dim,
+  dim7,
+  halfdim
 }
 
 const chordTypeSymbol: {[type in ChordType]: string} = {
@@ -30,7 +33,10 @@ const chordTypeSymbol: {[type in ChordType]: string} = {
   [ChordType.major6]: '6',
   [ChordType.sus2]: 'sus2',
   [ChordType.sus4]: 'sus4',
-  [ChordType.five]: '5'
+  [ChordType.five]: '5',
+  [ChordType.dim]: 'o',
+  [ChordType.dim7]: 'o7',
+  [ChordType.halfdim]: 'ø7'
 };
 
 export type ChordGenerator = (rootNote: Note) => Chord;
@@ -145,6 +151,41 @@ export const fiveChord: ChordGenerator = (root: NoteValue): Chord => {
   return {
     type: ChordType.five,
     notes: new Set<NoteValue>([root, fifth]),
+    root
+  };
+};
+
+export const dimChord: ChordGenerator = (root: NoteValue): Chord => {
+  const third = noteToNoteValue(root + 3);
+  const flatFive = noteToNoteValue(root + 6);
+
+  return {
+    type: ChordType.dim,
+    notes: new Set<NoteValue>([root, third, flatFive]),
+    root
+  };
+};
+
+export const dim7Chord: ChordGenerator = (root: NoteValue): Chord => {
+  const third = noteToNoteValue(root + 3);
+  const flatFive = noteToNoteValue(root + 6);
+  const flatSeven = noteToNoteValue(root + 9);
+
+  return {
+    type: ChordType.dim7,
+    notes: new Set<NoteValue>([root, third, flatFive, flatSeven]),
+    root
+  };
+};
+
+export const halfdim: ChordGenerator = (root: NoteValue): Chord => {
+  const third = noteToNoteValue(root + 3);
+  const flatFive = noteToNoteValue(root + 6);
+  const seven = noteToNoteValue(root + 10);
+
+  return {
+    type: ChordType.halfdim,
+    notes: new Set<NoteValue>([root, third, flatFive, seven]),
     root
   };
 };
