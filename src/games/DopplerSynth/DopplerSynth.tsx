@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import {random, times} from 'lodash';
 import React from 'react';
-import {Compressor, setContext, ToneAudioNode} from 'tone';
+import {Compressor, ToneAudioNode} from 'tone';
 import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
@@ -44,7 +44,6 @@ export class DopplerSynthGame implements Game {
   private updateMenu: () => void;
 
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
-    setContext(initializers.audioContext);
     this.channel = new Compressor({
       threshold: -10,
       ratio: 5

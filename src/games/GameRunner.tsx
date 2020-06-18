@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import NoSleep from 'nosleep.js';
 import React from 'react';
-import {Context as AudioContext} from 'tone';
+import {Context as AudioContext, Oscillator, setContext, Tremolo} from 'tone';
 import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
@@ -10,7 +10,7 @@ import {Game, GameClass, GameInfo} from './Game';
 
 export interface GameRunnerProps {
   gameInfo: GameInfo;
-  noAudioContext?: boolean;
+  fakeAudioContext?: boolean;
   game?: GameClass;
 }
 
@@ -91,8 +91,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const audioContext: AudioContext = new AudioContext();
     const analyserNode = audioContext.createAnalyser();
     const audioAnalyser = new AudioAnalyser(analyserNode);
+    setContext(audioContext);
 
-    if (!this.props.noAudioContext) {
+    if (!this.props.fakeAudioContext) {
       if (audioContext.state !== 'running') {
         await audioContext.resume();
       }
@@ -103,6 +104,16 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
         });
         return;
       }
+    } else {
+      const tone = new Oscillator({
+        frequency: 20
+      });
+      tone.start();
+      tone.frequency.exponentialRampTo(220, 10);
+      const tremolo = new Tremolo(0.2, 1);
+      tone.connect(tremolo);
+      tremolo.connect(analyserNode);
+      // tremolo.toMaster();
     }
 
     this.noSleep.enable();

@@ -1,6 +1,6 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
-import {Compressor, setContext} from 'tone';
+import {Compressor} from 'tone';
 import {Note} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
@@ -60,7 +60,6 @@ export class CablesGame implements Game {
     };
 
     // Setup audio
-    setContext(initializers.audioContext);
     const channel = new Compressor({
       threshold: -10,
       ratio: 5

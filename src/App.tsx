@@ -61,7 +61,7 @@ export class App extends React.Component<{}> {
                     <GameRunner
                       game={preview}
                       gameInfo={gameInfo}
-                      noAudioContext={true}
+                      fakeAudioContext={true}
                       {...this.state}
                     />
                   ) : null}
