@@ -26,10 +26,10 @@ export class MidiFileSource implements IMidiSource<MidiFileOptions> {
 
       if (name === 'Note off' || velocity === 0) {
         this.deleteNote(noteNumber);
-      }
-
-      if (name === 'Note on' && noteNumber && isNumber(velocity)) {
+      } else if (name === 'Note on' && noteNumber && isNumber(velocity)) {
         this.addNote(noteNumber, velocity);
+      } else if (name === 'End of track') {
+        this.destroy();
       }
     });
     this.loadMidiFile();

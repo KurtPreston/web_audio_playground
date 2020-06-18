@@ -12,7 +12,13 @@
       "type": "string",
       "format": "uri-reference",
       "title": "Midi File",
-      "enum": ["/midi/moonlight_sonata.mid", "/midi/scarborough.mid", "/midi/classical_gas.mid"]
+      "enum": [
+        "/midi/moonlight_sonata.mid",
+        "/midi/scarborough.mid",
+        "/midi/classical_gas.mid",
+        "/midi/chopin_nocturne_9_2.mid"
+      ],
+      "enumNames": ["Moonlight Sonata", "Scarborough Faire", "Classical Gas", "Nocturne op.9 #2"]
     }
   },
   "required": ["bpm"],
