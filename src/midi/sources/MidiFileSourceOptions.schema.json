@@ -12,7 +12,7 @@
       "type": "string",
       "format": "uri-reference",
       "title": "Midi File",
-      "enum": ["/midi/moonlight_sonata.mid", "/midi/scarborough.mid"]
+      "enum": ["/midi/moonlight_sonata.mid", "/midi/scarborough.mid", "/midi/classical_gas.mid"]
     }
   },
   "required": ["bpm"],
