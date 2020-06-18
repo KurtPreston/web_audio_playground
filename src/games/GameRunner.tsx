@@ -9,7 +9,6 @@ import {DeviceOrientation, Dimensions, FRAME_RATE, IPosition, WorldState} from '
 import {Game, GameClass, GameInfo} from './Game';
 
 export interface GameRunnerProps {
-  dimensions: Dimensions;
   gameInfo: GameInfo;
   noAudioContext?: boolean;
   game?: GameClass;
@@ -19,6 +18,7 @@ export interface GameRunnerState {
   gameLoop: number | undefined;
   menuOpen: boolean;
   requireClickToStart: boolean;
+  dimensions: Dimensions | undefined;
 }
 
 interface AudioNodes {
@@ -36,8 +36,10 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   public state: GameRunnerState = {
     gameLoop: undefined,
     menuOpen: false,
-    requireClickToStart: true
+    requireClickToStart: true,
+    dimensions: undefined
   };
+  private container: HTMLElement | null = null;
 
   // World state
   private readonly keysDown = new Set<string>();
@@ -47,7 +49,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private frameNum: number = 0;
   private canvasCtx: CanvasRenderingContext2D | null = null;
   private mouseDragging: boolean = false;
-  private dimensions: Dimensions = this.props.dimensions;
 
   // Audio
   private audio: AudioNodes | undefined;
@@ -61,10 +62,31 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     window.document.addEventListener('keypress', this.onKeyPress);
     document.title = `KurtPreston.com | ${this.props.gameInfo.title}`;
 
-    this.initializeGame();
+    window.addEventListener('resize', this.setDimensions);
+  }
+
+  private setDimensions() {
+    if (this.container) {
+      const {clientWidth, clientHeight} = this.container;
+      this.setState({
+        dimensions: {
+          width: clientWidth,
+          height: clientHeight
+        }
+      });
+    }
   }
 
   private async initializeGame() {
+    if (this.game) {
+      console.info(`Game ${this.props.gameInfo.title} already running`);
+      return;
+    }
+
+    if (!this.state.dimensions) {
+      return;
+    }
+
     // Create audio first
     const audioContext: AudioContext = new AudioContext();
     const analyserNode = audioContext.createAnalyser();
@@ -122,24 +144,34 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   public render(): React.ReactNode {
-    const {height, width} = this.dimensions;
+    const {dimensions} = this.state;
 
     return (
-      <div className='game'>
-        <canvas
-          height={height}
-          width={width}
-          ref={this.canvasRefFn}
-          onMouseDown={this.onMouseDown}
-          onMouseMove={this.onMouseDown}
-          onTouchMove={this.onTouchMove}
-          onTouchEnd={this.onTouchEnd}
-          onMouseUp={this.onMouseUp}
-          onMouseOut={this.onMouseUp}
-        />
+      <div className='game' ref={this.containerRefFn}>
+        {dimensions ? (
+          <canvas
+            ref={this.canvasRefFn}
+            width={dimensions.width}
+            height={dimensions.height}
+            onMouseDown={this.onMouseDown}
+            onMouseMove={this.onMouseDown}
+            onTouchMove={this.onTouchMove}
+            onTouchEnd={this.onTouchEnd}
+            onMouseUp={this.onMouseUp}
+            onMouseOut={this.onMouseUp}
+          />
+        ) : null}
         {this.renderMenu()}
       </div>
     );
+  }
+
+  private containerRefFn(ref: HTMLElement | null) {
+    this.container = ref;
+    setTimeout(() => {
+      this.setDimensions();
+      this.initializeGame();
+    }, 5);
   }
 
   private renderTitle() {
@@ -190,11 +222,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private canvasRefFn(ref: HTMLCanvasElement) {
-    const {clientWidth, clientHeight} = ref;
-    this.dimensions = {
-      width: clientWidth,
-      height: clientHeight
-    };
     this.canvasCtx = ref?.getContext('2d');
     if (this.canvasCtx) {
       this.canvasCtx.globalCompositeOperation = 'source-over';
@@ -293,8 +320,12 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   protected world(): WorldState {
+    if (!this.state.dimensions) {
+      throw new Error('No dimensions');
+    }
+
     return {
-      dimensions: this.props.dimensions,
+      dimensions: this.state.dimensions,
       audio: this.audio?.audioAnalyser || emptyAudioData,
       keysDown: this.keysDown,
       keysPressedThisFrame: this.keysPressedThisFrame,

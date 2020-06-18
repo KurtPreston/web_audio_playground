@@ -10,39 +10,26 @@ import {GameRunner} from './games/GameRunner';
 import {Hadouken} from './games/Hadouken';
 import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
-import {Dimensions} from './types/State';
-
-export interface AppState {
-  dimensions: Dimensions;
-}
 
 const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo, Cables];
 
 @autobind
-export class App extends React.Component<{}, AppState> {
-  private mainRef: HTMLElement | undefined;
-
+export class App extends React.Component<{}> {
   public async componentDidMount() {
     if (window.location.protocol !== 'https:') {
       window.location.protocol = 'https:';
     }
-
-    window.addEventListener('resize', this.setDimensions);
   }
 
   public render() {
     return (
       <div className='App'>
-        <main ref={this.mainRefFn}>{this.renderRouter()}</main>
+        <main>{this.renderRouter()}</main>
       </div>
     );
   }
 
   private renderRouter() {
-    if (!this.state?.dimensions) {
-      return;
-    }
-
     return (
       <Router>
         {/* A <Switch> looks through its children <Route>s and
@@ -50,7 +37,7 @@ export class App extends React.Component<{}, AppState> {
         <Switch>
           {games.map((game: GameInfo) => (
             <Route key={game.url} path={game.url}>
-              <GameRunner gameInfo={game} {...this.state} />
+              <GameRunner gameInfo={game} />
             </Route>
           ))}
           <Route path='/'>{this.nav()}</Route>
@@ -85,23 +72,6 @@ export class App extends React.Component<{}, AppState> {
         </ul>
       </nav>
     );
-  }
-
-  private setDimensions() {
-    if (this.mainRef) {
-      const {clientWidth, clientHeight} = this.mainRef;
-      this.setState({
-        dimensions: {
-          width: clientWidth,
-          height: clientHeight
-        }
-      });
-    }
-  }
-
-  private mainRefFn(ref: HTMLElement) {
-    this.mainRef = ref;
-    this.setDimensions();
   }
 }
 
