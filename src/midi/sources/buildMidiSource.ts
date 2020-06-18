@@ -1,7 +1,7 @@
 import {MidiNotePublish} from '../MidiNoteBus';
-import {AutoChordMidiSource} from './AutoChordMidiSource';
-import {MidiFileSource} from './MidiFileSource';
-import {MidiInputSource} from './MidiInputSource';
+import {AutoChordMidiSource} from './AutoChordMidiSource/AutoChordMidiSource';
+import {MidiFileSource} from './MidiFileSource/MidiFileSource';
+import {MidiInputSource} from './MidiInputSource/MidiInputSource';
 import {IMidiSource} from './MidiSource';
 import {
   ChordGeneratorOptions,
@@ -11,8 +11,8 @@ import {
   MidiInputSourceOptions,
   MidiSourceConfig
 } from './MidiSourceConfig.generated';
-import {PitchfinderMidiSource} from './PitchfinderMidiSource';
-import {TypewriteMidiSource} from './TypewriterMidiSource';
+import {PitchfinderMidiSource} from './PitchfinderMidiSource/PitchfinderMidiSource';
+import {TypewriteMidiSource} from './TypewriterMidiSource/TypewriterMidiSource';
 
 interface BuildMidiSourceParams {
   config: MidiSourceConfig;

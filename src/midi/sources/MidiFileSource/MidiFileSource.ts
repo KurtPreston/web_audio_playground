@@ -1,10 +1,10 @@
 import {autobind} from 'core-decorators';
 import {isNumber} from 'lodash';
 import MidiPlayer from 'midi-player-js';
-import {Note} from '../../audio/Note';
-import {MidiNotePublish} from '../MidiNoteBus';
+import {Note} from '../../../audio/Note';
+import {MidiNotePublish} from '../../MidiNoteBus';
+import {IMidiSource, MidiSourceParams} from '../MidiSource';
 import {MidiFileOptions} from './MidiFileSourceOptions.generated';
-import {IMidiSource, MidiSourceParams} from './MidiSource';
 
 @autobind
 export class MidiFileSource implements IMidiSource<MidiFileOptions> {

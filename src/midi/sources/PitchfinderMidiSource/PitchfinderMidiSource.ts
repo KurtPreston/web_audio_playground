@@ -1,9 +1,9 @@
-import {freqToMidiNote} from '../../audio/midi';
-import {Note} from '../../audio/Note';
-import {pitchDetectionWorker} from '../../workers/pitchDetectionWorkerProxy';
-import {MidiNotePublish} from '../MidiNoteBus';
-import {IMidiSource, MidiSourceParams} from './MidiSource';
-import {MicPitchDetectionOptions} from './MidiSourceConfig.generated';
+import {freqToMidiNote} from '../../../audio/midi';
+import {Note} from '../../../audio/Note';
+import {pitchDetectionWorker} from '../../../workers/pitchDetectionWorkerProxy';
+import {MidiNotePublish} from '../../MidiNoteBus';
+import {IMidiSource, MidiSourceParams} from '../MidiSource';
+import {MicPitchDetectionOptions} from '../MidiSourceConfig.generated';
 
 export class PitchfinderMidiSource implements IMidiSource<MicPitchDetectionOptions> {
   public options: MicPitchDetectionOptions;

@@ -1,12 +1,12 @@
 import {autobind} from 'core-decorators';
 import {random, sampleSize} from 'lodash';
-import {circleOfFifths, minorProgression} from '../../audio/chordProgression';
-import {Chord} from '../../audio/chords';
-import {generateRelatedChord} from '../../audio/harmony';
-import {Note, NoteValue} from '../../audio/Note';
-import {MidiNotePublish} from '../MidiNoteBus';
+import {circleOfFifths, minorProgression} from '../../../audio/chordProgression';
+import {Chord} from '../../../audio/chords';
+import {generateRelatedChord} from '../../../audio/harmony';
+import {Note, NoteValue} from '../../../audio/Note';
+import {MidiNotePublish} from '../../MidiNoteBus';
+import {IMidiSource, MidiSourceParams} from '../MidiSource';
 import {ChordGeneratorOptions} from './AutoChordMidiSourceOptions.generated';
-import {IMidiSource, MidiSourceParams} from './MidiSource';
 
 @autobind
 export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {

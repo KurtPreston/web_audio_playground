@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
-import {Note} from '../../audio/Note';
-import {MidiNotePublish} from '../MidiNoteBus';
+import {Note} from '../../../audio/Note';
+import {MidiNotePublish} from '../../MidiNoteBus';
+import {IMidiSource, MidiSourceParams} from '../MidiSource';
 import {MidiInputSourceOptions} from './MidiInputSourceOptions.generated';
-import {IMidiSource, MidiSourceParams} from './MidiSource';
 
 @autobind
 export class MidiInputSource implements IMidiSource<MidiInputSourceOptions> {

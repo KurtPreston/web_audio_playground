@@ -1,8 +1,8 @@
 import {autobind} from 'core-decorators';
 import {isNumber} from 'lodash';
-import {Note, NoteValue} from '../../audio/Note';
-import {MidiNotePublish} from '../MidiNoteBus';
-import {IMidiSource, MidiSourceParams} from './MidiSource';
+import {Note, NoteValue} from '../../../audio/Note';
+import {MidiNotePublish} from '../../MidiNoteBus';
+import {IMidiSource, MidiSourceParams} from '../MidiSource';
 import {ComputerKeyboardOptions} from './TypewriterMidiSourceOptions.generated';
 
 type Key = string;
