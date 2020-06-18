@@ -21,9 +21,9 @@ main {
       list-style: none;
 
       li {
-        flex: 1 1;
+        flex: 1 1 30%;
         padding: 0.5rem;
-        min-width: 300px;
+        min-width: 275px;
         overflow: hidden;
 
         .game {
