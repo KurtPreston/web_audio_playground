@@ -5,8 +5,8 @@
     "source": {
       "title": "Midi Source",
       "type": "string",
-      "enum": ["midiInput", "midiFile", "pitchfinder", "autoChord", "computerKeyboard"],
-      "enumNames": ["MIDI instrument", "MIDI file", "Mic", "Autoplay Chords", "Computer Keyboard"]
+      "enum": ["midiFile", "computerKeyboard", "autoChord", "pitchfinder", "midiInput"],
+      "enumNames": ["MIDI file", "Computer Keyboard", "Autoplay Chords", "Mic", "MIDI instrument"]
     },
     "options": {
       "type": "object"

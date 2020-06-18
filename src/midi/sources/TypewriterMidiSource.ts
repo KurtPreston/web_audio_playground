@@ -43,6 +43,9 @@ export class TypewriteMidiSource implements IMidiSource<ComputerKeyboardOptions>
     this.publish = params.publish;
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('keyup', this.onKeyUp);
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
   }
 
   public updateOptions(options: ComputerKeyboardOptions) {

@@ -2,12 +2,6 @@
   "title": "Midi File Options",
   "type": "object",
   "properties": {
-    "bpm": {
-      "type": "number",
-      "title": "BPM",
-      "minimum": 50,
-      "maximum": 200
-    },
     "midiFileUri": {
       "type": "string",
       "format": "uri-reference",
@@ -19,6 +13,12 @@
         "/midi/chopin_nocturne_9_2.mid"
       ],
       "enumNames": ["Moonlight Sonata", "Scarborough Faire", "Classical Gas", "Nocturne op.9 #2"]
+    },
+    "bpm": {
+      "type": "number",
+      "title": "BPM",
+      "minimum": 50,
+      "maximum": 200
     }
   },
   "required": ["bpm"],
