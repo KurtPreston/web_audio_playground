@@ -6,12 +6,12 @@ import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
 import {DeviceOrientation, Dimensions, FRAME_RATE, IPosition, WorldState} from '../types/State';
-import {Game, GameClass, GameInfo} from './Game';
+import {Game, GameInfo} from './Game';
 
 export interface GameRunnerProps {
   gameInfo: GameInfo;
   fakeAudioContext?: boolean;
-  game?: GameClass;
+  preview?: boolean;
 }
 
 export interface GameRunnerState {
@@ -60,7 +60,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     window.document.addEventListener('keydown', this.onKeyDown);
     window.document.addEventListener('keyup', this.onKeyUp);
     window.document.addEventListener('keypress', this.onKeyPress);
-    document.title = `KurtPreston.com | ${this.props.gameInfo.title}`;
+    if (!this.props.preview) {
+      document.title = `KurtPreston.com | ${this.props.gameInfo.title}`;
+    }
 
     window.addEventListener('resize', this.setDimensions);
   }
@@ -124,7 +126,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       analyserNode,
       audioAnalyser
     };
-    const Game = this.props.game || this.props.gameInfo.game;
+    const Game = this.props.preview ? this.props.gameInfo.preview : this.props.gameInfo.game;
     this.game = new Game(
       this.world(),
       {

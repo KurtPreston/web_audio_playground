@@ -19,6 +19,8 @@ export class App extends React.Component<{}> {
     if (window.location.protocol !== 'https:') {
       window.location.protocol = 'https:';
     }
+
+    document.title = 'KurtPreston.com | Web Audio Playground';
   }
 
   public render() {
@@ -58,12 +60,7 @@ export class App extends React.Component<{}> {
                   <h2>{title}</h2>
                   <div>{description}</div>
                   {preview ? (
-                    <GameRunner
-                      game={preview}
-                      gameInfo={gameInfo}
-                      fakeAudioContext={true}
-                      {...this.state}
-                    />
+                    <GameRunner preview={true} gameInfo={gameInfo} {...this.state} />
                   ) : null}
                 </Link>
               </li>
