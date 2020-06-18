@@ -157,8 +157,6 @@ export class DemoGame implements Game {
   private updateOptions(options: Options) {
     this.nextOptions = options;
   }
-
-  public info = Demo;
 }
 
 interface DemoMenuProps {
@@ -244,9 +242,9 @@ class DemoPreview implements Game {
 }
 
 export const Demo: GameInfo = {
-  title: 'Demo',
-  url: '/demo',
-  description: 'Space for testing new sprites and visualizations',
+  title: 'Light Factory',
+  url: '/factory',
+  description: 'The scraps from the cutting room',
   game: DemoGame,
   preview: DemoPreview
 };

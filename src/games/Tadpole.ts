@@ -8,8 +8,6 @@ import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class TadpoleGame implements Game {
-  public readonly info = Tadpole;
-
   private readonly bg = new StaticBackground();
   private readonly wisps: Set<Wisp> = new Set<Wisp>();
 

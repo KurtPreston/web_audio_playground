@@ -26,8 +26,6 @@ import {DopplerSynthMode} from './DopplerSynthMode.generated';
 
 @autobind
 export class DopplerSynthGame implements Game {
-  public info = DopplerSynth;
-
   // Sprites
   private noteGraph: NoteGraph;
   private noteGraphController: NoteGraphController;
@@ -275,8 +273,8 @@ export const DopplerSynth: GameInfo = {
   url: '/doppler',
   description: (
     <div>
-      <p>If a synth orbits in outer space and no one's there to hear it, does it make a sound?</p>
-      <p>Place the wamdag so we don't have to find out</p>
+      <p>They say there's no sound in outer space, but they've never been.</p>
+      <p>The astronaut is your ears to hear the sounds which whirl around the stars.</p>
     </div>
   ),
   game: DopplerSynthGame,

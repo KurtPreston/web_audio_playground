@@ -7,8 +7,6 @@ import {Game, GameInfo, ResourceInitializers} from './Game';
 
 @autobind
 export class HadoukenGame implements Game {
-  public info = Hadouken;
-
   private readonly player1: Ryu;
   private readonly player2: Ryu;
   private readonly fireballs: Set<Fireball>;

@@ -135,8 +135,6 @@ export class CablesGame implements Game {
     this.options = options;
     this.updateMenu();
   }
-
-  public info = Cables;
 }
 
 class CablesPreview implements Game {

@@ -72,8 +72,6 @@ export class WamflapGame implements Game {
     const wisps: Wisp[] = Array.from(this.wisps.values());
     return [this.bg, ...wisps, this.player];
   }
-
-  public info = Wamflap;
 }
 
 export class WamflapPreview implements Game {
