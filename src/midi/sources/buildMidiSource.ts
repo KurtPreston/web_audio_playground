@@ -1,9 +1,16 @@
-import {MidiSourceConfig} from '../../games/Cables/CablesOptions.generated';
 import {MidiNotePublish} from '../MidiNoteBus';
 import {AutoChordMidiSource} from './AutoChordMidiSource';
 import {MidiFileSource} from './MidiFileSource';
 import {MidiInputSource} from './MidiInputSource';
 import {IMidiSource} from './MidiSource';
+import {
+  ChordGeneratorOptions,
+  ComputerKeyboardOptions,
+  MicPitchDetectionOptions,
+  MidiFileOptions,
+  MidiInputSourceOptions,
+  MidiSourceConfig
+} from './MidiSourceConfig.generated';
 import {PitchfinderMidiSource} from './PitchfinderMidiSource';
 import {TypewriteMidiSource} from './TypewriterMidiSource';
 
@@ -12,19 +19,35 @@ interface BuildMidiSourceParams {
   publish: MidiNotePublish;
 }
 
-export function buildMidiSource(params: BuildMidiSourceParams): IMidiSource {
+export function buildMidiSource(params: BuildMidiSourceParams): IMidiSource<any> {
   const {config, publish} = params;
-  switch (config.source) {
+  const {options, source} = config;
+  switch (source) {
     case 'midiInput':
-      return new MidiInputSource(publish);
+      return new MidiInputSource({
+        publish,
+        options: options as MidiInputSourceOptions
+      });
     case 'midiFile':
-      return new MidiFileSource(publish);
+      return new MidiFileSource({
+        publish,
+        options: options as MidiFileOptions
+      });
     case 'autoChord':
-      return new AutoChordMidiSource(publish);
+      return new AutoChordMidiSource({
+        publish,
+        options: options as ChordGeneratorOptions
+      });
     case 'pitchfinder':
-      return new PitchfinderMidiSource(publish);
+      return new PitchfinderMidiSource({
+        publish,
+        options: options as MicPitchDetectionOptions
+      });
     case 'computerKeyboard':
-      return new TypewriteMidiSource(publish);
+      return new TypewriteMidiSource({
+        publish,
+        options: options as ComputerKeyboardOptions
+      });
     default:
       throw new Error('Unexpected midi source type');
   }

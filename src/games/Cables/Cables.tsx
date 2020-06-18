@@ -28,7 +28,7 @@ export class CablesGame implements Game {
 
   // Midi
   private readonly midiNoteBus: MidiNoteBus;
-  private midiSource: IMidiSource | undefined;
+  private midiSource: IMidiSource<any> | undefined;
   private readonly midiSynth: MidiSynth;
   private readonly midiListeners: IMidiSubscriber[];
 
@@ -125,6 +125,8 @@ export class CablesGame implements Game {
           publish: this.midiNoteBus.publish
         });
       }
+
+      this.midiSource?.updateOptions(options.midiSource.options || {});
     }
 
     this.midiSynth.updateSynth(options.synth);

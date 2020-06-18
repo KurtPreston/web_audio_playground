@@ -1,21 +1,20 @@
 import {autobind} from 'core-decorators';
 import {Note} from '../../audio/Note';
 import {MidiNotePublish} from '../MidiNoteBus';
-import {IMidiSource} from './MidiSource';
-
-interface MidiInputSourceOptions {
-  autoRelease: number;
-}
+import {MidiInputSourceOptions} from './MidiInputSourceOptions.generated';
+import {IMidiSource, MidiSourceParams} from './MidiSource';
 
 @autobind
-export class MidiInputSource implements IMidiSource {
+export class MidiInputSource implements IMidiSource<MidiInputSourceOptions> {
   public options: MidiInputSourceOptions = {
     autoRelease: 0
   };
 
   private subscriptions: (() => void)[] = [];
+  private readonly publish: MidiNotePublish;
 
-  constructor(private readonly publish: MidiNotePublish) {
+  constructor(params: MidiSourceParams<MidiInputSourceOptions>) {
+    this.publish = params.publish;
     this.initialize();
   }
 
@@ -29,6 +28,10 @@ export class MidiInputSource implements IMidiSource {
         input.removeEventListener('midimessage', this.publishMidiEvent as any);
       });
     });
+  }
+
+  public updateOptions(options: MidiInputSourceOptions) {
+    this.options = options;
   }
 
   private publishMidiEvent(event: WebMidi.MIDIMessageEvent) {

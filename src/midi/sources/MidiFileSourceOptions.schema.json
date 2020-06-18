@@ -2,13 +2,19 @@
   "title": "Midi File Options",
   "type": "object",
   "properties": {
+    "bpm": {
+      "type": "number",
+      "title": "BPM",
+      "minimum": 50,
+      "maximum": 200
+    },
     "midiFileUri": {
       "type": "string",
       "format": "uri-reference",
       "title": "Midi File",
-      "enum": ["/moonlight_sonata.mid"]
+      "enum": ["/midi/moonlight_sonata.mid", "/midi/scarborough.mid"]
     }
   },
-  "required": ["midiFileUri"],
+  "required": ["bpm"],
   "additionalProperties": false
 }

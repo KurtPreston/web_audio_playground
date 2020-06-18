@@ -2,12 +2,15 @@ import {autobind} from 'core-decorators';
 import {isNumber} from 'lodash';
 import {Note, NoteValue} from '../../audio/Note';
 import {MidiNotePublish} from '../MidiNoteBus';
-import {IMidiSource} from './MidiSource';
+import {IMidiSource, MidiSourceParams} from './MidiSource';
+import {ComputerKeyboardOptions} from './TypewriterMidiSourceOptions.generated';
 
 type Key = string;
 
 @autobind
-export class TypewriteMidiSource implements IMidiSource {
+export class TypewriteMidiSource implements IMidiSource<ComputerKeyboardOptions> {
+  public options: ComputerKeyboardOptions;
+
   private keys = new Map<Key, Note>();
 
   private keyboardMap: {[key: string]: NoteValue} = {
@@ -33,9 +36,17 @@ export class TypewriteMidiSource implements IMidiSource {
     ']': NoteValue.Dsharp + 12
   };
 
-  constructor(private readonly publish: MidiNotePublish) {
+  private readonly publish: MidiNotePublish;
+
+  constructor(params: MidiSourceParams<ComputerKeyboardOptions>) {
+    this.options = params.options;
+    this.publish = params.publish;
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('keyup', this.onKeyUp);
+  }
+
+  public updateOptions(options: ComputerKeyboardOptions) {
+    this.options = options;
   }
 
   private onKeyDown(event: KeyboardEvent) {

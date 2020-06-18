@@ -5,20 +5,27 @@ import {Chord} from '../../audio/chords';
 import {generateRelatedChord} from '../../audio/harmony';
 import {Note, NoteValue} from '../../audio/Note';
 import {MidiNotePublish} from '../MidiNoteBus';
-import {IMidiSource} from './MidiSource';
-interface AutoChordMidiSourceOptions {}
+import {ChordGeneratorOptions} from './AutoChordMidiSourceOptions.generated';
+import {IMidiSource, MidiSourceParams} from './MidiSource';
 
 @autobind
-export class AutoChordMidiSource implements IMidiSource {
-  public options: AutoChordMidiSourceOptions = {};
+export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
+  public options: ChordGeneratorOptions;
   private chord = new Map<NoteValue, Note[]>();
   private chordChangeInterval: NodeJS.Timeout;
   private progressionIdx: number = 0;
   private progression: Chord[] = circleOfFifths(minorProgression([1, 6, 4, 5]), NoteValue.C);
+  private readonly publish: MidiNotePublish;
 
-  constructor(private readonly publish: MidiNotePublish) {
+  constructor(params: MidiSourceParams<ChordGeneratorOptions>) {
+    this.options = params.options;
+    this.publish = params.publish;
     this.setChord(this.progression[0].notes);
     this.chordChangeInterval = setInterval(this.nextChord, 750);
+  }
+
+  public updateOptions(options: ChordGeneratorOptions) {
+    this.options = options;
   }
 
   private nextChord() {

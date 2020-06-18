@@ -2,17 +2,26 @@ import {freqToMidiNote} from '../../audio/midi';
 import {Note} from '../../audio/Note';
 import {pitchDetectionWorker} from '../../workers/pitchDetectionWorkerProxy';
 import {MidiNotePublish} from '../MidiNoteBus';
-import {IMidiSource, MidiSourceClass} from './MidiSource';
+import {IMidiSource, MidiSourceParams} from './MidiSource';
+import {MicPitchDetectionOptions} from './MidiSourceConfig.generated';
 
-export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSource {
+export class PitchfinderMidiSource implements IMidiSource<MicPitchDetectionOptions> {
+  public options: MicPitchDetectionOptions;
   private readonly audioContext: AudioContext;
   private running = true;
   private note: Note | null = null;
   private readonly lastNotes = new Array<Note | null>();
+  private readonly publish: MidiNotePublish;
 
-  constructor(private readonly publish: MidiNotePublish) {
+  constructor(params: MidiSourceParams<MicPitchDetectionOptions>) {
+    this.options = params.options;
+    this.publish = params.publish;
     this.audioContext = new AudioContext();
     this.initialize();
+  }
+
+  public updateOptions(options: MicPitchDetectionOptions) {
+    this.options = options;
   }
 
   private async initialize() {
@@ -85,4 +94,4 @@ export const PitchfinderMidiSource: MidiSourceClass = class implements IMidiSour
   public menu(): React.ReactNode {
     return 'Pitchfinder';
   }
-};
+}
