@@ -61,9 +61,31 @@ export class HadoukenGame implements Game {
   }
 }
 
+class HadoukenPreview implements Game {
+  private ryu: Ryu;
+
+  constructor(world: WorldState) {
+    this.ryu = new Ryu({
+      world,
+      launchFireball: () => {},
+      position: {
+        x: world.dimensions.width / 2,
+        y: world.dimensions.height - 50
+      },
+      angle: (3 * Math.PI) / 2, // facing up.
+      positionController: inputPositionController
+    });
+  }
+
+  public sprites(): Sprite[] {
+    return [this.ryu];
+  }
+}
+
 export const Hadouken: GameInfo = {
   title: 'Hadouken',
   url: '/hadouken',
   description: 'Charge your fireball like a super-saiyan',
-  game: HadoukenGame
+  game: HadoukenGame,
+  preview: HadoukenPreview
 };

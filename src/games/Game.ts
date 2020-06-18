@@ -8,7 +8,7 @@ export interface GameInfo {
   description: React.ReactNode;
   url: string;
   game: GameClass;
-  preview?: GameClass;
+  preview: GameClass;
 }
 
 export interface GameClass {

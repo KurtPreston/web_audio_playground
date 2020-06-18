@@ -1,6 +1,7 @@
 import {autobind} from 'core-decorators';
 import React from 'react';
 import {Compressor, setContext} from 'tone';
+import {Note} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
 import {buildMidiSource} from '../../midi/sources/buildMidiSource';
@@ -78,7 +79,7 @@ export class CablesGame implements Game {
       channel,
       midiNoteSubscribe: this.midiNoteBus.subscribe
     });
-    this.keyboard = new Keyboard(this.midiNoteBus);
+    this.keyboard = new Keyboard(this.midiNoteBus.notes);
     this.midiListeners = [
       this.midiSynth,
       new NoteGraphMidiPlayer({
@@ -139,9 +140,22 @@ export class CablesGame implements Game {
   public info = Cables;
 }
 
+class CablesPreview implements Game {
+  private keyboard: Keyboard;
+
+  constructor(world: WorldState) {
+    this.keyboard = new Keyboard(new Set<Note>());
+  }
+
+  public sprites(): Sprite[] {
+    return [this.keyboard];
+  }
+}
+
 export const Cables: GameInfo = {
   title: 'Cables',
   url: '/cables',
   description: 'A visual MIDI synth',
-  game: CablesGame
+  game: CablesGame,
+  preview: CablesPreview
 };

@@ -229,9 +229,22 @@ class DemoMenu extends React.PureComponent<DemoMenuProps, DemoMenuState> {
   }
 }
 
+class DemoPreview implements Game {
+  private flower: Flower;
+
+  constructor(world: WorldState) {
+    this.flower = new Flower(world.dimensions);
+  }
+
+  public sprites(): Sprite[] {
+    return [this.flower];
+  }
+}
+
 export const Demo: GameInfo = {
   title: 'Demo',
   url: '/demo',
   description: 'Space for testing new sprites and visualizations',
-  game: DemoGame
+  game: DemoGame,
+  preview: DemoPreview
 };
