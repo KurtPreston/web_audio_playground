@@ -7,12 +7,17 @@ import {noteColor} from './renderHelpers/noteColor';
 import {Sprite} from './Sprite';
 
 export class Keyboard implements Sprite {
+  public options = {
+    showNoteName: false
+  };
+
   constructor(private readonly noteBus: MidiNoteBus) {}
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
+    const {showNoteName} = this.options;
     const {width, height} = world.dimensions;
     const whiteKeyHeight = 60;
-    const blackKeyHeight = whiteKeyHeight * 0.5;
+    const blackKeyHeight = whiteKeyHeight * 0.6;
 
     const startY = height - whiteKeyHeight;
 
@@ -37,13 +42,15 @@ export class Keyboard implements Sprite {
         canvas.fillRect(startX, startY, whiteKeyWidth, whiteKeyHeight);
         canvas.strokeRect(startX, startY, whiteKeyWidth, whiteKeyHeight);
 
-        canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
-        canvas.fillText(
-          `${letter}${accidental || ''}`,
-          startX + whiteKeyWidth / 2,
-          height - 10,
-          whiteKeyWidth
-        );
+        if (showNoteName) {
+          canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
+          canvas.fillText(
+            `${letter}${accidental || ''}`,
+            startX + whiteKeyWidth / 2,
+            height - 10,
+            whiteKeyWidth
+          );
+        }
 
         startX += whiteKeyWidth;
       }
@@ -61,8 +68,10 @@ export class Keyboard implements Sprite {
         canvas.strokeStyle = 'white';
         canvas.fillRect(startX - blackKeyWidth / 2, startY, blackKeyWidth, blackKeyHeight);
 
-        canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
-        canvas.fillText(`${letter}${accidental || ''}`, startX, height - 40, blackKeyWidth);
+        if (showNoteName) {
+          canvas.fillStyle = tinycolor(color).isDark() ? 'white' : 'black';
+          canvas.fillText(`${letter}${accidental || ''}`, startX, height - 40, blackKeyWidth);
+        }
       } else {
         startX += whiteKeyWidth;
       }
