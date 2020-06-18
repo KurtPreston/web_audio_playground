@@ -8,6 +8,7 @@ export interface GameInfo {
   description: React.ReactNode;
   url: string;
   game: GameClass;
+  preview?: GameClass;
 }
 
 export interface GameClass {
@@ -27,5 +28,4 @@ export interface Game {
   gameTick?: (world: WorldState) => void;
   destroy?: () => void;
   sprites: () => Sprite[];
-  info: GameInfo;
 }

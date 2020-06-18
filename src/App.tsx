@@ -63,11 +63,25 @@ export class App extends React.Component<{}, AppState> {
     return (
       <nav>
         <ul>
-          {games.map(({title, url}) => (
-            <li key={url}>
-              <Link to={url}>{title}</Link>
-            </li>
-          ))}
+          {games.map((gameInfo: GameInfo) => {
+            const {url, title, description, preview} = gameInfo;
+            return (
+              <li key={url}>
+                <Link to={url}>
+                  <h2>{title}</h2>
+                  <div>{description}</div>
+                  {preview ? (
+                    <GameRunner
+                      game={preview}
+                      gameInfo={gameInfo}
+                      noAudioContext={true}
+                      {...this.state}
+                    />
+                  ) : null}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     );

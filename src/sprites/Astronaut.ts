@@ -14,7 +14,7 @@ import {Sprite} from './Sprite';
 
 interface AstronautParams {
   getNoteNodes: () => Set<NoteNode>;
-  channel: ToneAudioNode;
+  channel: ToneAudioNode | null;
   dimensions: Dimensions;
 }
 
@@ -32,7 +32,7 @@ export class Astronaut implements Sprite {
   private readonly color = 'white';
 
   // Doppler settings
-  private bounceSynth: Synth;
+  private bounceSynth: Synth | null;
   private bounceFill: number = 0;
 
   constructor(params: AstronautParams) {
@@ -49,21 +49,25 @@ export class Astronaut implements Sprite {
     this.getNoteNodes = params.getNoteNodes;
 
     // Create synth
-    this.bounceSynth = new Synth({
-      ...pingOscillator,
-      volume: -8
-    });
-    const delay = new FeedbackDelay({
-      wet: 0.5,
-      delayTime: 0.4,
-      feedback: 0.7
-    });
-    const reverb = new Reverb({
-      decay: 7 // 7seconds
-    });
-    this.bounceSynth.connect(delay);
-    delay.connect(reverb);
-    reverb.connect(params.channel);
+    if (params.channel) {
+      this.bounceSynth = new Synth({
+        ...pingOscillator,
+        volume: -8
+      });
+      const delay = new FeedbackDelay({
+        wet: 0.5,
+        delayTime: 0.4,
+        feedback: 0.7
+      });
+      const reverb = new Reverb({
+        decay: 7 // 7seconds
+      });
+      this.bounceSynth.connect(delay);
+      delay.connect(reverb);
+      reverb.connect(params.channel);
+    } else {
+      this.bounceSynth = null;
+    }
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -145,7 +149,9 @@ export class Astronaut implements Sprite {
     if (node) {
       const note: NoteValue = noteToNoteValue(node.note);
       const freq = midiNoteToFreq(note + 72);
-      this.bounceSynth.triggerAttackRelease(freq, 0.125);
+      if (this.bounceSynth) {
+        this.bounceSynth.triggerAttackRelease(freq, 0.125);
+      }
     }
   }
 }

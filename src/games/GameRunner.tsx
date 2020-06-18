@@ -6,11 +6,13 @@ import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
 import {DeviceOrientation, Dimensions, FRAME_RATE, IPosition, WorldState} from '../types/State';
-import {Game, GameInfo} from './Game';
+import {Game, GameClass, GameInfo} from './Game';
 
 export interface GameRunnerProps {
   dimensions: Dimensions;
   gameInfo: GameInfo;
+  noAudioContext?: boolean;
+  game?: GameClass;
 }
 
 export interface GameRunnerState {
@@ -45,6 +47,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   private frameNum: number = 0;
   private canvasCtx: CanvasRenderingContext2D | null = null;
   private mouseDragging: boolean = false;
+  private dimensions: Dimensions = this.props.dimensions;
 
   // Audio
   private audio: AudioNodes | undefined;
@@ -67,15 +70,17 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const analyserNode = audioContext.createAnalyser();
     const audioAnalyser = new AudioAnalyser(analyserNode);
 
-    if (audioContext.state !== 'running') {
-      await audioContext.resume();
-    }
-    if (audioContext.state !== 'running') {
-      console.warn(`AudioContext is ${audioContext.state}. Cannot create game.`);
-      this.setState({
-        requireClickToStart: true
-      });
-      return;
+    if (!this.props.noAudioContext) {
+      if (audioContext.state !== 'running') {
+        await audioContext.resume();
+      }
+      if (audioContext.state !== 'running') {
+        console.warn(`AudioContext is ${audioContext.state}. Cannot create game.`);
+        this.setState({
+          requireClickToStart: true
+        });
+        return;
+      }
     }
 
     this.noSleep.enable();
@@ -85,7 +90,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       analyserNode,
       audioAnalyser
     };
-    const Game = this.props.gameInfo.game;
+    const Game = this.props.game || this.props.gameInfo.game;
     this.game = new Game(
       this.world(),
       {
@@ -117,8 +122,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   public render(): React.ReactNode {
-    const {dimensions} = this.props;
-    const {height, width} = dimensions;
+    const {height, width} = this.dimensions;
 
     return (
       <div className='game'>
@@ -186,6 +190,11 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private canvasRefFn(ref: HTMLCanvasElement) {
+    const {clientWidth, clientHeight} = ref;
+    this.dimensions = {
+      width: clientWidth,
+      height: clientHeight
+    };
     this.canvasCtx = ref?.getContext('2d');
     if (this.canvasCtx) {
       this.canvasCtx.globalCompositeOperation = 'source-over';

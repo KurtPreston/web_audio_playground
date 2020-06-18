@@ -254,14 +254,32 @@ export class DopplerSynthGame implements Game {
   }
 }
 
+export class DopplerSynthPreview implements Game {
+  private readonly astronaut: Astronaut;
+  private readonly noteNodes = new Set<NoteNode>();
+
+  constructor(world: WorldState) {
+    this.astronaut = new Astronaut({
+      dimensions: world.dimensions,
+      getNoteNodes: () => this.noteNodes,
+      channel: null
+    });
+  }
+
+  public sprites(): Sprite[] {
+    return [this.astronaut];
+  }
+}
+
 export const DopplerSynth: GameInfo = {
   title: 'DopplerSynth',
   url: '/doppler',
   description: (
     <div>
-      <p>if a synth orbits in outer space and no one's there to hear it, does it make a sound?</p>
-      <p>place the wamdag so we don't have to find out.</p>
+      <p>If a synth orbits in outer space and no one's there to hear it, does it make a sound?</p>
+      <p>Place the wamdag so we don't have to find out</p>
     </div>
   ),
-  game: DopplerSynthGame
+  game: DopplerSynthGame,
+  preview: DopplerSynthPreview
 };

@@ -76,9 +76,24 @@ export class WamflapGame implements Game {
   public info = Wamflap;
 }
 
+export class WamflapPreview implements Game {
+  private readonly flyingWamdag: FlyingWamdag;
+
+  constructor(world: WorldState) {
+    this.flyingWamdag = new FlyingWamdag({
+      dimensions: world.dimensions
+    });
+  }
+
+  public sprites(): Sprite[] {
+    return [this.flyingWamdag];
+  }
+}
+
 export const Wamflap: GameInfo = {
   title: 'Wamflap',
   description: 'Move the wambird by singing notes to collect the wisps',
   url: '/wamflap',
-  game: WamflapGame
+  game: WamflapGame,
+  preview: WamflapPreview
 };

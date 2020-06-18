@@ -142,6 +142,6 @@ export class CablesGame implements Game {
 export const Cables: GameInfo = {
   title: 'Cables',
   url: '/cables',
-  description: 'The tadpoles come to the surface when called',
+  description: 'A visual MIDI synth',
   game: CablesGame
 };

@@ -38,9 +38,31 @@ export class TadpoleGame implements Game {
   }
 }
 
+class TadpolePreview implements Game {
+  private readonly wisps: Wisp[];
+
+  constructor(world: WorldState, initializers: ResourceInitializers) {
+    this.wisps = times(
+      5,
+      () =>
+        new Wisp({
+          dimensions: world.dimensions,
+          bounceOffEdge: true,
+          destroy: () => false,
+          mixBlendMode: 'xor'
+        })
+    );
+  }
+
+  public sprites(): Sprite[] {
+    return this.wisps;
+  }
+}
+
 export const Tadpole: GameInfo = {
   title: 'Tadpoles',
   url: '/tadpole',
   description: 'The tadpoles come to the surface when called',
-  game: TadpoleGame
+  game: TadpoleGame,
+  preview: TadpolePreview
 };
