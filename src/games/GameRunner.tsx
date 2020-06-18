@@ -106,6 +106,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       }
     } else {
       const tone = new Oscillator({
+        type: 'triangle',
         frequency: 20
       });
       tone.start();
