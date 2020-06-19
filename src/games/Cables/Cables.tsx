@@ -3,6 +3,7 @@ import React from 'react';
 import {Compressor} from 'tone';
 import {Note} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
+import {diff} from '../../math/diff';
 import {zip} from '../../math/zip';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
 import {buildMidiSource} from '../../midi/sources/buildMidiSource';
@@ -121,7 +122,7 @@ export class CablesGame implements Game {
     this.options = options;
     this.updateMenu();
 
-    console.log(zip(options));
+    console.log(zip(diff(options, defaultCablesOptions)));
   }
 }
 
