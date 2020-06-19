@@ -4,7 +4,7 @@ import {scale} from '../math/scale';
 import {PitchDetector} from '../pitchfinder/src/detectors/types';
 import {AudioData} from '../types/AudioData';
 import {workerPitchDetector} from '../workers/pitchDetectionWorkerProxy';
-import {freqToMidiNote} from './midi';
+import {freqToMidiNote, midiNoteToFreq} from './midi';
 import {getNoteFrequencyRange, Note} from './Note';
 
 // Modifies AudioData rather than returning a new one
@@ -13,8 +13,12 @@ export type FftSize = 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16
 
 export const NOTE_FRAMES_TO_AVG = 5;
 
+export interface IAudioAnalyser extends AudioData {
+  reset: () => void;
+}
+
 @autobind
-export class AudioAnalyser implements AudioData {
+export class AudioAnalyser implements IAudioAnalyser {
   // References
   private readonly analyser: AnalyserNode;
   private readonly _frequencies: Uint8Array;
@@ -170,3 +174,41 @@ export class AudioAnalyser implements AudioData {
     return Math.sqrt(sum / range);
   }
 }
+
+class FakeAudioAnalyser implements IAudioAnalyser {
+  public readonly frequencies: Uint8Array;
+  public readonly uintWave: Uint8Array;
+  public readonly floatWave: Float32Array;
+  public readonly hzPerIdx: number;
+  public readonly sampleRate = 44100;
+  public amplitude: number = 1;
+  public rms: number = 1;
+  public peakFreq: number | null = 440;
+  public notes: Note[] = [69];
+
+  constructor() {
+    const fftSize: FftSize = 512;
+    const frequencyBinCount = fftSize / 2;
+
+    // Allocate the memory for the arrays just once
+    this.frequencies = new Uint8Array(frequencyBinCount);
+    this.uintWave = new Uint8Array(fftSize);
+    this.floatWave = new Float32Array(fftSize);
+    this.hzPerIdx = this.sampleRate / (frequencyBinCount * 2);
+  }
+
+  private frame = 0;
+  public reset() {
+    this.frame++;
+    const midiNote = 72 + Math.sin(this.frame / 200) * 12;
+    this.peakFreq = midiNoteToFreq(midiNote);
+    this.notes = [Math.round(midiNote)];
+    this.amplitude = Math.cos(this.frame / 100) * 0.5 + 0.5;
+  }
+
+  public amplitudeAtNote(note: number): number {
+    throw new Error('Method not implemented.');
+  }
+}
+
+export const fakeAudioAnalyserSingleton = new FakeAudioAnalyser();

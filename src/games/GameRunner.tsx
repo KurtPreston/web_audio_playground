@@ -1,9 +1,9 @@
 import {autobind} from 'core-decorators';
 import NoSleep from 'nosleep.js';
 import React from 'react';
-import {Context as AudioContext, Oscillator, setContext, Tremolo} from 'tone';
+import {Context as AudioContext, setContext} from 'tone';
 import {clearInterval, setInterval} from 'worker-timers';
-import {AudioAnalyser} from '../audio/AudioAnalyser';
+import {AudioAnalyser, fakeAudioAnalyserSingleton, IAudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
 import {DeviceOrientation, Dimensions, FRAME_RATE, IPosition, WorldState} from '../types/State';
 import {Game, GameInfo} from './Game';
@@ -24,7 +24,7 @@ export interface GameRunnerState {
 interface AudioNodes {
   audioContext: AudioContext;
   analyserNode: AnalyserNode;
-  audioAnalyser: AudioAnalyser;
+  audioAnalyser: IAudioAnalyser;
 }
 
 @autobind
@@ -92,7 +92,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     // Create audio first
     const audioContext: AudioContext = new AudioContext();
     const analyserNode = audioContext.createAnalyser();
-    const audioAnalyser = new AudioAnalyser(analyserNode);
+    const audioAnalyser: IAudioAnalyser = this.props.fakeAudioContext
+      ? new AudioAnalyser(analyserNode)
+      : fakeAudioAnalyserSingleton;
     setContext(audioContext);
 
     if (!this.props.fakeAudioContext) {
@@ -107,15 +109,15 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
         return;
       }
     } else {
-      const tone = new Oscillator({
-        type: 'triangle',
-        frequency: 20
-      });
-      tone.start();
-      tone.frequency.exponentialRampTo(220, 10);
-      const tremolo = new Tremolo(0.2, 1);
-      tone.connect(tremolo);
-      tremolo.connect(analyserNode);
+      // const tone = new Oscillator({
+      //   type: 'triangle',
+      //   frequency: 20
+      // });
+      // tone.start();
+      // tone.frequency.exponentialRampTo(220, 10);
+      // const tremolo = new Tremolo(0.2, 1);
+      // tone.connect(tremolo);
+      // tremolo.connect(analyserNode);
       // tremolo.toMaster();
     }
 
