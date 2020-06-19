@@ -1,4 +1,4 @@
-import {DopplerMode} from '../../types/DopplerSettings.d';
+import {DopplerMode} from '../../sprites/Microphone/MicrophoneAudioSettings.generated';
 import {doppler} from './doppler';
 
 describe('doppler', () => {
@@ -30,7 +30,7 @@ describe('doppler', () => {
           },
           settings: {
             speedOfSound: 1000,
-            mode: DopplerMode.On
+            dopplerMode: DopplerMode.On
           }
         })
       ).toEqual(100 * (1005 / 1000));

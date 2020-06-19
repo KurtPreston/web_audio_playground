@@ -3,6 +3,7 @@ import React from 'react';
 import {Compressor} from 'tone';
 import {Note} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
+import {zip} from '../../math/zip';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
 import {buildMidiSource} from '../../midi/sources/buildMidiSource';
 import {IMidiSource} from '../../midi/sources/MidiSource';
@@ -17,27 +18,7 @@ import {CablesOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import {CablesOptions} from './CablesOptions.generated';
-import {zip} from '../../math/zip';
-
-const defaultCablesOptions: CablesOptions = {
-  synth: {
-    oscillator: {
-      type: 'triangle',
-      partialCount: 3
-    },
-    envelope: {
-      attack: 0.01,
-      attackCurve: 'linear',
-      decay: 0.1,
-      decayCurve: 'exponential',
-      sustain: 0.3,
-      release: 1,
-      releaseCurve: 'exponential'
-    },
-    volume: -40
-  },
-  noteGraph: defaultNoteGraphOptions()
-};
+import {defaultCablesOptions} from './defaultCablesOptions';
 
 @autobind
 export class CablesGame implements Game {
@@ -140,7 +121,6 @@ export class CablesGame implements Game {
     this.options = options;
     this.updateMenu();
 
-    const di;
     console.log(zip(options));
   }
 }
