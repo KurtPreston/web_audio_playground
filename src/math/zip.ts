@@ -5,15 +5,7 @@ export function zip(data: any): string {
   return buffer.toString('base64');
 }
 
-export function unzip(zipped: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const buffer = Buffer.from(zipped, 'base64');
-    cbor.decodeFirst(buffer, (err, value) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(value);
-      }
-    });
-  });
+export function unzip(zipped: string): any {
+  const buffer = Buffer.from(zipped, 'base64');
+  return cbor.decodeFirstSync(buffer);
 }

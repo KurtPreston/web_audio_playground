@@ -1,7 +1,7 @@
 import {unzip, zip} from './zip';
 
 describe('zip', () => {
-  it('serializes and deserializes JSON', async () => {
+  it('serializes and deserializes JSON', () => {
     const data = {
       key: {
         value: 'string',
@@ -10,7 +10,7 @@ describe('zip', () => {
     };
 
     const zipped = zip(data);
-    const unzipped = await unzip(zipped);
+    const unzipped = unzip(zipped);
     expect(unzipped).toEqual(data);
   });
 });

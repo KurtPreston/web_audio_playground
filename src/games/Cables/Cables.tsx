@@ -1,10 +1,11 @@
 import {autobind} from 'core-decorators';
+import {merge} from 'lodash';
 import React from 'react';
 import {Compressor} from 'tone';
 import {Note} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {diff} from '../../math/diff';
-import {zip} from '../../math/zip';
+import {unzip, zip} from '../../math/zip';
 import {MidiNoteBus} from '../../midi/MidiNoteBus';
 import {buildMidiSource} from '../../midi/sources/buildMidiSource';
 import {IMidiSource} from '../../midi/sources/MidiSource';
@@ -16,14 +17,16 @@ import {defaultNoteGraphOptions, NoteGraph} from '../../sprites/NoteGraph/NoteGr
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
 import {CablesOptionsSchema} from '../../types/schemas.generated';
-import {WorldState} from '../../types/State';
+import {Dimensions, WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import {CablesOptions} from './CablesOptions.generated';
 import {defaultCablesOptions} from './defaultCablesOptions';
 
+const OPTIONS_KEY = 'o';
+
 @autobind
 export class CablesGame implements Game {
-  private options: CablesOptions;
+  private options: CablesOptions = defaultCablesOptions;
 
   // Sprites
   private readonly noteGraph: NoteGraph;
@@ -41,11 +44,6 @@ export class CablesGame implements Game {
     initializers: ResourceInitializers,
     private readonly updateMenu: () => void
   ) {
-    // Build options
-    this.options = {
-      ...defaultCablesOptions,
-      noteGraph: defaultNoteGraphOptions(world.dimensions)
-    };
     // Setup audio
     const channel = new Compressor({
       threshold: -10,
@@ -75,7 +73,28 @@ export class CablesGame implements Game {
     ];
 
     // Initialize midi
-    this.updateSettings(this.options);
+    this.updateSettings(this.initialOptions(world.dimensions));
+  }
+
+  private initialOptions(dimensions: Dimensions): CablesOptions {
+    const queryParams = new URLSearchParams(window.location.search);
+    const optionsString = queryParams.get(OPTIONS_KEY);
+    let partialOptions: Partial<CablesOptions> = {};
+    if (optionsString) {
+      try {
+        partialOptions = unzip(optionsString);
+      } catch (err) {
+        console.warn('Invalid query params', optionsString);
+      }
+    }
+
+    return merge(
+      {
+        ...defaultCablesOptions,
+        noteGraph: defaultNoteGraphOptions(dimensions)
+      },
+      partialOptions
+    );
   }
 
   public destroy() {
@@ -122,7 +141,10 @@ export class CablesGame implements Game {
     this.options = options;
     this.updateMenu();
 
-    console.log(zip(diff(options, defaultCablesOptions)));
+    const optionsString = zip(diff(options, defaultCablesOptions));
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(OPTIONS_KEY, optionsString);
+    window.history.replaceState(options, 'Options', `?${urlParams.toString()}`);
   }
 }
 
