@@ -207,7 +207,7 @@ class FakeAudioAnalyser implements IAudioAnalyser {
   }
 
   public amplitudeAtNote(note: number): number {
-    throw new Error('Method not implemented.');
+    return Math.random();
   }
 }
 

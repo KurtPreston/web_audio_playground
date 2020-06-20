@@ -1,4 +1,4 @@
-import {range} from 'lodash';
+import {isBoolean, range} from 'lodash';
 import {IPosition, WorldState} from '../types/State';
 
 import {midiNoteToFreq} from '../audio/midi';
@@ -13,6 +13,7 @@ export interface NoteGridParams {
   showPitchIndicator: boolean;
   showFrequency: boolean;
   showNoteAmplitude: boolean;
+  showNoteName: boolean;
 }
 
 const noteGridParamDefaults: NoteGridParams = {
@@ -20,7 +21,8 @@ const noteGridParamDefaults: NoteGridParams = {
   highOctave: 6,
   showPitchIndicator: false,
   showFrequency: true,
-  showNoteAmplitude: true
+  showNoteAmplitude: true,
+  showNoteName: true
 };
 
 export class NoteGrid implements Sprite {
@@ -30,12 +32,20 @@ export class NoteGrid implements Sprite {
   private readonly showPitchIndicator: boolean;
   private readonly showFrequency: boolean;
   private readonly showNoteAmplitude: boolean;
+  private readonly showNoteName: boolean;
 
   private colWidth: number = 0;
   private rowHeight: number = 0;
 
   constructor(params: Partial<NoteGridParams>) {
-    const {lowOctave, highOctave, showPitchIndicator, showFrequency, showNoteAmplitude} = {
+    const {
+      lowOctave,
+      highOctave,
+      showPitchIndicator,
+      showNoteName,
+      showFrequency,
+      showNoteAmplitude
+    } = {
       ...noteGridParamDefaults,
       ...params
     };
@@ -44,6 +54,7 @@ export class NoteGrid implements Sprite {
     this.showPitchIndicator = showPitchIndicator;
     this.showFrequency = showFrequency;
     this.showNoteAmplitude = showNoteAmplitude;
+    this.showNoteName = isBoolean(showNoteName) ? showNoteName : false;
   }
 
   public tick(world: WorldState) {
@@ -146,7 +157,7 @@ export class NoteGrid implements Sprite {
       canvas.fillText(noteName, cx, cy - 5, colWidth);
       canvas.textBaseline = 'top';
       canvas.fillText(freq.toString(), cx, cy + 5, colWidth);
-    } else {
+    } else if (this.showNoteName) {
       canvas.textBaseline = 'middle';
       canvas.fillText(noteName, cx, cy, colWidth);
     }

@@ -228,16 +228,13 @@ class DemoMenu extends React.PureComponent<DemoMenuProps, DemoMenuState> {
 }
 
 class DemoPreview implements Game {
-  private flower: Flower;
-  private bg: Background;
-
-  constructor(world: WorldState) {
-    this.flower = new Flower(world.dimensions);
-    this.bg = new Background({}, 0);
-  }
+  private noteGrid = new NoteGrid({
+    showFrequency: false,
+    showNoteName: false
+  });
 
   public sprites(): Sprite[] {
-    return [this.bg, this.flower];
+    return [this.noteGrid];
   }
 }
 
