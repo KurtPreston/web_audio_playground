@@ -10,7 +10,6 @@ import {Game, GameInfo} from './Game';
 
 export interface GameRunnerProps {
   gameInfo: GameInfo;
-  fakeAudioContext?: boolean;
   preview?: boolean;
 }
 
@@ -92,11 +91,11 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     // Create audio first
     const audioContext: AudioContext = new AudioContext();
     const analyserNode = audioContext.createAnalyser();
-    const audioAnalyser: IAudioAnalyser = this.props.fakeAudioContext
+    const audioAnalyser: IAudioAnalyser = this.props.preview
       ? new AudioAnalyser(analyserNode)
       : fakeAudioAnalyserSingleton;
 
-    if (!this.props.fakeAudioContext) {
+    if (!this.props.preview) {
       if (audioContext.state !== 'running') {
         await audioContext.resume();
       }
@@ -108,17 +107,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
         return;
       }
       setContext(audioContext);
-    } else {
-      // const tone = new Oscillator({
-      //   type: 'triangle',
-      //   frequency: 20
-      // });
-      // tone.start();
-      // tone.frequency.exponentialRampTo(220, 10);
-      // const tremolo = new Tremolo(0.2, 1);
-      // tone.connect(tremolo);
-      // tremolo.connect(analyserNode);
-      // tremolo.toMaster();
     }
 
     this.noSleep.enable();
