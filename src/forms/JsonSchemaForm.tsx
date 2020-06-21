@@ -41,6 +41,8 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
     return <JsonSchemaObjectForm {...(props as any)} />;
   } else if (schema.type === 'number' || schema.type === 'integer') {
     return JsonSchemaNumberForm(props as any);
+  } else if (schema.type === 'array' && schema.uniqueItems && schema.items?.enum) {
+    return JsonSchemaMultiSelect(props as any);
   } else {
     throw new Error(`Unspported type ${schema.type}`);
   }
@@ -241,6 +243,49 @@ function JsonSchemaEnumDropdown(props: JsonSchemaFormProps<any>): React.ReactEle
     <div className='jsonschema-enum-dropdown'>
       <label>{schema.title}</label>
       <select value={value} onChange={onSelectionChange}>
+        {options.map(({label, value}, idx) => {
+          return (
+            <option key={idx} value={value}>
+              {label}
+            </option>
+          );
+        })}
+      </select>
+    </div>
+  );
+}
+
+function JsonSchemaMultiSelect(
+  props: JsonSchemaFormProps<(string | number)[]>
+): React.ReactElement {
+  const {onChange, schema, value} = props;
+  if (!schema.items?.enum) {
+    throw new Error('Requires enum');
+  }
+  const options = schema.items?.enum.map((value, idx) => ({
+    label: schema.items?.enumNames ? schema.items?.enumNames[idx] : value.toString(),
+    value: value.toString()
+  }));
+
+  const onSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const values: string[] = Array.from(event.target.options)
+      .filter((option) => option.selected)
+      .map(({value}) => value);
+    if (schema.type === 'number') {
+      onChange(values.map((value) => parseFloat(value)));
+    } else if (schema.type === 'integer') {
+      onChange(values.map((value) => parseInt(value)));
+    } else {
+      onChange(values);
+    }
+  };
+
+  const stringValues: string[] = (value || []).map((v) => v.toString());
+
+  return (
+    <div className='jsonschema-multiselect'>
+      <label>{schema.title}</label>
+      <select multiple value={stringValues} onChange={onSelectionChange}>
         {options.map(({label, value}, idx) => {
           return (
             <option key={idx} value={value}>

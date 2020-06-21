@@ -1,5 +1,6 @@
 import {autobind} from 'core-decorators';
-import {Note} from '../../../audio/Note';
+import {minBy} from 'lodash';
+import {Note, noteToNoteValue, NoteValue} from '../../../audio/Note';
 import {MidiNotePublish} from '../../MidiNoteBus';
 import {IMidiSource, MidiSourceParams} from '../MidiSource';
 import {MidiInputSourceOptions} from './MidiInputSourceOptions.generated';
@@ -39,7 +40,11 @@ export class MidiInputSource implements IMidiSource<MidiInputSourceOptions> {
     const note: Note = event.data[1];
     const velocity = event.data[2];
     if (signal === 144) {
-      this.publish({note, velocity});
+      const nearestNote = this.options.filterNotes
+        ? nearestFilteredNote(note, this.options.filterNotes)
+        : note;
+
+      this.publish({note: nearestNote, velocity});
     }
   }
 
@@ -54,4 +59,24 @@ export class MidiInputSource implements IMidiSource<MidiInputSourceOptions> {
       return 'Not Connected';
     }
   }
+}
+
+function nearestFilteredNote(note: Note, allowedNotes: NoteValue[]): Note {
+  const noteValue = noteToNoteValue(note);
+  if (allowedNotes.includes(noteValue)) {
+    return note;
+  }
+
+  let minDistance = Number.POSITIVE_INFINITY;
+  allowedNotes.forEach((allowedNote: NoteValue) => {
+    const diff = minBy(
+      [noteValue - allowedNote, noteValue - (allowedNote + 12)],
+      Math.abs
+    ) as number;
+    if (Math.abs(diff) < Math.abs(minDistance)) {
+      minDistance = diff;
+    }
+  });
+
+  return note - minDistance;
 }
