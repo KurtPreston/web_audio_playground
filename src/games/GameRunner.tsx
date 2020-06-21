@@ -95,7 +95,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const audioAnalyser: IAudioAnalyser = this.props.fakeAudioContext
       ? new AudioAnalyser(analyserNode)
       : fakeAudioAnalyserSingleton;
-    setContext(audioContext);
 
     if (!this.props.fakeAudioContext) {
       if (audioContext.state !== 'running') {
@@ -108,6 +107,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
         });
         return;
       }
+      setContext(audioContext);
     } else {
       // const tone = new Oscillator({
       //   type: 'triangle',
