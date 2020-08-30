@@ -92,8 +92,8 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const audioContext: AudioContext = new AudioContext();
     const analyserNode = audioContext.createAnalyser();
     const audioAnalyser: IAudioAnalyser = this.props.preview
-      ? new AudioAnalyser(analyserNode)
-      : fakeAudioAnalyserSingleton;
+      ? fakeAudioAnalyserSingleton
+      : new AudioAnalyser(analyserNode);
 
     if (!this.props.preview) {
       if (audioContext.state !== 'running') {
