@@ -18,7 +18,7 @@ export enum TimingFunctionType {
 export function timingFunction(params: TimingFunctionParams): number {
   const {frame, numFrames, maxValue, reverse, type} = params;
   let timeFraction: number = scale({
-    input: frame / numFrames,
+    input: frame,
     inputMin: 0,
     inputMax: numFrames,
     outputMin: 0,

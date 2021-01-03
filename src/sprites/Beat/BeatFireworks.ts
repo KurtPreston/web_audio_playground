@@ -1,7 +1,8 @@
 import {random} from 'lodash';
-import {timingFunction, TimingFunctionType} from '../math/timingFunctions';
-import {Dimensions, IPosition, WorldState} from '../types/State';
-import {Sprite} from './Sprite';
+import {Player, ToneAudioNode} from 'tone';
+import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
+import {Dimensions, IPosition, WorldState} from '../../types/State';
+import {Sprite} from '../Sprite';
 
 interface Beat {
   position: IPosition;
@@ -11,11 +12,18 @@ interface Beat {
   color: string;
 }
 
-export class OuterSpace implements Sprite {
-  private beats: Set<Beat> = new Set<Beat>();
+export class BeatFireworks implements Sprite {
+  private readonly beats: Set<Beat> = new Set<Beat>();
+  private readonly kick: Player;
+
+  constructor(channel: ToneAudioNode) {
+    this.kick = new Player('/samples/kick.wav');
+    this.kick.connect(channel);
+  }
 
   private generateBeat(dimensions: Dimensions): Beat {
     const {width, height} = dimensions;
+    this.kick.start();
     return {
       position: {
         x: random(width),
@@ -39,16 +47,29 @@ export class OuterSpace implements Sprite {
       });
       const {x, y} = position;
       canvas.fillStyle = color;
+      canvas.beginPath();
       canvas.arc(x, y, size, 0, 2 * Math.PI);
+      canvas.fill();
     });
   }
 
   public tick(world: WorldState) {
+    // Advance beat frames
     this.beats.forEach((beat: Beat) => {
       beat.frame++;
       if (beat.frame > beat.numFrames) {
         this.beats.delete(beat);
       }
     });
+
+    // Create new beat every 20 frames
+    const framesPerMeasure = 20;
+    const beat1 = 0;
+    const beat4 = (framesPerMeasure * 3) / 4;
+    const beat = world.frameNum % framesPerMeasure;
+    const measure = Math.floor(world.frameNum / framesPerMeasure);
+    if (beat === beat1 || (beat === beat4 && measure % 4 === 1)) {
+      this.beats.add(this.generateBeat(world.dimensions));
+    }
   }
 }
