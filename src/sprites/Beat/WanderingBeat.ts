@@ -17,7 +17,7 @@ interface WanderingBeatParams {
 
 export class WanderingBeat implements Sprite {
   // Positioning
-  private head: IWanderer;
+  public head: IWanderer;
   private readonly ticker: SpriteTicker<IWanderer>;
 
   // Audio
@@ -32,6 +32,7 @@ export class WanderingBeat implements Sprite {
   constructor(params: WanderingBeatParams) {
     const {sample, pattern, dimensions, fireworkSize, fireworkColor} = params;
 
+    // Wandering
     this.fireworkSize = fireworkSize;
     this.fireworkColor = fireworkColor;
     this.head = {
@@ -40,11 +41,13 @@ export class WanderingBeat implements Sprite {
       angle: random(Math.PI * 2)
     };
     this.ticker = randomWalkFactory({
-      velocity: random(5, 9),
+      velocity: random(1, 7),
       jitter: random(0.01, 0.12),
       lean: random(-0.03, 0.03, true),
       bounceOffEdge: true
     });
+
+    // Trigger samples
     this.sample = sample;
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.beat(time);
@@ -79,7 +82,7 @@ export class WanderingBeat implements Sprite {
     canvas.fill();
 
     // Render fireworks
-    this.fireworks.forEach(({color, position, frame, numFrames, maxSize}) => {
+    this.fireworks.forEach(({position, frame, numFrames, maxSize}) => {
       const size = timingFunction({
         type: TimingFunctionType.quad,
         maxValue: maxSize,

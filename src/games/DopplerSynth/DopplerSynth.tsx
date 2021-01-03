@@ -77,7 +77,9 @@ export class DopplerSynthGame implements Game {
     });
     this.beat = new BeatSequencer({
       channel: this.channel,
-      dimensions: world.dimensions
+      dimensions: world.dimensions,
+      astronaut: this.astronaut,
+      audioSettings: this.audioSettings
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
