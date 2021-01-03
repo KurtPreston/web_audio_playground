@@ -1,4 +1,4 @@
-import {random} from 'lodash';
+import {each, random} from 'lodash';
 import {Player, ToneAudioNode} from 'tone';
 import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
 import {Dimensions, IPosition, WorldState} from '../../types/State';
@@ -14,16 +14,23 @@ interface Beat {
 
 export class BeatFireworks implements Sprite {
   private readonly beats: Set<Beat> = new Set<Beat>();
-  private readonly kick: Player;
+  private readonly samples: {
+    kick: Player;
+    hat: Player;
+  };
 
   constructor(channel: ToneAudioNode) {
-    this.kick = new Player('/samples/kick.wav');
-    this.kick.connect(channel);
+    this.samples = {
+      kick: new Player('/samples/kick.wav'),
+      hat: new Player('/samples/hihat.wav')
+    };
+    this.samples.hat.playbackRate = 2;
+    each(this.samples, (sample: Player) => sample.connect(channel));
   }
 
-  private generateBeat(dimensions: Dimensions): Beat {
+  private generateBeat(dimensions: Dimensions, sample: Player): Beat {
     const {width, height} = dimensions;
-    this.kick.start();
+    sample.start();
     return {
       position: {
         x: random(width),
@@ -68,8 +75,15 @@ export class BeatFireworks implements Sprite {
     const beat4 = (framesPerMeasure * 3) / 4;
     const beat = world.frameNum % framesPerMeasure;
     const measure = Math.floor(world.frameNum / framesPerMeasure);
+
+    // Kick
     if (beat === beat1 || (beat === beat4 && measure % 4 === 1)) {
-      this.beats.add(this.generateBeat(world.dimensions));
+      this.beats.add(this.generateBeat(world.dimensions, this.samples.kick));
+    }
+
+    // Hat
+    if (world.frameNum % 10 === 0) {
+      this.beats.add(this.generateBeat(world.dimensions, this.samples.hat));
     }
   }
 }
