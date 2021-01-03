@@ -4,7 +4,6 @@ import {angleBetween} from '../trig/angleBetween';
 
 export interface DopplerParams {
   source: {
-    freq: number;
     position: IPosition;
     vector: IVector;
   };
@@ -24,7 +23,7 @@ export function doppler(params: DopplerParams): number {
   const {speedOfSound, dopplerMode} = settings;
 
   if (dopplerMode === DopplerMode.Off) {
-    return source.freq;
+    return 1;
   }
 
   // Calculate relative momentum
@@ -45,5 +44,5 @@ export function doppler(params: DopplerParams): number {
     dopplerMode === DopplerMode.Invert
       ? Math.abs(speedOfSound - velocityTowardNode) / speedOfSound
       : Math.abs(speedOfSound + velocityTowardNode) / speedOfSound;
-  return source.freq * freqRatio;
+  return freqRatio;
 }

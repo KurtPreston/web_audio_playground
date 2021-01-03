@@ -1,32 +1,27 @@
 import {autobind} from 'core-decorators';
 import {difference, isNumber, pull, random, range, sample, times} from 'lodash';
-import {Oscillator, PanVol, ToneAudioNode} from 'tone';
+import {Oscillator} from 'tone';
 import {randomChord} from '../../audio/chords';
 import {generateRelatedChord} from '../../audio/harmony';
 import {midiNoteToFreq} from '../../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
-import {doppler} from '../../math/physics/doppler';
-import {OverflowMode, scale} from '../../math/scale';
-import {angleBetween} from '../../math/trig/angleBetween';
-import {distanceBetween} from '../../math/trig/distanceBetween';
-import {FRAME_RATE, WorldState} from '../../types/State';
-import {Astronaut} from '../Astronaut';
+import {WorldState} from '../../types/State';
+import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';
+import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
 import {NoteGraph, NoteNode} from './NoteGraph';
 import {NoteGraphAction, NoteGraphController} from './NoteGraphController';
 
 export interface NoteGraphAutoplayerParams {
   noteGraph: NoteGraph;
   onNotesUpdated: () => void;
-  channel: ToneAudioNode;
-  astronaut: Astronaut;
-  audioSettings: MicrophoneAudioSettings;
+  mic: Microphone;
 }
 
 interface NodeSynth {
   synth: Oscillator;
-  panVol: PanVol;
+  connection: MicrophoneConnection;
 }
 
 @autobind
@@ -35,24 +30,18 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   public readonly noteValues = new Set<NoteValue>();
   private readonly nodeSynths = new Map<NoteNode, NodeSynth>();
 
-  // Settings
-  public readonly audioSettings: MicrophoneAudioSettings;
-
   // References
   private readonly noteGraph: NoteGraph;
-  private readonly astronaut: Astronaut;
+  private readonly mic: Microphone;
 
   public readonly actions: NoteGraphAction[][];
   private readonly randomActions = new Map<() => void, number>();
-  private readonly channel: ToneAudioNode;
   private readonly onNotesUpdated: () => void;
 
   constructor(params: NoteGraphAutoplayerParams) {
     this.noteGraph = params.noteGraph;
-    this.astronaut = params.astronaut;
-    this.channel = params.channel;
+    this.mic = params.mic;
     this.onNotesUpdated = params.onNotesUpdated;
-    this.audioSettings = params.audioSettings;
 
     // Create nodes
     const numNodes = random(8, 16);
@@ -112,44 +101,6 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       if (!this.noteGraph.hasNode(noteNode)) {
         this.deleteNode(noteNode);
       }
-      const {note} = noteNode;
-      const {traveler} = this.astronaut;
-      const {position} = traveler;
-      const freq = midiNoteToFreq(note);
-      const angleToNode = angleBetween(noteNode.position, position);
-      const distanceToNode = distanceBetween(position, noteNode.position);
-
-      let adjustedFreq = doppler({
-        source: {
-          freq,
-          position: noteNode.position,
-          vector: noteNode.vector
-        },
-        target: traveler,
-        settings: this.audioSettings
-      });
-
-      // Apply freq bounds
-      if (adjustedFreq < 0) {
-        adjustedFreq = 0;
-      } else if (adjustedFreq > world.audio.sampleRate) {
-        adjustedFreq = world.audio.sampleRate;
-      }
-
-      const volume = scale({
-        input: distanceToNode,
-        inputMin: 0,
-        inputMax: this.audioSettings.maxAudibleDistance,
-        outputMin: -4,
-        outputMax: -75,
-        logarithmic: this.audioSettings.distanceVolumeRolloff,
-        overflowMode: OverflowMode.Constrain
-      });
-
-      const {synth, panVol} = nodeSynth;
-      panVol.volume.rampTo(volume);
-      panVol.pan.rampTo(Math.cos(angleToNode) * -1);
-      synth.frequency.rampTo(adjustedFreq, 1 / FRAME_RATE);
     });
 
     // Perform random actions
@@ -159,6 +110,10 @@ export class NoteGraphAutoplayer implements NoteGraphController {
         action();
       }
     });
+  }
+
+  public get audioSettings(): MicrophoneAudioSettings {
+    return this.mic.audioSettings;
   }
 
   public setChord(chord: Set<NoteValue>) {
@@ -225,15 +180,21 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       detune: random(-1, 1, true),
       frequency: midiNoteToFreq(node.note)
     });
-    const panVol = new PanVol();
-    synth.connect(panVol);
-    panVol.connect(this.channel);
+
+    const connection: MicrophoneConnection = this.mic.connect({
+      sourceAudio: synth,
+      sourcePosition: () => ({
+        position: node.position,
+        vector: node.vector
+      })
+    });
+
     synth.start();
     synth.volume.exponentialRampTo(0, 1);
 
     this.nodeSynths.set(node, {
       synth,
-      panVol
+      connection
     });
   }
 
@@ -245,17 +206,15 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   private deleteNode(node: NoteNode) {
-    const fadeOutTime = 1000;
     this.noteGraph.deleteNode(node);
     const nodeSynth = this.nodeSynths.get(node);
     if (nodeSynth) {
       this.nodeSynths.delete(node);
-      const {synth, panVol} = nodeSynth;
-      synth.volume.rampTo(-200, fadeOutTime / 1000);
-      setTimeout(() => {
-        panVol.dispose();
+      const {synth, connection} = nodeSynth;
+
+      connection.destroy().then(() => {
         synth.dispose();
-      }, fadeOutTime);
+      });
     }
   }
 

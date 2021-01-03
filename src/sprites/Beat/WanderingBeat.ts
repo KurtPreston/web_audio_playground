@@ -4,6 +4,8 @@ import {Subdivision} from 'tone/build/esm/core/type/Units';
 import {randomWalkFactory} from '../../frameTickers/randomWalk';
 import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../../types/State';
+import {Microphone} from '../Microphone/Microphone';
+import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
 import {Sprite} from '../Sprite';
 import {Firework} from './Firework';
 
@@ -13,6 +15,7 @@ interface WanderingBeatParams {
   dimensions: Dimensions;
   fireworkSize: number;
   fireworkColor: string;
+  mic: Microphone;
 }
 
 export class WanderingBeat implements Sprite {
@@ -23,6 +26,7 @@ export class WanderingBeat implements Sprite {
   // Audio
   private readonly scheduledRepeat: number;
   private readonly sample: Player;
+  private readonly micConnection: MicrophoneConnection;
 
   // Fireworks
   private readonly fireworkColor: string;
@@ -30,7 +34,7 @@ export class WanderingBeat implements Sprite {
   private readonly fireworks: Set<Firework> = new Set<Firework>();
 
   constructor(params: WanderingBeatParams) {
-    const {sample, pattern, dimensions, fireworkSize, fireworkColor} = params;
+    const {sample, pattern, dimensions, fireworkSize, fireworkColor, mic} = params;
 
     // Wandering
     this.fireworkSize = fireworkSize;
@@ -40,11 +44,26 @@ export class WanderingBeat implements Sprite {
       y: random(dimensions.width),
       angle: random(Math.PI * 2)
     };
+    const velocity = random(1, 7);
     this.ticker = randomWalkFactory({
-      velocity: random(1, 7),
+      velocity,
       jitter: random(0.01, 0.3),
       lean: 0,
       bounceOffEdge: true
+    });
+
+    // Connect
+    this.micConnection = mic.connect({
+      sourceAudio: sample,
+      sourcePosition: () => {
+        return {
+          position: this.head,
+          vector: {
+            xMomentum: velocity * Math.cos(this.head.angle),
+            yMomentum: velocity * Math.sin(this.head.angle)
+          }
+        };
+      }
     });
 
     // Trigger samples
@@ -98,7 +117,7 @@ export class WanderingBeat implements Sprite {
   }
 
   public tick(world: WorldState): void {
-    // Move the thead
+    // Move the head
     this.head = this.ticker(this.head, world);
 
     // Advance firework frames
@@ -108,9 +127,13 @@ export class WanderingBeat implements Sprite {
         this.fireworks.delete(firework);
       }
     });
+
+    // Update microphone
+    this.micConnection.tick();
   }
 
   public destroy() {
+    this.micConnection.destroy();
     this.fireworks.clear();
     Transport.cancel(this.scheduledRepeat);
   }

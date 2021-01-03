@@ -7,6 +7,7 @@ import {getNoteName, NoteValue} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Astronaut} from '../../sprites/Astronaut';
 import {BeatSequencer} from '../../sprites/Beat/BeatSequencer';
+import {Microphone} from '../../sprites/Microphone/Microphone';
 import {
   DopplerMode,
   MicrophoneAudioSettings
@@ -37,6 +38,7 @@ export class DopplerSynthGame implements Game {
   // Other state
   private mode: DopplerSynthMode = 'auto';
   private audioSettings: MicrophoneAudioSettings;
+  private readonly mic: Microphone;
   private readonly channel: ToneAudioNode;
   private lastDimensions: Dimensions;
 
@@ -68,18 +70,19 @@ export class DopplerSynthGame implements Game {
       channel: this.channel,
       dimensions: world.dimensions
     });
+    this.mic = new Microphone({
+      channel: this.channel,
+      audioSettings: this.audioSettings,
+      micPosition: () => this.astronaut.traveler
+    });
     this.noteGraphController = new NoteGraphAutoplayer({
       noteGraph: this.noteGraph,
       onNotesUpdated: updateMenu,
-      channel: this.channel,
-      astronaut: this.astronaut,
-      audioSettings: this.audioSettings
+      mic: this.mic
     });
     this.beat = new BeatSequencer({
-      channel: this.channel,
       dimensions: world.dimensions,
-      astronaut: this.astronaut,
-      audioSettings: this.audioSettings
+      mic: this.mic
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
@@ -131,9 +134,7 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        channel: this.channel,
-        astronaut: this.astronaut,
-        audioSettings: this.audioSettings
+        mic: this.mic
       });
       this.updateMenu();
     }, 1000);
@@ -177,9 +178,7 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        channel: this.channel,
-        astronaut: this.astronaut,
-        audioSettings: this.audioSettings
+        mic: this.mic
       });
     }
 
