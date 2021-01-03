@@ -1,7 +1,7 @@
 import {each, random} from 'lodash';
 import {Player, ToneAudioNode, Transport} from 'tone';
 import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
-import {Dimensions, IPosition, WorldState} from '../../types/State';
+import {Dimensions, IPosition, IWanderer, SpriteTicker, WorldState} from '../../types/State';
 import {Sprite} from '../Sprite';
 
 interface Beat {
@@ -17,6 +17,13 @@ interface BeatSequencerParams {
   channel: ToneAudioNode;
 }
 
+interface DrumChannel {
+  sample: Player;
+  volume: number;
+  position: IWanderer;
+  ticker: SpriteTicker<IWanderer>;
+}
+
 export class BeatSequencer implements Sprite {
   private readonly beats: Set<Beat> = new Set<Beat>();
   private readonly samples: {
@@ -30,12 +37,15 @@ export class BeatSequencer implements Sprite {
       hat: new Player('/samples/hihat.wav')
     };
     this.samples.hat.playbackRate = 2;
+    this.samples.hat.volume.value = -20;
+    this.samples.kick.volume.value = -10;
     each(this.samples, (sample: Player) => sample.connect(params.channel));
 
     // Create loops
     Transport.scheduleRepeat((time) => {
       this.beats.add(
         this.generateBeat({
+          time,
           dimensions: params.dimensions,
           sample: this.samples.kick,
           color: 'white',
@@ -47,6 +57,7 @@ export class BeatSequencer implements Sprite {
     Transport.scheduleRepeat((time) => {
       this.beats.add(
         this.generateBeat({
+          time,
           dimensions: params.dimensions,
           sample: this.samples.hat,
           color: 'cyan',
@@ -54,19 +65,21 @@ export class BeatSequencer implements Sprite {
         })
       );
     }, '8n');
+    Transport.bpm.value = 80;
     Transport.start();
   }
 
   private generateBeat(params: {
+    time: number;
     dimensions: Dimensions;
     sample: Player;
     color: string;
     size: number;
   }): Beat {
-    const {dimensions, sample, color, size} = params;
+    const {dimensions, sample, color, size, time} = params;
     const {width, height} = dimensions;
     if (sample.loaded) {
-      sample.start();
+      sample.start(time);
     }
     return {
       position: {
