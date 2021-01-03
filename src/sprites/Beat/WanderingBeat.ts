@@ -42,8 +42,8 @@ export class WanderingBeat implements Sprite {
     };
     this.ticker = randomWalkFactory({
       velocity: random(1, 7),
-      jitter: random(0.01, 0.12),
-      lean: random(-0.03, 0.03, true),
+      jitter: random(0.01, 0.3),
+      lean: 0,
       bounceOffEdge: true
     });
 
