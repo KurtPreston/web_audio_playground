@@ -1,5 +1,5 @@
 import {each, random} from 'lodash';
-import {Player, ToneAudioNode} from 'tone';
+import {Player, ToneAudioNode, Transport} from 'tone';
 import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
 import {Dimensions, IPosition, WorldState} from '../../types/State';
 import {Sprite} from '../Sprite';
@@ -12,25 +12,62 @@ interface Beat {
   color: string;
 }
 
-export class BeatFireworks implements Sprite {
+interface BeatSequencerParams {
+  dimensions: Dimensions;
+  channel: ToneAudioNode;
+}
+
+export class BeatSequencer implements Sprite {
   private readonly beats: Set<Beat> = new Set<Beat>();
   private readonly samples: {
     kick: Player;
     hat: Player;
   };
 
-  constructor(channel: ToneAudioNode) {
+  constructor(params: BeatSequencerParams) {
     this.samples = {
       kick: new Player('/samples/kick.wav'),
       hat: new Player('/samples/hihat.wav')
     };
     this.samples.hat.playbackRate = 2;
-    each(this.samples, (sample: Player) => sample.connect(channel));
+    each(this.samples, (sample: Player) => sample.connect(params.channel));
+
+    // Create loops
+    Transport.scheduleRepeat((time) => {
+      this.beats.add(
+        this.generateBeat({
+          dimensions: params.dimensions,
+          sample: this.samples.kick,
+          color: 'white',
+          size: 50
+        })
+      );
+    }, '4n');
+
+    Transport.scheduleRepeat((time) => {
+      this.beats.add(
+        this.generateBeat({
+          dimensions: params.dimensions,
+          sample: this.samples.hat,
+          color: 'cyan',
+          size: 15
+        })
+      );
+    }, '8n');
+    Transport.start();
   }
 
-  private generateBeat(dimensions: Dimensions, sample: Player): Beat {
+  private generateBeat(params: {
+    dimensions: Dimensions;
+    sample: Player;
+    color: string;
+    size: number;
+  }): Beat {
+    const {dimensions, sample, color, size} = params;
     const {width, height} = dimensions;
-    sample.start();
+    if (sample.loaded) {
+      sample.start();
+    }
     return {
       position: {
         x: random(width),
@@ -38,15 +75,15 @@ export class BeatFireworks implements Sprite {
       },
       frame: 0,
       numFrames: 30,
-      maxSize: 30,
-      color: 'white'
+      maxSize: size,
+      color
     };
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     this.beats.forEach(({color, position, frame, numFrames, maxSize}) => {
       const size = timingFunction({
-        type: TimingFunctionType.linear,
+        type: TimingFunctionType.quad,
         maxValue: maxSize,
         frame,
         numFrames,
@@ -68,22 +105,5 @@ export class BeatFireworks implements Sprite {
         this.beats.delete(beat);
       }
     });
-
-    // Create new beat every 20 frames
-    const framesPerMeasure = 20;
-    const beat1 = 0;
-    const beat4 = (framesPerMeasure * 3) / 4;
-    const beat = world.frameNum % framesPerMeasure;
-    const measure = Math.floor(world.frameNum / framesPerMeasure);
-
-    // Kick
-    if (beat === beat1 || (beat === beat4 && measure % 4 === 1)) {
-      this.beats.add(this.generateBeat(world.dimensions, this.samples.kick));
-    }
-
-    // Hat
-    if (world.frameNum % 10 === 0) {
-      this.beats.add(this.generateBeat(world.dimensions, this.samples.hat));
-    }
   }
 }

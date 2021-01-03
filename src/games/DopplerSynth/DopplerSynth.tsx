@@ -6,7 +6,7 @@ import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Astronaut} from '../../sprites/Astronaut';
-import {BeatFireworks} from '../../sprites/Beat/BeatFireworks';
+import {BeatSequencer} from '../../sprites/Beat/BeatSequencer';
 import {
   DopplerMode,
   MicrophoneAudioSettings
@@ -32,7 +32,7 @@ export class DopplerSynthGame implements Game {
   private noteGraphController: NoteGraphController;
   private readonly bg: Sprite;
   private readonly astronaut: Astronaut;
-  private readonly beat: BeatFireworks;
+  private readonly beat: BeatSequencer;
 
   // Other state
   private mode: DopplerSynthMode = 'auto';
@@ -75,7 +75,10 @@ export class DopplerSynthGame implements Game {
       astronaut: this.astronaut,
       audioSettings: this.audioSettings
     });
-    this.beat = new BeatFireworks(this.channel);
+    this.beat = new BeatSequencer({
+      channel: this.channel,
+      dimensions: world.dimensions
+    });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
   }
