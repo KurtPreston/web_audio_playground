@@ -1,122 +1,75 @@
-import {each, random} from 'lodash';
 import {Player, ToneAudioNode, Transport} from 'tone';
-import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
-import {Dimensions, IPosition, IWanderer, SpriteTicker, WorldState} from '../../types/State';
+import {Dimensions, WorldState} from '../../types/State';
 import {Sprite} from '../Sprite';
-
-interface Beat {
-  position: IPosition;
-  frame: number;
-  numFrames: number;
-  maxSize: number;
-  color: string;
-}
+import {WanderingBeat} from './WanderingBeat';
 
 interface BeatSequencerParams {
   dimensions: Dimensions;
   channel: ToneAudioNode;
 }
 
-interface DrumChannel {
-  sample: Player;
-  volume: number;
-  position: IWanderer;
-  ticker: SpriteTicker<IWanderer>;
-}
-
 export class BeatSequencer implements Sprite {
-  private readonly beats: Set<Beat> = new Set<Beat>();
-  private readonly samples: {
-    kick: Player;
-    hat: Player;
-  };
+  private readonly beats: WanderingBeat[];
 
   constructor(params: BeatSequencerParams) {
-    this.samples = {
-      kick: new Player('/samples/kick.wav'),
-      hat: new Player('/samples/hihat.wav')
-    };
-    this.samples.hat.playbackRate = 2;
-    this.samples.hat.volume.value = -20;
-    this.samples.kick.volume.value = -10;
-    each(this.samples, (sample: Player) => sample.connect(params.channel));
+    const {dimensions, channel} = params;
 
-    // Create loops
-    Transport.scheduleRepeat((time) => {
-      this.beats.add(
-        this.generateBeat({
-          time,
-          dimensions: params.dimensions,
-          sample: this.samples.kick,
-          color: 'white',
-          size: 50
-        })
-      );
-    }, '4n');
+    // Kick
+    const kick = new Player('/samples/kick.wav');
+    kick.volume.value = -10;
+    kick.connect(channel);
 
-    Transport.scheduleRepeat((time) => {
-      this.beats.add(
-        this.generateBeat({
-          time,
-          dimensions: params.dimensions,
-          sample: this.samples.hat,
-          color: 'cyan',
-          size: 15
-        })
-      );
-    }, '8n');
+    // Snare
+    const snare = new Player('/samples/snare.wav');
+    snare.volume.value = -10;
+    snare.connect(channel);
+
+    // Hat
+    const hat = new Player('/samples/hihat.wav');
+    hat.playbackRate = 2;
+    hat.volume.value = -20;
+    hat.connect(channel);
+
+    // Create wandering beats
+    this.beats = [
+      new WanderingBeat({
+        sample: kick,
+        pattern: '4n',
+        dimensions,
+        fireworkSize: 50,
+        fireworkColor: 'white'
+      }),
+      new WanderingBeat({
+        sample: snare,
+        pattern: '2n',
+        dimensions,
+        fireworkSize: 50,
+        fireworkColor: 'turqoise'
+      }),
+      new WanderingBeat({
+        sample: hat,
+        pattern: '8n',
+        dimensions,
+        fireworkSize: 15,
+        fireworkColor: 'cyan'
+      })
+    ];
+
+    // Start sequencer
     Transport.bpm.value = 80;
     Transport.start();
   }
 
-  private generateBeat(params: {
-    time: number;
-    dimensions: Dimensions;
-    sample: Player;
-    color: string;
-    size: number;
-  }): Beat {
-    const {dimensions, sample, color, size, time} = params;
-    const {width, height} = dimensions;
-    if (sample.loaded) {
-      sample.start(time);
-    }
-    return {
-      position: {
-        x: random(width),
-        y: random(height)
-      },
-      frame: 0,
-      numFrames: 30,
-      maxSize: size,
-      color
-    };
-  }
-
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    this.beats.forEach(({color, position, frame, numFrames, maxSize}) => {
-      const size = timingFunction({
-        type: TimingFunctionType.quad,
-        maxValue: maxSize,
-        frame,
-        numFrames,
-        reverse: true
-      });
-      const {x, y} = position;
-      canvas.fillStyle = color;
-      canvas.beginPath();
-      canvas.arc(x, y, size, 0, 2 * Math.PI);
-      canvas.fill();
+    this.beats.forEach((beat: WanderingBeat) => {
+      beat.render(canvas, world);
     });
   }
 
   public tick(world: WorldState) {
     // Advance beat frames
-    this.beats.forEach((beat: Beat) => {
-      beat.frame++;
-      if (beat.frame > beat.numFrames) {
-        this.beats.delete(beat);
-      }
+    this.beats.forEach((beat: WanderingBeat) => {
+      beat.tick(world);
     });
   }
 }
