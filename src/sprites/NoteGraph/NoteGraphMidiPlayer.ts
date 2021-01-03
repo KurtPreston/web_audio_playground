@@ -48,7 +48,8 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
       speedOfSound: 3000,
       distanceVolumeRolloff: 3,
       maxAudibleDistance: Math.min(params.dimensions.width, params.dimensions.height),
-      maxNodeVolume: -4
+      minVolume: -35,
+      maxVolume: -4
     };
 
     // Start MIDI

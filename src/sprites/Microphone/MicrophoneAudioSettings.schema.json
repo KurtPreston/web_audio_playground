@@ -12,13 +12,22 @@
       "title": "Distance-Volume Roll-off",
       "type": "number",
       "minimum": 1,
-      "maximum": 20
+      "maximum": 20,
+      "default": 5
     },
-    "maxNodeVolume": {
-      "title": "Max Node Volume (db)",
+    "minVolume": {
+      "title": "Min Volume (dB)",
       "type": "number",
-      "minimum": -30,
-      "maximum": 0
+      "minimum": -100,
+      "maximum": 0,
+      "default": -35
+    },
+    "maxVolume": {
+      "title": "Max Volune (dB)",
+      "type": "number",
+      "minimum": -100,
+      "maximum": 0,
+      "default": -4
     },
     "dopplerMode": {
       "title": "Doppler Mode",
@@ -40,7 +49,8 @@
     "speedOfSound",
     "distanceVolumeRolloff",
     "maxAudibleDistance",
-    "maxNodeVolume"
+    "minVolume",
+    "maxVolume"
   ],
   "additionalProperties": false
 }

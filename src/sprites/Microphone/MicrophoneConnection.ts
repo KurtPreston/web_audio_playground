@@ -65,9 +65,9 @@ export class MicrophoneConnection {
       input: distanceToNode,
       inputMin: 0,
       inputMax: this.audioSettings.maxAudibleDistance,
-      outputMin: 0,
-      outputMax: -35,
-      logarithmic: 5,
+      outputMin: this.audioSettings.maxVolume,
+      outputMax: this.audioSettings.minVolume,
+      logarithmic: this.audioSettings.distanceVolumeRolloff,
       overflowMode: OverflowMode.Constrain
     });
     this.panVol.volume.rampTo(volume);

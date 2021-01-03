@@ -59,7 +59,8 @@ export class DopplerSynthGame implements Game {
       speedOfSound: 3000,
       distanceVolumeRolloff: 3,
       maxAudibleDistance: Math.min(world.dimensions.width, world.dimensions.height),
-      maxNodeVolume: -4
+      minVolume: -40,
+      maxVolume: -4
     };
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
@@ -162,7 +163,7 @@ export class DopplerSynthGame implements Game {
       this.updateAudioSettings({
         ...this.noteGraphController.audioSettings,
         maxAudibleDistance: 1500,
-        maxNodeVolume: -12
+        maxVolume: -12
       });
       this.noteGraphController = new NoteGraphMidiPlayer({
         noteGraph: this.noteGraph,
@@ -173,7 +174,7 @@ export class DopplerSynthGame implements Game {
     } else if (mode === 'auto') {
       this.updateAudioSettings({
         maxAudibleDistance: 600,
-        maxNodeVolume: -4
+        maxVolume: -4
       });
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,

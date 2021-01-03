@@ -98,6 +98,8 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     });
 
     this.nodeSynths.forEach((nodeSynth, noteNode: NoteNode) => {
+      nodeSynth.connection.tick();
+
       if (!this.noteGraph.hasNode(noteNode)) {
         this.deleteNode(noteNode);
       }
