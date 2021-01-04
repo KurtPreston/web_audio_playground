@@ -1,4 +1,4 @@
-import {random} from 'lodash';
+import {isFunction, random} from 'lodash';
 import {ToneAudioNode, Transport} from 'tone';
 import {Subdivision} from 'tone/build/esm/core/type/Units';
 import {randomWalkFactory} from '../../frameTickers/randomWalk';
@@ -22,7 +22,7 @@ interface WanderingBeatParams {
   pattern: Subdivision;
   dimensions: Dimensions;
   fireworkSize: number;
-  fireworkColor?: string;
+  fireworkColor?: string | (() => string);
   fireworkBlendMode?: CanvasBlendMode;
   mic: Microphone;
 }
@@ -38,7 +38,7 @@ export class WanderingBeat implements Sprite {
   private readonly micConnection: MicrophoneConnection;
 
   // Fireworks
-  private readonly fireworkColor: string;
+  private readonly fireworkColor: string | (() => string);
   private readonly fireworkSize: number;
   private readonly fireworkBlendMode: CanvasBlendMode;
   private readonly fireworks: Set<Firework> = new Set<Firework>();
@@ -106,21 +106,22 @@ export class WanderingBeat implements Sprite {
       frame: 0,
       numFrames: 30,
       maxSize: this.fireworkSize,
-      color: this.fireworkColor
+      color: isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor
     };
     this.fireworks.add(firework);
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Render head
-    canvas.fillStyle = this.fireworkColor;
+    canvas.fillStyle = isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor;
     canvas.globalCompositeOperation = this.fireworkBlendMode;
     canvas.beginPath();
     canvas.arc(this.head.x, this.head.y, 3, 0, 2 * Math.PI);
     canvas.fill();
 
     // Render fireworks
-    this.fireworks.forEach(({position, frame, numFrames, maxSize}) => {
+    this.fireworks.forEach(({position, frame, numFrames, maxSize, color}) => {
+      canvas.fillStyle = color;
       const size = timingFunction({
         type: TimingFunctionType.quad,
         maxValue: maxSize,

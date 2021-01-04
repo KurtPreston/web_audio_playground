@@ -7,6 +7,7 @@ import {randomSustainSynth} from '../../audio/oscillators';
 import {Dimensions, WorldState} from '../../types/State';
 import {randomColor} from '../../util/color';
 import {Microphone} from '../Microphone/Microphone';
+import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
 import {WanderingBeat} from './WanderingBeat';
 
@@ -117,12 +118,13 @@ export class BeatSequencer implements Sprite {
     }
   ) {
     const instrument = new MonoSynth(randomSustainSynth());
+    let note: Note | undefined;
     let freq: number | undefined;
     const bassWanderer = new WanderingBeat({
       sourceAudio: {
         source: instrument,
         trigger: (time: number) => {
-          const note = params.nextNote();
+          note = params.nextNote();
           if (note) {
             freq = midiNoteToFreq(note);
             try {
@@ -141,7 +143,14 @@ export class BeatSequencer implements Sprite {
       pattern: params.pattern,
       dimensions: params.dimensions,
       fireworkSize: 55,
-      mic: params.mic
+      mic: params.mic,
+      fireworkColor: (): string => {
+        if (note) {
+          return noteColor(note);
+        } else {
+          return 'white';
+        }
+      }
     });
 
     this.beats.add(bassWanderer);
