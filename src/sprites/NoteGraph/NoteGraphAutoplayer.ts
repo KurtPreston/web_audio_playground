@@ -6,7 +6,7 @@ import {generateRelatedChord} from '../../audio/harmony';
 import {midiNoteToFreq} from '../../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
-import {WorldState} from '../../types/State';
+import {FRAME_RATE, WorldState} from '../../types/State';
 import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';
 import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
@@ -176,11 +176,12 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   private createSynthForNode(node: NoteNode) {
+    const frequency = midiNoteToFreq(node.note);
     const synth = new Oscillator({
       ...randomSustainOscillatorOptions(),
       volume: Number.NEGATIVE_INFINITY,
       detune: random(-1, 1, true),
-      frequency: midiNoteToFreq(node.note)
+      frequency
     });
 
     const connection: MicrophoneConnection = this.mic.connect({
@@ -188,7 +189,11 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       sourcePosition: () => ({
         position: node.position,
         vector: node.vector
-      })
+      }),
+      pitchBend: (ratio: number) => {
+        const rampTime = 1 / FRAME_RATE;
+        synth.frequency.rampTo(frequency * ratio, `+${rampTime}`);
+      }
     });
 
     synth.start();

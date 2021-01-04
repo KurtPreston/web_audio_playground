@@ -63,6 +63,9 @@ export class WanderingBeat implements Sprite {
             yMomentum: velocity * Math.sin(this.head.angle)
           }
         };
+      },
+      pitchBend: (ratio: number): void => {
+        sample.playbackRate = ratio;
       }
     });
 

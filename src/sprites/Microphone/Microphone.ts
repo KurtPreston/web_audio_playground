@@ -19,6 +19,7 @@ export interface SpriteMicrophoneParams {
 export interface SpriteSoundSource {
   sourceAudio: Source<any>;
   sourcePosition: () => ITraveler;
+  pitchBend: (ratio: number) => void;
 }
 
 export class Microphone {
@@ -43,7 +44,8 @@ export class Microphone {
       sourcePosition: source.sourcePosition,
       audioSettings: this.audioSettings,
       micPosition: this.micPosition,
-      channel: this.channel
+      channel: this.channel,
+      pitchBend: source.pitchBend
     });
     this.connections.add(connection);
     return connection;

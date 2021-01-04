@@ -17,7 +17,6 @@ export class BeatSequencer implements Sprite {
 
     // Kick
     const kick = new Player('/samples/kick.wav');
-    kick.volume.value = -10;
 
     // Snare
     const snare = new Player('/samples/snare.wav');

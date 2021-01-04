@@ -1,8 +1,7 @@
 // Represents a connection between a sound-emitting ITraveler and an ITraveler mic
 
-import {PanVol, PitchShift, ToneAudioNode} from 'tone';
+import {PanVol, ToneAudioNode} from 'tone';
 import {Source} from 'tone/build/esm/source/Source';
-import {ratioToSemitones} from '../../audio/midi';
 import {doppler} from '../../math/physics/doppler';
 import {OverflowMode, scale} from '../../math/scale';
 import {angleBetween} from '../../math/trig/angleBetween';
@@ -16,12 +15,13 @@ export interface MicrophoneConnectionParams {
   audioSettings: MicrophoneAudioSettings;
   micPosition: () => ITraveler;
   channel: ToneAudioNode;
+  pitchBend: (ratio: number) => void;
 }
 
 export class MicrophoneConnection {
   // Audio nodes
+  private readonly pitchBend: (ratio: number) => void;
   private readonly panVol: PanVol;
-  private readonly pitchshift: PitchShift;
 
   // Physics
   private readonly sourcePosition: () => ITraveler;
@@ -29,20 +29,19 @@ export class MicrophoneConnection {
   private readonly audioSettings: MicrophoneAudioSettings;
 
   constructor(params: MicrophoneConnectionParams) {
-    const {sourceAudio, sourcePosition, audioSettings, micPosition, channel} = params;
+    const {sourceAudio, sourcePosition, audioSettings, micPosition, channel, pitchBend} = params;
 
     // Cache params
     this.micPosition = micPosition;
     this.sourcePosition = sourcePosition;
+    this.pitchBend = pitchBend;
     this.audioSettings = audioSettings;
 
     // Create audio nodes
     this.panVol = new PanVol(0, -100);
-    this.pitchshift = new PitchShift();
 
     // Connect audio nodes
-    sourceAudio.connect(this.pitchshift);
-    this.pitchshift.connect(this.panVol);
+    sourceAudio.connect(this.panVol);
     this.panVol.connect(channel);
 
     // Start relational
@@ -84,8 +83,7 @@ export class MicrophoneConnection {
       },
       settings: this.audioSettings
     });
-    const semitones = ratioToSemitones(pitchShiftRatio);
-    this.pitchshift.pitch = semitones;
+    this.pitchBend(pitchShiftRatio);
   }
 
   public async destroy() {
@@ -93,7 +91,6 @@ export class MicrophoneConnection {
     this.panVol.volume.rampTo(-200, fadeOutTime / 1000);
     return new Promise<void>((resolve) => {
       setTimeout(() => {
-        this.pitchshift.dispose();
         this.panVol.dispose();
         resolve();
       });
