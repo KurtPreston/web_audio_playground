@@ -8,7 +8,6 @@ describe('doppler', () => {
       expect(
         doppler({
           source: {
-            freq: 100,
             position: {
               x: -10,
               y: 0
@@ -33,7 +32,7 @@ describe('doppler', () => {
             dopplerMode: DopplerMode.On
           }
         })
-      ).toEqual(100 * (1005 / 1000));
+      ).toEqual(1005 / 1000);
     });
 
     it('y', () => {
@@ -41,7 +40,6 @@ describe('doppler', () => {
       expect(
         doppler({
           source: {
-            freq: 100,
             position: {
               x: 0,
               y: 10
@@ -66,7 +64,7 @@ describe('doppler', () => {
             mode: DopplerMode.On
           }
         })
-      ).toEqual(100 * (1005 / 1000));
+      ).toEqual(1005 / 1000);
     });
   });
 
@@ -75,7 +73,6 @@ describe('doppler', () => {
       expect(
         doppler({
           source: {
-            freq: 100,
             position: {
               x: 10,
               y: 0
@@ -100,14 +97,13 @@ describe('doppler', () => {
             mode: DopplerMode.On
           }
         })
-      ).toEqual((100 * 995) / 1000);
+      ).toEqual(995 / 1000);
     });
 
     it('y', () => {
       expect(
         doppler({
           source: {
-            freq: 100,
             position: {
               x: 0,
               y: 10
@@ -132,7 +128,7 @@ describe('doppler', () => {
             mode: DopplerMode.On
           }
         })
-      ).toEqual((100 * 995) / 1000);
+      ).toEqual(995 / 1000);
     });
   });
 });
