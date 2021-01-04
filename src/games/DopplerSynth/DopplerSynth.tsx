@@ -67,7 +67,7 @@ export class DopplerSynthGame implements Game {
       dimensions
     });
     this.astronaut = new Astronaut({
-      getNoteNodes: this.getNoteNodes,
+      getNoteValues: () => this.noteGraphController.noteValues,
       channel: this.channel,
       dimensions: world.dimensions
     });
@@ -262,12 +262,12 @@ export class DopplerSynthGame implements Game {
 
 export class DopplerSynthPreview implements Game {
   private readonly astronaut: Astronaut;
-  private readonly noteNodes = new Set<NoteNode>();
+  private readonly notes = new Set<NoteValue>();
 
   constructor(world: WorldState) {
     this.astronaut = new Astronaut({
       dimensions: world.dimensions,
-      getNoteNodes: () => this.noteNodes,
+      getNoteValues: () => this.notes,
       channel: null
     });
   }

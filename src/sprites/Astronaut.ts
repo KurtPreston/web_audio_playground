@@ -1,19 +1,18 @@
 import {sample} from 'lodash';
 import {FeedbackDelay, Reverb, Synth, ToneAudioNode} from 'tone';
 import {midiNoteToFreq} from '../audio/midi';
-import {noteToNoteValue, NoteValue} from '../audio/Note';
+import {NoteValue} from '../audio/Note';
 import {pingOscillator} from '../audio/oscillators';
 import headphoneWamdag from '../images/astroWamdag.svg';
 import {BounceOffEdge, IForce} from '../math/traveler/forces';
 import {updateTraveler} from '../math/traveler/updateTraveler';
 import {Dimensions, ITraveler, WorldState} from '../types/State';
-import {NoteNode} from './NoteGraph/NoteGraph';
 import {circularPath} from './renderHelpers/circularPath';
 import {drawRotated} from './renderHelpers/drawRotated';
 import {Sprite} from './Sprite';
 
 interface AstronautParams {
-  getNoteNodes: () => Set<NoteNode>;
+  getNoteValues: () => Set<NoteValue>;
   channel: ToneAudioNode | null;
   dimensions: Dimensions;
 }
@@ -28,7 +27,7 @@ export class Astronaut implements Sprite {
   private angularMomentum: number = 0.01;
 
   // Constants
-  private readonly getNoteNodes: () => Set<NoteNode>;
+  private readonly getNoteValues: () => Set<NoteValue>;
   private readonly color = 'white';
 
   // Doppler settings
@@ -46,7 +45,7 @@ export class Astronaut implements Sprite {
         yMomentum: 1
       }
     };
-    this.getNoteNodes = params.getNoteNodes;
+    this.getNoteValues = params.getNoteValues;
 
     // Create synth
     if (params.channel) {
@@ -145,9 +144,8 @@ export class Astronaut implements Sprite {
 
   private onBounce() {
     this.bounceFill = 1;
-    const node: NoteNode | undefined = sample(Array.from(this.getNoteNodes()));
-    if (node) {
-      const note: NoteValue = noteToNoteValue(node.note);
+    const note: NoteValue | undefined = sample(Array.from(this.getNoteValues()));
+    if (note) {
       const freq = midiNoteToFreq(note + 72);
       if (this.bounceSynth) {
         this.bounceSynth.triggerAttackRelease(freq, 0.125);
