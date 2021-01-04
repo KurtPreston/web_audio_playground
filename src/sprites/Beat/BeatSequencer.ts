@@ -17,82 +17,14 @@ interface BeatSequencerParams {
 }
 
 export class BeatSequencer implements Sprite {
-  private readonly beats: WanderingBeat[];
+  private readonly beats: Set<WanderingBeat> = new Set<WanderingBeat>();
 
   constructor(params: BeatSequencerParams) {
-    // Load params
-    const {dimensions, mic} = params;
-
-    // Kick
-    const kick = new Player('/samples/kick.wav');
-
-    // Snare
-    const snare = new Player('/samples/snare.wav');
-    snare.volume.value = -5;
-
-    // Hat
-    const hat = new Player('/samples/hihat.wav');
-    hat.volume.value = -10;
-    hat.playbackRate = 4;
-
-    // Create wandering beats
-    const kickWanderer = new WanderingBeat({
-      sourceAudio: {
-        source: kick,
-        trigger: (time) => {
-          if (kick.loaded) {
-            kick.start(time);
-          }
-        },
-        pitchBend: (ratio: number) => {
-          kick.playbackRate = ratio;
-        }
-      },
-      pattern: '4n',
-      dimensions,
-      fireworkSize: 50,
-      fireworkColor: randomColor(),
-      mic
-    });
-    const hatWanderer = new WanderingBeat({
-      sourceAudio: {
-        source: hat,
-        trigger: (time) => {
-          if (hat.loaded) {
-            hat.start(time);
-          }
-        },
-        pitchBend: (ratio: number) => {
-          hat.playbackRate = ratio * 4;
-        }
-      },
-      pattern: '8n',
-      dimensions,
-      fireworkSize: 15,
-      mic
-    });
-    const snareWanderer = new WanderingBeat({
-      sourceAudio: {
-        source: snare,
-        trigger: (time) => {
-          if (snare.loaded) {
-            snare.start(time);
-          }
-        },
-        pitchBend: (ratio: number) => {
-          snare.playbackRate = ratio;
-        }
-      },
-      pattern: '2n',
-      dimensions,
-      fireworkSize: 35,
-      mic
-    });
-
-    this.beats = [kickWanderer, hatWanderer, snareWanderer];
-
+    times(1, () => this.createSnareWanderer(params));
+    times(1, () => this.createHatWanderer(params));
+    times(3, () => this.createKickWanderer(params));
     times(3, () => this.createBassWanderer(params));
-    times(6, () => this.createMelodyWanderer(params));
+    times(5, () => this.createMelodyWanderer(params));
 
     // Start sequencer
     Transport.bpm.value = 80;
@@ -109,6 +41,72 @@ export class BeatSequencer implements Sprite {
     // Advance beat frames
     this.beats.forEach((beat: WanderingBeat) => {
       beat.tick(world);
+    });
+  }
+
+  private createDrumWanderer(
+    params: BeatSequencerParams & {
+      sample: Player;
+      playbackRate: number;
+      fireworkSize: number;
+      pattern: Subdivision;
+    }
+  ) {
+    const {playbackRate, sample} = params;
+    const drumWanderer = new WanderingBeat({
+      sourceAudio: {
+        source: sample,
+        trigger: (time) => {
+          if (sample.loaded) {
+            sample.start(time);
+          }
+        },
+        pitchBend: (ratio: number) => {
+          sample.playbackRate = playbackRate * ratio;
+        }
+      },
+      pattern: params.pattern,
+      dimensions: params.dimensions,
+      fireworkSize: params.fireworkSize,
+      fireworkColor: randomColor(),
+      mic: params.mic
+    });
+    this.beats.add(drumWanderer);
+  }
+
+  private createKickWanderer(params: BeatSequencerParams) {
+    const kick = new Player('/samples/kick.wav');
+    this.createDrumWanderer({
+      ...params,
+      sample: kick,
+      playbackRate: 1,
+      fireworkSize: 50,
+      pattern: '4n'
+    });
+  }
+
+  private createSnareWanderer(params: BeatSequencerParams) {
+    const snare = new Player('/samples/snare.wav');
+    snare.volume.value = -5;
+    this.createDrumWanderer({
+      ...params,
+      sample: snare,
+      playbackRate: 1,
+      fireworkSize: 50,
+      pattern: '2n'
+    });
+  }
+
+  private createHatWanderer(params: BeatSequencerParams) {
+    const hat = new Player('/samples/hihat.wav');
+    hat.volume.value = -10;
+    hat.playbackRate = 4;
+    this.createDrumWanderer({
+      ...params,
+      sample: hat,
+      playbackRate: 4,
+      fireworkSize: 15,
+      pattern: '8n'
     });
   }
 
@@ -146,7 +144,7 @@ export class BeatSequencer implements Sprite {
       mic: params.mic
     });
 
-    this.beats.push(bassWanderer);
+    this.beats.add(bassWanderer);
   }
 
   private createMelodyWanderer(params: BeatSequencerParams) {
@@ -156,7 +154,7 @@ export class BeatSequencer implements Sprite {
       nextNote: () => {
         const notes: Set<NoteValue> = params.getNotes();
         const noteValue = sample(Array.from(notes));
-        if (noteValue) {
+        if (noteValue && Math.random() > 0.5) {
           const note: Note = noteValue + 12 * random(4, 6);
           return note;
         }
