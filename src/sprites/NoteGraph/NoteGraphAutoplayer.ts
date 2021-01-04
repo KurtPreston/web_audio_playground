@@ -109,7 +109,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     this.randomActions.forEach((interval, action) => {
       const oddsOfHappeningThisFrame = 1 / 25 / interval;
       if (Math.random() < oddsOfHappeningThisFrame) {
-        // action();
+        action();
       }
     });
   }

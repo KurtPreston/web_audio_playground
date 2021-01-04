@@ -1,7 +1,8 @@
-import {sample, times} from 'lodash';
+import {random, sample, times} from 'lodash';
 import {MonoSynth, Player, Transport} from 'tone';
+import {Subdivision} from 'tone/build/esm/core/type/Units';
 import {midiNoteToFreq} from '../../audio/midi';
-import {NoteValue} from '../../audio/Note';
+import {Note, NoteValue} from '../../audio/Note';
 import {randomSustainSynth} from '../../audio/oscillators';
 import {Dimensions, WorldState} from '../../types/State';
 import {randomColor} from '../../util/color';
@@ -32,7 +33,7 @@ export class BeatSequencer implements Sprite {
     // Hat
     const hat = new Player('/samples/hihat.wav');
     hat.volume.value = -10;
-    hat.playbackRate = 2;
+    hat.playbackRate = 4;
 
     // Create wandering beats
     const kickWanderer = new WanderingBeat({
@@ -62,7 +63,7 @@ export class BeatSequencer implements Sprite {
           }
         },
         pitchBend: (ratio: number) => {
-          hat.playbackRate = ratio;
+          hat.playbackRate = ratio * 4;
         }
       },
       pattern: '8n',
@@ -90,7 +91,8 @@ export class BeatSequencer implements Sprite {
 
     this.beats = [kickWanderer, hatWanderer, snareWanderer];
 
-    times(4, () => this.createBassWanderer(params));
+    times(3, () => this.createBassWanderer(params));
+    times(6, () => this.createMelodyWanderer(params));
 
     // Start sequencer
     Transport.bpm.value = 80;
@@ -110,20 +112,23 @@ export class BeatSequencer implements Sprite {
     });
   }
 
-  private createBassWanderer(params: BeatSequencerParams) {
-    const bass = new MonoSynth(randomSustainSynth());
+  private createInstrumentWanderer(
+    params: BeatSequencerParams & {
+      pattern: Subdivision;
+      nextNote: () => Note | undefined;
+    }
+  ) {
+    const instrument = new MonoSynth(randomSustainSynth());
     let freq: number | undefined;
     const bassWanderer = new WanderingBeat({
       sourceAudio: {
-        source: bass,
+        source: instrument,
         trigger: (time: number) => {
-          const notes: Set<NoteValue> = params.getNotes();
-          const noteValue = sample(Array.from(notes));
-          if (noteValue) {
-            const bassNote = noteValue + (sample([24, 36]) as number);
-            freq = midiNoteToFreq(bassNote);
+          const note = params.nextNote();
+          if (note) {
+            freq = midiNoteToFreq(note);
             try {
-              bass.triggerAttackRelease(freq, '8n', time);
+              instrument.triggerAttackRelease(freq, params.pattern, time);
             } catch (e) {
               console.error(e);
             }
@@ -131,16 +136,46 @@ export class BeatSequencer implements Sprite {
         },
         pitchBend: (ratio: number): void => {
           if (freq) {
-            bass.frequency.value = freq * ratio;
+            instrument.frequency.value = freq * ratio;
           }
         }
       },
-      pattern: '4n',
+      pattern: params.pattern,
       dimensions: params.dimensions,
       fireworkSize: 55,
       mic: params.mic
     });
 
     this.beats.push(bassWanderer);
+  }
+
+  private createMelodyWanderer(params: BeatSequencerParams) {
+    this.createInstrumentWanderer({
+      ...params,
+      pattern: '16n',
+      nextNote: () => {
+        const notes: Set<NoteValue> = params.getNotes();
+        const noteValue = sample(Array.from(notes));
+        if (noteValue) {
+          const note: Note = noteValue + 12 * random(4, 6);
+          return note;
+        }
+      }
+    });
+  }
+
+  private createBassWanderer(params: BeatSequencerParams) {
+    this.createInstrumentWanderer({
+      ...params,
+      pattern: '4n',
+      nextNote: () => {
+        const notes: Set<NoteValue> = params.getNotes();
+        const noteValue = sample(Array.from(notes));
+        if (noteValue) {
+          const note: Note = noteValue + 12 * random(2, 4);
+          return note;
+        }
+      }
+    });
   }
 }
