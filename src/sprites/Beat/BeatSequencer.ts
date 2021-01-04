@@ -1,6 +1,7 @@
 import {random, sample, times} from 'lodash';
 import {MonoSynth, Player, Transport} from 'tone';
 import {Subdivision} from 'tone/build/esm/core/type/Units';
+import {chordsMatching} from '../../audio/chords';
 import {midiNoteToFreq} from '../../audio/midi';
 import {Note, NoteValue} from '../../audio/Note';
 import {randomSustainSynth} from '../../audio/oscillators';
@@ -177,10 +178,13 @@ export class BeatSequencer implements Sprite {
       pattern: '4n',
       nextNote: () => {
         const notes: Set<NoteValue> = params.getNotes();
-        const noteValue = sample(Array.from(notes));
-        if (noteValue) {
-          const note: Note = noteValue + 12 * random(2, 4);
-          return note;
+        const chords = chordsMatching(Array.from(notes));
+        if (chords.length) {
+          const noteValue = chords[0].root;
+          if (noteValue) {
+            const note: Note = noteValue + 12 * random(2, 4);
+            return note;
+          }
         }
       }
     });
