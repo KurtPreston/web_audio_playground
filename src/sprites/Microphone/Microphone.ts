@@ -5,7 +5,6 @@
 // 3: PitchShift: simulated doppler effect
 
 import {ToneAudioNode} from 'tone';
-import {Source} from 'tone/build/esm/source/Source';
 import {ITraveler} from '../../types/State';
 import {MicrophoneAudioSettings} from './MicrophoneAudioSettings.generated';
 import {MicrophoneConnection} from './MicrophoneConnection';
@@ -17,7 +16,7 @@ export interface SpriteMicrophoneParams {
 }
 
 export interface SpriteSoundSource {
-  sourceAudio: Source<any>;
+  sourceAudio: ToneAudioNode;
   sourcePosition: () => ITraveler;
   pitchBend: (ratio: number) => void;
 }

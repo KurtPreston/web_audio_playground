@@ -83,7 +83,8 @@ export class DopplerSynthGame implements Game {
     });
     this.beat = new BeatSequencer({
       dimensions: world.dimensions,
-      mic: this.mic
+      mic: this.mic,
+      getNotes: () => this.noteGraphController.noteValues
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;

@@ -1,20 +1,29 @@
 import {random} from 'lodash';
-import {Player, Transport} from 'tone';
+import {ToneAudioNode, Transport} from 'tone';
 import {Subdivision} from 'tone/build/esm/core/type/Units';
 import {randomWalkFactory} from '../../frameTickers/randomWalk';
+import {CanvasBlendMode} from '../../games/Cables/CablesOptions.generated';
 import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../../types/State';
+import {randomColor} from '../../util/color';
 import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
 import {Sprite} from '../Sprite';
 import {Firework} from './Firework';
 
 interface WanderingBeatParams {
-  sample: Player;
+  // Audio sample
+  sourceAudio: {
+    source: ToneAudioNode;
+    pitchBend: (ratio: number) => void;
+    trigger: (time: number) => void;
+  };
+
   pattern: Subdivision;
   dimensions: Dimensions;
   fireworkSize: number;
-  fireworkColor: string;
+  fireworkColor?: string;
+  fireworkBlendMode?: CanvasBlendMode;
   mic: Microphone;
 }
 
@@ -25,20 +34,30 @@ export class WanderingBeat implements Sprite {
 
   // Audio
   private readonly scheduledRepeat: number;
-  private readonly sample: Player;
+  private readonly triggerSample: (time: number) => void;
   private readonly micConnection: MicrophoneConnection;
 
   // Fireworks
   private readonly fireworkColor: string;
   private readonly fireworkSize: number;
+  private readonly fireworkBlendMode: CanvasBlendMode;
   private readonly fireworks: Set<Firework> = new Set<Firework>();
 
   constructor(params: WanderingBeatParams) {
-    const {sample, pattern, dimensions, fireworkSize, fireworkColor, mic} = params;
+    const {
+      sourceAudio,
+      pattern,
+      dimensions,
+      fireworkSize,
+      fireworkColor,
+      fireworkBlendMode,
+      mic
+    } = params;
 
     // Wandering
     this.fireworkSize = fireworkSize;
-    this.fireworkColor = fireworkColor;
+    this.fireworkColor = fireworkColor || randomColor();
+    this.fireworkBlendMode = fireworkBlendMode || 'hard-light';
     this.head = {
       x: random(dimensions.height),
       y: random(dimensions.width),
@@ -54,7 +73,7 @@ export class WanderingBeat implements Sprite {
 
     // Connect
     this.micConnection = mic.connect({
-      sourceAudio: sample,
+      sourceAudio: sourceAudio.source,
       sourcePosition: () => {
         return {
           position: this.head,
@@ -64,13 +83,11 @@ export class WanderingBeat implements Sprite {
           }
         };
       },
-      pitchBend: (ratio: number): void => {
-        sample.playbackRate = ratio;
-      }
+      pitchBend: sourceAudio.pitchBend
     });
 
     // Trigger samples
-    this.sample = sample;
+    this.triggerSample = sourceAudio.trigger;
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.beat(time);
     }, pattern);
@@ -78,9 +95,7 @@ export class WanderingBeat implements Sprite {
 
   private beat(time: number) {
     // Trigger sample
-    if (this.sample.loaded) {
-      this.sample.start(time);
-    }
+    this.triggerSample(time);
 
     // Create firework
     const firework: Firework = {
@@ -99,6 +114,7 @@ export class WanderingBeat implements Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Render head
     canvas.fillStyle = this.fireworkColor;
+    canvas.globalCompositeOperation = this.fireworkBlendMode;
     canvas.beginPath();
     canvas.arc(this.head.x, this.head.y, 3, 0, 2 * Math.PI);
     canvas.fill();

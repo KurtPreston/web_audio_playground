@@ -1,7 +1,6 @@
 // Represents a connection between a sound-emitting ITraveler and an ITraveler mic
 
 import {PanVol, ToneAudioNode} from 'tone';
-import {Source} from 'tone/build/esm/source/Source';
 import {doppler} from '../../math/physics/doppler';
 import {OverflowMode, scale} from '../../math/scale';
 import {angleBetween} from '../../math/trig/angleBetween';
@@ -10,7 +9,7 @@ import {IPosition, ITraveler, IVector} from '../../types/State';
 import {MicrophoneAudioSettings} from './MicrophoneAudioSettings.generated';
 
 export interface MicrophoneConnectionParams {
-  sourceAudio: Source<any>;
+  sourceAudio: ToneAudioNode;
   sourcePosition: () => ITraveler;
   audioSettings: MicrophoneAudioSettings;
   micPosition: () => ITraveler;
