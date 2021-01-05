@@ -1,11 +1,12 @@
 import {autobind} from 'core-decorators';
 import {difference, isNumber, pull, random, range, sample, times} from 'lodash';
 import {Oscillator} from 'tone';
-import {randomChord} from '../../audio/chords';
+import {Chord, randomChord} from '../../audio/chords';
 import {generateRelatedChord} from '../../audio/harmony';
 import {midiNoteToFreq} from '../../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
+import {Sequencer} from '../../audio/Sequencer';
 import {FRAME_RATE, WorldState} from '../../types/State';
 import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';
@@ -17,6 +18,7 @@ export interface NoteGraphAutoplayerParams {
   noteGraph: NoteGraph;
   onNotesUpdated: () => void;
   mic: Microphone;
+  sequencer: Sequencer;
 }
 
 interface NodeSynth {
@@ -37,6 +39,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   public readonly actions: NoteGraphAction[][];
   private readonly randomActions = new Map<() => void, number>();
   private readonly onNotesUpdated: () => void;
+  private readonly unsubscribeFromSequencer: () => void;
 
   constructor(params: NoteGraphAutoplayerParams) {
     this.noteGraph = params.noteGraph;
@@ -78,12 +81,17 @@ export class NoteGraphAutoplayer implements NoteGraphController {
       ]
     ];
 
+    // Follow sequencer
+    this.unsubscribeFromSequencer = params.sequencer.subscribe((chord: Chord) => {
+      this.setChord(chord.notes);
+    });
+
     // Create random actions
     this.randomActions.set(this.createNode, 20);
     this.randomActions.set(this.deleteRandomNode, 20);
     this.randomActions.set(this.noteGraph.addEdge, 25);
     this.randomActions.set(this.noteGraph.deleteEdge, 40);
-    this.randomActions.set(this.loadRelatedChord, 20);
+    // this.randomActions.set(this.loadRelatedChord, 20);
     this.randomActions.set(this.noteGraph.splitGraph, 50);
     this.randomActions.set(this.noteGraph.mergeGraphs, 50);
     // this.randomActions.set(this.regenerateGraph, 500);
@@ -288,5 +296,6 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   public destroy() {
     this.noteValues.forEach(this.deleteNote);
     this.noteGraph.destroy();
+    this.unsubscribeFromSequencer();
   }
 }

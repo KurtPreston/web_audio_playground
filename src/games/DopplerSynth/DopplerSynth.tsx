@@ -1,9 +1,10 @@
 import {autobind} from 'core-decorators';
-import {random, times} from 'lodash';
+import {chunk, random, times} from 'lodash';
 import React from 'react';
 import {Compressor, ToneAudioNode} from 'tone';
 import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
+import {Sequencer} from '../../audio/Sequencer';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Astronaut} from '../../sprites/Astronaut';
 import {BeatSequencer} from '../../sprites/Beat/BeatSequencer';
@@ -34,6 +35,7 @@ export class DopplerSynthGame implements Game {
   private readonly bg: Sprite;
   private readonly astronaut: Astronaut;
   private readonly beat: BeatSequencer;
+  private readonly sequencer: Sequencer;
 
   // Other state
   private mode: DopplerSynthMode = 'auto';
@@ -76,10 +78,12 @@ export class DopplerSynthGame implements Game {
       audioSettings: this.audioSettings,
       micPosition: () => this.astronaut.traveler
     });
+    this.sequencer = new Sequencer();
     this.noteGraphController = new NoteGraphAutoplayer({
       noteGraph: this.noteGraph,
       onNotesUpdated: updateMenu,
-      mic: this.mic
+      mic: this.mic,
+      sequencer: this.sequencer
     });
     this.beat = new BeatSequencer({
       dimensions: world.dimensions,
@@ -136,7 +140,8 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        mic: this.mic
+        mic: this.mic,
+        sequencer: this.sequencer
       });
       this.updateMenu();
     }, 1000);
@@ -180,7 +185,8 @@ export class DopplerSynthGame implements Game {
       this.noteGraphController = new NoteGraphAutoplayer({
         noteGraph: this.noteGraph,
         onNotesUpdated: this.updateMenu,
-        mic: this.mic
+        mic: this.mic,
+        sequencer: this.sequencer
       });
     }
 
@@ -209,6 +215,26 @@ export class DopplerSynthGame implements Game {
           {this.noteGraphController.controls && this.noteGraphController.controls()}
         </fieldset>
         <fieldset>
+          <label>Progression</label>
+          <table>
+            <tbody>
+              {chunk(this.sequencer.chordProgression, 4).map((chords, chunkIdx) => (
+                <tr>
+                  {chords.map((chord, i) => {
+                    if (this.sequencer.idx === i + chunkIdx * 4) {
+                      return (
+                        <td>
+                          <b>{chordName(chord)}</b>
+                        </td>
+                      );
+                    } else {
+                      return <td>{chordName(chord)}</td>;
+                    }
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <label>Notes</label>
           <div>
             <strong>{chordsMatching(notesArray).map(chordName).join(' or ')}</strong>

@@ -155,6 +155,6 @@ export class WanderingBeat implements Sprite {
   public destroy() {
     this.micConnection.destroy();
     this.fireworks.clear();
-    Transport.cancel(this.scheduledRepeat);
+    Transport.clear(this.scheduledRepeat);
   }
 }
