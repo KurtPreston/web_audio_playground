@@ -277,7 +277,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   public addNote(noteValue?: NoteValue, numNodes?: number) {
-    noteValue = noteValue || this.randomUnusedNote();
+    noteValue = noteValue ?? this.randomUnusedNote();
     if (isNumber(noteValue)) {
       this.noteValues.add(noteValue);
       numNodes = isNumber(numNodes) ? numNodes : random(1, 5);
