@@ -1,13 +1,13 @@
 import {autobind} from 'core-decorators';
 import {difference, isNumber, pull, random, range, sample, times} from 'lodash';
 import {Oscillator} from 'tone';
-import {Chord, randomChord} from '../../audio/chords';
+import {Chord, normalizeChord, randomChord} from '../../audio/chords';
 import {generateRelatedChord} from '../../audio/harmony';
-import {midiNoteToFreq} from '../../audio/midi';
+import {freqToMidiNote, midiNoteToFreq} from '../../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
 import {Sequencer} from '../../audio/Sequencer';
-import {FRAME_RATE, WorldState} from '../../types/State';
+import {WorldState} from '../../types/State';
 import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';
 import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
@@ -127,8 +127,9 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   public setChord(chord: Set<NoteValue>) {
-    const newNotes = difference(Array.from(chord), Array.from(this.noteValues));
-    const yesterNotes = difference(Array.from(this.noteValues), Array.from(chord));
+    const chordNotes: NoteValue[] = normalizeChord(Array.from(chord));
+    const newNotes = difference(chordNotes, Array.from(this.noteValues));
+    const yesterNotes = difference(Array.from(this.noteValues), chordNotes);
 
     // Rebuild any overlapping notes that have disappeared
     chord.forEach((noteValue: Note) => {
@@ -148,6 +149,12 @@ export class NoteGraphAutoplayer implements NoteGraphController {
         const note = this.randomNote(newNote);
         if (note) {
           node.note = note;
+
+          const nodeSynth = this.nodeSynths.get(node);
+          if (nodeSynth) {
+            const freq = midiNoteToFreq(note);
+            nodeSynth.synth.frequency.value = freq;
+          }
         }
       });
       pull(newNotes, newNote);
@@ -172,6 +179,25 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     this.onNotesUpdated();
   }
 
+  private numNodesPerNoteValue() {
+    const nodeStatus: {[note: string]: number} = {};
+    this.nodeSynths.forEach((synth, node) => {
+      if (node.flaggedForDelete) {
+        return;
+      }
+      const freq = synth.synth.frequency.value as number;
+      const midiNote = freqToMidiNote(freq);
+      const noteValue = noteToNoteValue(midiNote);
+      // const name = getNoteName(midiNote);
+      if (!nodeStatus[noteValue]) {
+        nodeStatus[noteValue] = 0;
+      }
+      nodeStatus[noteValue]++;
+    });
+
+    return nodeStatus;
+  }
+
   public createNode() {
     const midiNote = this.randomNote();
     if (midiNote) {
@@ -184,12 +210,11 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   private createSynthForNode(node: NoteNode) {
-    const frequency = midiNoteToFreq(node.note);
     const synth = new Oscillator({
       ...randomSustainOscillatorOptions(),
       volume: Number.NEGATIVE_INFINITY,
       detune: random(-1, 1, true),
-      frequency
+      frequency: midiNoteToFreq(node.note)
     });
 
     const connection: MicrophoneConnection = this.mic.connect({
@@ -199,8 +224,8 @@ export class NoteGraphAutoplayer implements NoteGraphController {
         vector: node.vector
       }),
       pitchBend: (ratio: number) => {
-        const rampTime = 1 / FRAME_RATE;
-        synth.frequency.rampTo(frequency * ratio, `+${rampTime}`);
+        const frequency = midiNoteToFreq(node.note);
+        synth.frequency.value = frequency * ratio;
       }
     });
 
