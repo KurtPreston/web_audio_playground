@@ -13,9 +13,16 @@ export class Sequencer {
 
   constructor() {
     this.chordProgression = [
+      // Major/minor
       ...circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
+
+      // 2-5-1s
       ...circleOfFifths(minorProgression([2, 5, 1, 1])),
-      ...circleOfFifths(majorProgression([2, 5, 1, 1]))
+      ...circleOfFifths(majorProgression([2, 5, 1, 1])),
+
+      // Blues
+      ...circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
+      ...circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1]))
     ];
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
