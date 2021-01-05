@@ -147,9 +147,16 @@ export class Astronaut implements Sprite {
     const note: NoteValue | undefined = sample(Array.from(this.getNoteValues()));
     if (note) {
       const freq = midiNoteToFreq(note + 72);
-      if (this.bounceSynth) {
-        this.bounceSynth.triggerAttackRelease(freq, 0.125);
-      }
+      this.bounceSynth?.triggerAttackRelease(freq, 0.125);
+      // const now = Transport.position;
+      // const [bars, beats, _sixteenths] = now
+      //   .toString()
+      //   .split(':')
+      //   .map((str) => parseFloat(str));
+      // const next: BarsBeatsSixteenths = `${bars}:${beats + 1}:0`;
+      // Transport.schedule((time) => {
+      //   this.bounceSynth?.triggerAttackRelease(freq, 0.125);
+      // }, next);
     }
   }
 }

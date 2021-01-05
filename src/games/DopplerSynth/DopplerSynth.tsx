@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import {chunk, random, times} from 'lodash';
 import React from 'react';
-import {Compressor, ToneAudioNode} from 'tone';
+import {Compressor, ToneAudioNode, Transport} from 'tone';
 import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
 import {Sequencer} from '../../audio/Sequencer';
@@ -56,6 +56,8 @@ export class DopplerSynthGame implements Game {
     this.channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
+    Transport.bpm.value = 90;
+
     this.audioSettings = {
       dopplerMode: DopplerMode.On,
       speedOfSound: 3000,
@@ -69,7 +71,7 @@ export class DopplerSynthGame implements Game {
       dimensions
     });
     this.astronaut = new Astronaut({
-      getNoteValues: () => this.noteGraphController.noteValues,
+      getNoteValues: () => this.sequencer.chord.notes,
       channel: this.channel,
       dimensions: world.dimensions
     });
@@ -219,16 +221,16 @@ export class DopplerSynthGame implements Game {
           <table>
             <tbody>
               {chunk(this.sequencer.chordProgression, 4).map((chords, chunkIdx) => (
-                <tr>
+                <tr key={chunkIdx}>
                   {chords.map((chord, i) => {
                     if (this.sequencer.idx === i + chunkIdx * 4) {
                       return (
-                        <td>
+                        <td key={i}>
                           <b>{chordName(chord)}</b>
                         </td>
                       );
                     } else {
-                      return <td>{chordName(chord)}</td>;
+                      return <td key={i}>{chordName(chord)}</td>;
                     }
                   })}
                 </tr>

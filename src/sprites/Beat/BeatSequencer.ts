@@ -36,7 +36,6 @@ export class BeatSequencer implements Sprite {
     this.unsubscribeFromSequencer = params.sequencer.subscribe((chord: Chord) => {
       this.currentChord = chord;
     });
-    Transport.bpm.value = 80;
     Transport.start();
   }
 

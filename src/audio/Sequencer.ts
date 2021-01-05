@@ -1,5 +1,5 @@
 import {Transport} from 'tone';
-import {circleOfFifths, majorProgression} from './chordProgression';
+import {circleOfFifths, majorProgression, minorProgression} from './chordProgression';
 import {Chord} from './chords';
 
 type SequencerCallback = (chord: Chord) => void;
@@ -12,10 +12,18 @@ export class Sequencer {
   private readonly scheduledRepeat: number;
 
   constructor() {
-    this.chordProgression = circleOfFifths(majorProgression([2, 5, 1, 1]));
+    this.chordProgression = [
+      ...circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
+      ...circleOfFifths(minorProgression([2, 5, 1, 1])),
+      ...circleOfFifths(majorProgression([2, 5, 1, 1]))
+    ];
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
     }, '1m');
+  }
+
+  public get chord(): Chord {
+    return this.chordProgression[this.chordIdx];
   }
 
   public get idx(): number {
