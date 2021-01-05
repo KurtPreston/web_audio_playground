@@ -1,10 +1,11 @@
 import {random, sample, times} from 'lodash';
 import {MonoSynth, Player, Transport} from 'tone';
 import {Subdivision} from 'tone/build/esm/core/type/Units';
-import {chordsMatching} from '../../audio/chords';
+import {Chord} from '../../audio/chords';
 import {midiNoteToFreq} from '../../audio/midi';
-import {Note, NoteValue} from '../../audio/Note';
+import {Note} from '../../audio/Note';
 import {randomSustainSynth} from '../../audio/oscillators';
+import {Sequencer} from '../../audio/Sequencer';
 import {Dimensions, WorldState} from '../../types/State';
 import {randomColor} from '../../util/color';
 import {Microphone} from '../Microphone/Microphone';
@@ -15,20 +16,26 @@ import {WanderingBeat} from './WanderingBeat';
 interface BeatSequencerParams {
   dimensions: Dimensions;
   mic: Microphone;
-  getNotes: () => Set<NoteValue>;
+  sequencer: Sequencer;
 }
 
 export class BeatSequencer implements Sprite {
   private readonly beats: Set<WanderingBeat> = new Set<WanderingBeat>();
+  private readonly unsubscribeFromSequencer: () => void;
+  private currentChord: Chord | undefined;
 
   constructor(params: BeatSequencerParams) {
+    // Create wandderers
     times(1, () => this.createSnareWanderer(params));
     times(1, () => this.createHatWanderer(params));
     times(3, () => this.createKickWanderer(params));
-    times(3, () => this.createBassWanderer(params));
+    times(4, () => this.createBassWanderer(params));
     times(5, () => this.createMelodyWanderer(params));
 
-    // Start sequencer
+    // Subscrube to sequencer
+    this.unsubscribeFromSequencer = params.sequencer.subscribe((chord: Chord) => {
+      this.currentChord = chord;
+    });
     Transport.bpm.value = 80;
     Transport.start();
   }
@@ -162,27 +169,28 @@ export class BeatSequencer implements Sprite {
       ...params,
       pattern: '16n',
       nextNote: () => {
-        const notes: Set<NoteValue> = params.getNotes();
-        const noteValue = sample(Array.from(notes));
-        if (noteValue && Math.random() > 0.5) {
-          const note: Note = noteValue + 12 * random(4, 6);
-          return note;
+        if (this.currentChord) {
+          const noteValue = sample(Array.from(this.currentChord.notes));
+          if (noteValue) {
+            // && Math.random() > 0.5) {
+            const note: Note = noteValue + 12 * random(4, 6);
+            return note;
+          }
         }
       }
     });
   }
 
   private createBassWanderer(params: BeatSequencerParams) {
+    const octave = random(2, 3);
     this.createInstrumentWanderer({
       ...params,
       pattern: '4n',
       nextNote: () => {
-        const notes: Set<NoteValue> = params.getNotes();
-        const chords = chordsMatching(Array.from(notes));
-        if (chords.length) {
-          const noteValue = chords[0].root;
+        if (this.currentChord) {
+          const noteValue = this.currentChord.root;
           if (noteValue) {
-            const note: Note = noteValue + 12 * random(2, 4);
+            const note: Note = noteValue + 12 * octave;
             return note;
           }
         }
