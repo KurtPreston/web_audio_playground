@@ -8,19 +8,19 @@ export interface Chord {
 }
 
 export enum ChordType {
-  major,
-  minor,
-  major7,
-  dominant7,
-  minor7,
-  minor6,
-  major6,
-  sus2,
-  sus4,
-  five,
-  dim,
-  dim7,
-  halfdim
+  major = 'major',
+  minor = 'minor',
+  major7 = 'major7',
+  dominant7 = 'dominant7',
+  minor7 = 'minor7',
+  minor6 = 'minor6',
+  major6 = 'major6',
+  sus2 = 'sus2',
+  sus4 = 'sus4',
+  five = 'five',
+  dim = 'dim',
+  dim7 = 'dim7',
+  halfdim = 'halfdim'
 }
 
 const chordTypeSymbol: {[type in ChordType]: string} = {
@@ -253,3 +253,41 @@ export function normalizeChord(notes: Note[]): NoteValue[] {
 export function chordName(chord: Chord): string {
   return `${getNoteName(chord.root)}${chordTypeSymbol[chord.type]}`;
 }
+
+export type ChordSet = {[type in ChordType]: Chord};
+
+function chordSetFor(root: NoteValue): ChordSet {
+  return {
+    major: majorChord(root),
+    minor: minorChord(root),
+    major7: major7Chord(root),
+    dominant7: dominant7Chord(root),
+    minor7: minor7Chord(root),
+    minor6: minor6Chord(root),
+    major6: major6Chord(root),
+    sus2: sus2Chord(root),
+    sus4: sus4Chord(root),
+    five: fiveChord(root),
+    dim: dimChord(root),
+    dim7: dim7Chord(root),
+    halfdim: halfdim(root)
+  };
+}
+
+export const Chord = {
+  A: chordSetFor(NoteValue.A),
+  Asharp: chordSetFor(NoteValue.Asharp),
+  Bflat: chordSetFor(NoteValue.Bflat),
+  B: chordSetFor(NoteValue.B),
+  C: chordSetFor(NoteValue.C),
+  Csharp: chordSetFor(NoteValue.Csharp),
+  Dflat: chordSetFor(NoteValue.Dflat),
+  D: chordSetFor(NoteValue.D),
+  Dsharp: chordSetFor(NoteValue.Dsharp),
+  Eflat: chordSetFor(NoteValue.Eflat),
+  F: chordSetFor(NoteValue.F),
+  Fsharp: chordSetFor(NoteValue.Fsharp),
+  Gflat: chordSetFor(NoteValue.Gflat),
+  G: chordSetFor(NoteValue.G),
+  Gsharp: chordSetFor(NoteValue.Gsharp)
+};
