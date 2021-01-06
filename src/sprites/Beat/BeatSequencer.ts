@@ -5,7 +5,7 @@ import {Chord} from '../../audio/chords';
 import {midiNoteToFreq} from '../../audio/midi';
 import {Note} from '../../audio/Note';
 import {randomSustainSynth} from '../../audio/oscillators';
-import {Sequencer} from '../../audio/Sequencer';
+import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {Dimensions, WorldState} from '../../types/State';
 import {randomColor} from '../../util/color';
 import {Microphone} from '../Microphone/Microphone';

@@ -15,6 +15,7 @@ interface AstronautParams {
   getNoteValues: () => Set<NoteValue>;
   channel: ToneAudioNode | null;
   dimensions: Dimensions;
+  bubbleSize: number;
 }
 
 const headphoneWamdagImage = new Image();
@@ -25,6 +26,7 @@ export class Astronaut implements Sprite {
   public traveler: ITraveler;
   private angle: number = 0;
   private angularMomentum: number = 0.01;
+  public bubbleSize: number;
 
   // Constants
   private readonly getNoteValues: () => Set<NoteValue>;
@@ -46,6 +48,7 @@ export class Astronaut implements Sprite {
       }
     };
     this.getNoteValues = params.getNoteValues;
+    this.bubbleSize = params.bubbleSize;
 
     // Create synth
     if (params.channel) {
@@ -90,8 +93,8 @@ export class Astronaut implements Sprite {
           wave: world.audio.uintWave,
           cx: 0,
           cy: 0,
-          minSize: 40,
-          maxSize: 100
+          minSize: 0.4 * this.bubbleSize,
+          maxSize: this.bubbleSize
         });
 
         // Draw the wamdag

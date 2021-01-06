@@ -4,7 +4,8 @@ import React from 'react';
 import {Compressor, ToneAudioNode, Transport} from 'tone';
 import {chordName, chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
-import {Sequencer} from '../../audio/Sequencer';
+import {Sequencer} from '../../audio/Sequencer/Sequencer';
+import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Astronaut} from '../../sprites/Astronaut';
 import {BeatSequencer} from '../../sprites/Beat/BeatSequencer';
@@ -21,7 +22,11 @@ import {NoteGraphOptions} from '../../sprites/NoteGraph/NoteGraphOptions.generat
 import {NoteGraphOptionsForm} from '../../sprites/NoteGraph/NoteGraphOptionsForm';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
-import {DopplerSynthModeSchema, MicrophoneAudioSettingsSchema} from '../../types/schemas.generated';
+import {
+  DopplerSynthModeSchema,
+  MicrophoneAudioSettingsSchema,
+  SequencerOptionsSchema
+} from '../../types/schemas.generated';
 import {Dimensions, WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import './DopplerSynth.scss';
@@ -40,6 +45,7 @@ export class DopplerSynthGame implements Game {
   // Other state
   private mode: DopplerSynthMode = 'auto';
   private audioSettings: MicrophoneAudioSettings;
+  private sequencerOptions: SequencerOptions;
   private readonly mic: Microphone;
   private readonly channel: ToneAudioNode;
   private lastDimensions: Dimensions;
@@ -61,16 +67,22 @@ export class DopplerSynthGame implements Game {
     this.audioSettings = {
       dopplerMode: DopplerMode.On,
       speedOfSound: 3000,
-      distanceVolumeRolloff: 3,
-      maxAudibleDistance: Math.min(world.dimensions.width, world.dimensions.height),
+      distanceVolumeRolloff: 4,
+      maxAudibleDistance: Math.round(
+        Math.sqrt(world.dimensions.width * world.dimensions.height) / 3.5
+      ),
       minVolume: -50,
       maxVolume: -10
+    };
+    this.sequencerOptions = {
+      bpm: 90
     };
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
       dimensions
     });
     this.astronaut = new Astronaut({
+      bubbleSize: this.audioSettings.maxAudibleDistance,
       getNoteValues: () => this.sequencer.chord.notes,
       channel: this.channel,
       dimensions: world.dimensions
@@ -80,7 +92,7 @@ export class DopplerSynthGame implements Game {
       audioSettings: this.audioSettings,
       micPosition: () => this.astronaut.traveler
     });
-    this.sequencer = new Sequencer();
+    this.sequencer = new Sequencer(this.sequencerOptions);
     this.noteGraphController = new NoteGraphAutoplayer({
       noteGraph: this.noteGraph,
       onNotesUpdated: updateMenu,
@@ -156,6 +168,13 @@ export class DopplerSynthGame implements Game {
 
   private updateAudioSettings(settings: Partial<MicrophoneAudioSettings>) {
     Object.assign(this.audioSettings, settings);
+    this.astronaut.bubbleSize = this.audioSettings.maxAudibleDistance;
+    this.updateMenu();
+  }
+
+  private updateSequencerOptions(options: SequencerOptions) {
+    this.sequencerOptions = options;
+    this.sequencer.setOptions(options);
     this.updateMenu();
   }
 
@@ -181,7 +200,6 @@ export class DopplerSynthGame implements Game {
       });
     } else if (mode === 'auto') {
       this.updateAudioSettings({
-        maxAudibleDistance: 600,
         maxVolume: -10
       });
       this.noteGraphController = new NoteGraphAutoplayer({
@@ -275,6 +293,11 @@ export class DopplerSynthGame implements Game {
           </div>
         </fieldset>
         <JsonSchemaForm
+          value={this.sequencerOptions}
+          onChange={this.updateSequencerOptions}
+          schema={SequencerOptionsSchema}
+        />
+        <JsonSchemaForm
           value={this.audioSettings}
           onChange={this.updateAudioSettings}
           schema={{
@@ -294,6 +317,7 @@ export class DopplerSynthPreview implements Game {
 
   constructor(world: WorldState) {
     this.astronaut = new Astronaut({
+      bubbleSize: 40,
       dimensions: world.dimensions,
       getNoteValues: () => this.notes,
       channel: null

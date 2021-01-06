@@ -6,7 +6,7 @@ import {generateRelatedChord} from '../../audio/harmony';
 import {freqToMidiNote, midiNoteToFreq} from '../../audio/midi';
 import {Note, noteToNoteValue, NoteValue} from '../../audio/Note';
 import {randomSustainOscillatorOptions} from '../../audio/oscillators';
-import {Sequencer} from '../../audio/Sequencer';
+import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {WorldState} from '../../types/State';
 import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneAudioSettings} from '../Microphone/MicrophoneAudioSettings.generated';

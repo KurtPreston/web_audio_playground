@@ -1,6 +1,7 @@
 import {Transport} from 'tone';
-import {circleOfFifths, majorProgression, minorProgression} from './chordProgression';
-import {Chord} from './chords';
+import {circleOfFifths, majorProgression, minorProgression} from '../chordProgression';
+import {Chord} from '../chords';
+import {SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;
 
@@ -11,7 +12,7 @@ export class Sequencer {
 
   private readonly scheduledRepeat: number;
 
-  constructor() {
+  constructor(private sequencerOptions: SequencerOptions) {
     this.chordProgression = [
       // Major/minor
       ...circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
@@ -27,6 +28,11 @@ export class Sequencer {
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
     }, '1m');
+  }
+
+  public setOptions(options: SequencerOptions) {
+    this.sequencerOptions = options;
+    Transport.bpm.rampTo(options.bpm);
   }
 
   public get chord(): Chord {

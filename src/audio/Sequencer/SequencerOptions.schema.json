@@ -1,0 +1,13 @@
+{
+  "title": "Sequencer Options",
+  "type": "object",
+  "properties": {
+    "bpm": {
+      "title": "Tempo (bpm)",
+      "type": "integer",
+      "minimum": 40,
+      "maximum": 180
+    }
+  },
+  "required": ["bpm"]
+}
