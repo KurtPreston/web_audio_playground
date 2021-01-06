@@ -94,6 +94,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     // this.randomActions.set(this.loadRelatedChord, 20);
     this.randomActions.set(this.noteGraph.splitGraph, 50);
     this.randomActions.set(this.noteGraph.mergeGraphs, 50);
+    this.randomActions.set(this.cullNodes, 50);
     // this.randomActions.set(this.regenerateGraph, 500);
   }
 
@@ -239,9 +240,21 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   public deleteRandomNode() {
-    const node = sample(Array.from(this.noteGraph.nodes));
+    const node = sample(this.activeNodes());
     if (node) {
       this.deleteNode(node);
+    }
+  }
+
+  private activeNodes(): NoteNode[] {
+    const nodes = Array.from(this.noteGraph.nodes);
+    return nodes.filter((node) => !node.flaggedForDelete);
+  }
+
+  private cullNodes() {
+    const maxNumNodes = random(3, 25);
+    while (this.activeNodes().length > maxNumNodes) {
+      this.deleteRandomNode();
     }
   }
 
