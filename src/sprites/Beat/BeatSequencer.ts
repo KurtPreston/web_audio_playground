@@ -64,15 +64,19 @@ export class BeatSequencer implements Sprite {
     const drumWanderer = new WanderingBeat({
       sourceAudio: {
         source: sample,
-        trigger: (time) => {
+        trigger: (time): boolean => {
           if (sample.loaded) {
             sample.start(time);
+            return true;
+          } else {
+            return false;
           }
         },
         pitchBend: (ratio: number) => {
           sample.playbackRate = playbackRate * ratio;
         }
       },
+      shipSize: 3,
       pattern: params.pattern,
       dimensions: params.dimensions,
       fireworkSize: params.fireworkSize,
@@ -121,6 +125,8 @@ export class BeatSequencer implements Sprite {
   private createInstrumentWanderer(
     params: BeatSequencerParams & {
       pattern: Subdivision;
+      shipSize: number;
+      fireworkSize: number;
       nextNote: () => Note | undefined;
     }
   ) {
@@ -130,15 +136,19 @@ export class BeatSequencer implements Sprite {
     const bassWanderer = new WanderingBeat({
       sourceAudio: {
         source: instrument,
-        trigger: (time: number) => {
+        trigger: (time: number): boolean => {
           note = params.nextNote();
           if (note) {
             freq = midiNoteToFreq(note);
             try {
               instrument.triggerAttackRelease(freq, params.pattern, time);
+              return true;
             } catch (e) {
               console.error(e);
+              return false;
             }
+          } else {
+            return false;
           }
         },
         pitchBend: (ratio: number): void => {
@@ -149,7 +159,8 @@ export class BeatSequencer implements Sprite {
       },
       pattern: params.pattern,
       dimensions: params.dimensions,
-      fireworkSize: 55,
+      fireworkSize: params.fireworkSize,
+      shipSize: params.shipSize,
       mic: params.mic,
       fireworkColor: (): string => {
         if (note) {
@@ -167,6 +178,8 @@ export class BeatSequencer implements Sprite {
     this.createInstrumentWanderer({
       ...params,
       pattern: '16n',
+      fireworkSize: 20,
+      shipSize: 0,
       nextNote: () => {
         if (this.currentChord) {
           const noteValue = sample(Array.from(this.currentChord.notes));
@@ -184,7 +197,9 @@ export class BeatSequencer implements Sprite {
     const octave = random(2, 3);
     this.createInstrumentWanderer({
       ...params,
+      fireworkSize: 200,
       pattern: '4n',
+      shipSize: 0,
       nextNote: () => {
         if (this.currentChord) {
           const noteValue = this.currentChord.root;

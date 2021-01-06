@@ -16,11 +16,12 @@ interface WanderingBeatParams {
   sourceAudio: {
     source: ToneAudioNode;
     pitchBend: (ratio: number) => void;
-    trigger: (time: number) => void;
+    trigger: (time: number) => boolean;
   };
 
   pattern: Subdivision;
   dimensions: Dimensions;
+  shipSize: number;
   fireworkSize: number;
   fireworkColor?: string | (() => string);
   fireworkBlendMode?: CanvasBlendMode;
@@ -31,10 +32,11 @@ export class WanderingBeat implements Sprite {
   // Positioning
   public head: IWanderer;
   private readonly ticker: SpriteTicker<IWanderer>;
+  private readonly shipSize: number;
 
   // Audio
   private readonly scheduledRepeat: number;
-  private readonly triggerSample: (time: number) => void;
+  private readonly triggerSample: (time: number) => boolean;
   private readonly micConnection: MicrophoneConnection;
 
   // Fireworks
@@ -51,10 +53,12 @@ export class WanderingBeat implements Sprite {
       fireworkSize,
       fireworkColor,
       fireworkBlendMode,
-      mic
+      mic,
+      shipSize
     } = params;
 
     // Wandering
+    this.shipSize = shipSize;
     this.fireworkSize = fireworkSize;
     this.fireworkColor = fireworkColor || randomColor();
     this.fireworkBlendMode = fireworkBlendMode || 'hard-light';
@@ -95,20 +99,21 @@ export class WanderingBeat implements Sprite {
 
   private beat(time: number) {
     // Trigger sample
-    this.triggerSample(time);
-
-    // Create firework
-    const firework: Firework = {
-      position: {
-        x: this.head.x,
-        y: this.head.y
-      },
-      frame: 0,
-      numFrames: 30,
-      maxSize: this.fireworkSize,
-      color: isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor
-    };
-    this.fireworks.add(firework);
+    const triggered = this.triggerSample(time);
+    if (triggered) {
+      // Create firework
+      const firework: Firework = {
+        position: {
+          x: this.head.x,
+          y: this.head.y
+        },
+        frame: 0,
+        numFrames: 30,
+        maxSize: this.fireworkSize,
+        color: isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor
+      };
+      this.fireworks.add(firework);
+    }
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -116,7 +121,7 @@ export class WanderingBeat implements Sprite {
     canvas.fillStyle = isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor;
     canvas.globalCompositeOperation = this.fireworkBlendMode;
     canvas.beginPath();
-    canvas.arc(this.head.x, this.head.y, 3, 0, 2 * Math.PI);
+    canvas.arc(this.head.x, this.head.y, this.shipSize, 0, 2 * Math.PI);
     canvas.fill();
 
     // Render fireworks
