@@ -28,6 +28,9 @@ export class Sequencer {
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
     }, '1m');
+
+    Transport.bpm.value = sequencerOptions.bpm;
+    Transport.start();
   }
 
   public setOptions(options: SequencerOptions) {

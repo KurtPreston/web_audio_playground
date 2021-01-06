@@ -8,7 +8,7 @@ import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {Astronaut} from '../../sprites/Astronaut';
-import {BeatSequencer} from '../../sprites/Beat/BeatSequencer';
+import {WanderingBeatFactory} from '../../sprites/Beat/WanderingBeatFactory';
 import {Microphone} from '../../sprites/Microphone/Microphone';
 import {
   DopplerMode,
@@ -39,7 +39,7 @@ export class DopplerSynthGame implements Game {
   private noteGraphController: NoteGraphController;
   private readonly bg: Sprite;
   private readonly astronaut: Astronaut;
-  private readonly beat: BeatSequencer;
+  private readonly beat: WanderingBeatFactory;
   private readonly sequencer: Sequencer;
 
   // Other state
@@ -99,7 +99,7 @@ export class DopplerSynthGame implements Game {
       mic: this.mic,
       sequencer: this.sequencer
     });
-    this.beat = new BeatSequencer({
+    this.beat = new WanderingBeatFactory({
       dimensions: world.dimensions,
       mic: this.mic,
       sequencer: this.sequencer

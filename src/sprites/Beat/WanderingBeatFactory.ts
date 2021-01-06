@@ -1,5 +1,5 @@
 import {random, sample, times} from 'lodash';
-import {MonoSynth, Player, Transport} from 'tone';
+import {MonoSynth, Player} from 'tone';
 import {Subdivision} from 'tone/build/esm/core/type/Units';
 import {Chord} from '../../audio/chords';
 import {midiNoteToFreq} from '../../audio/midi';
@@ -13,18 +13,18 @@ import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
 import {WanderingBeat} from './WanderingBeat';
 
-interface BeatSequencerParams {
+interface WanderingBeatParams {
   dimensions: Dimensions;
   mic: Microphone;
   sequencer: Sequencer;
 }
 
-export class BeatSequencer implements Sprite {
+export class WanderingBeatFactory implements Sprite {
   private readonly beats: Set<WanderingBeat> = new Set<WanderingBeat>();
   private readonly unsubscribeFromSequencer: () => void;
   private currentChord: Chord | undefined;
 
-  constructor(params: BeatSequencerParams) {
+  constructor(params: WanderingBeatParams) {
     // Create wandderers
     times(1, () => this.createSnareWanderer(params));
     times(1, () => this.createHatWanderer(params));
@@ -36,7 +36,6 @@ export class BeatSequencer implements Sprite {
     this.unsubscribeFromSequencer = params.sequencer.subscribe((chord: Chord) => {
       this.currentChord = chord;
     });
-    Transport.start();
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -53,7 +52,7 @@ export class BeatSequencer implements Sprite {
   }
 
   private createDrumWanderer(
-    params: BeatSequencerParams & {
+    params: WanderingBeatParams & {
       sample: Player;
       playbackRate: number;
       fireworkSize: number;
@@ -86,7 +85,7 @@ export class BeatSequencer implements Sprite {
     this.beats.add(drumWanderer);
   }
 
-  private createKickWanderer(params: BeatSequencerParams) {
+  private createKickWanderer(params: WanderingBeatParams) {
     const kick = new Player('/samples/kick.wav');
     this.createDrumWanderer({
       ...params,
@@ -97,7 +96,7 @@ export class BeatSequencer implements Sprite {
     });
   }
 
-  private createSnareWanderer(params: BeatSequencerParams) {
+  private createSnareWanderer(params: WanderingBeatParams) {
     const snare = new Player('/samples/snare.wav');
     snare.volume.value = -5;
     this.createDrumWanderer({
@@ -109,7 +108,7 @@ export class BeatSequencer implements Sprite {
     });
   }
 
-  private createHatWanderer(params: BeatSequencerParams) {
+  private createHatWanderer(params: WanderingBeatParams) {
     const hat = new Player('/samples/hihat.wav');
     hat.volume.value = -10;
     hat.playbackRate = 4;
@@ -123,7 +122,7 @@ export class BeatSequencer implements Sprite {
   }
 
   private createInstrumentWanderer(
-    params: BeatSequencerParams & {
+    params: WanderingBeatParams & {
       pattern: Subdivision;
       shipSize: number;
       fireworkSize: number;
@@ -174,7 +173,7 @@ export class BeatSequencer implements Sprite {
     this.beats.add(bassWanderer);
   }
 
-  private createMelodyWanderer(params: BeatSequencerParams) {
+  private createMelodyWanderer(params: WanderingBeatParams) {
     this.createInstrumentWanderer({
       ...params,
       pattern: '16n',
@@ -193,7 +192,7 @@ export class BeatSequencer implements Sprite {
     });
   }
 
-  private createBassWanderer(params: BeatSequencerParams) {
+  private createBassWanderer(params: WanderingBeatParams) {
     const octave = random(2, 3);
     this.createInstrumentWanderer({
       ...params,
