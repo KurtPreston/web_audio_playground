@@ -13,31 +13,31 @@
           "title": "Kick",
           "type": "integer",
           "minimum": 0,
-          "maximum": 20
+          "maximum": 50
         },
         "snareWanderers": {
           "title": "Snare",
           "type": "integer",
           "minimum": 0,
-          "maximum": 20
+          "maximum": 50
         },
         "hatWanderers": {
           "title": "Hi-hat",
           "type": "integer",
           "minimum": 0,
-          "maximum": 20
+          "maximum": 50
         },
         "melodyWanderers": {
           "title": "Melody",
           "type": "integer",
           "minimum": 0,
-          "maximum": 20
+          "maximum": 50
         },
         "bassWanderers": {
           "title": "Bass",
           "type": "integer",
           "minimum": 0,
-          "maximum": 20
+          "maximum": 50
         }
       },
       "required": [

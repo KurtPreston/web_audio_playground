@@ -1,7 +1,17 @@
 import {autobind} from 'core-decorators';
-import {Dictionary, findKey, get, isEmpty, isEqual, map, omit, round} from 'lodash';
+import {
+  Dictionary,
+  findKey,
+  get,
+  isEmpty,
+  isEqual,
+  isNumber,
+  isUndefined,
+  map,
+  omit,
+  round
+} from 'lodash';
 import React from 'react';
-import {isNumber, isObject, isUndefined} from 'util';
 import {JsonSchema} from '../types/JsonSchema';
 import {refSchemaMap} from '../types/schemas.generated';
 import './JsonSchemaForm.scss';
@@ -102,7 +112,7 @@ class JsonSchemaObjectForm extends React.Component<
         });
       };
 
-      const subValue: any = isObject(value) ? value[key] : undefined;
+      const subValue: any = value?.[key];
       const required = (schema.required || []).includes(key);
       return (
         <React.Fragment key={key}>
