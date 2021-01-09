@@ -23,7 +23,7 @@ import {NoteGraphOptionsForm} from '../../sprites/NoteGraph/NoteGraphOptionsForm
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {Sprite} from '../../sprites/Sprite';
 import {
-  DopplerSynthModeSchema,
+  DopplerSynthSettingsSchema,
   MicrophoneAudioSettingsSchema,
   SequencerOptionsSchema
 } from '../../types/schemas.generated';
@@ -31,6 +31,19 @@ import {Dimensions, WorldState} from '../../types/State';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import './DopplerSynth.scss';
 import {DopplerSynthMode} from './DopplerSynthMode.generated';
+import {DopplerSynthSettings} from './DopplerSynthSettings.generated';
+
+const defaultSettings: DopplerSynthSettings = {
+  mode: 'auto',
+  sprites: {
+    noteGraph: true,
+    snareWanderers: 1,
+    hatWanderers: 1,
+    kickWanderers: 3,
+    bassWanderers: 4,
+    melodyWanderers: 5
+  }
+};
 
 @autobind
 export class DopplerSynthGame implements Game {
@@ -43,7 +56,7 @@ export class DopplerSynthGame implements Game {
   private readonly sequencer: Sequencer;
 
   // Other state
-  private mode: DopplerSynthMode = 'auto';
+  private settings: DopplerSynthSettings = defaultSettings;
   private audioSettings: MicrophoneAudioSettings;
   private sequencerOptions: SequencerOptions;
   private readonly mic: Microphone;
@@ -102,7 +115,8 @@ export class DopplerSynthGame implements Game {
     this.beat = new WanderingBeatFactory({
       dimensions: world.dimensions,
       mic: this.mic,
-      sequencer: this.sequencer
+      sequencer: this.sequencer,
+      collection: this.settings.sprites
     });
     this.lastDimensions = world.dimensions;
     this.updateMenu = updateMenu;
@@ -147,7 +161,6 @@ export class DopplerSynthGame implements Game {
     setTimeout(() => {
       this.noteGraphController.destroy();
       this.noteGraph.destroy();
-      this.mode = 'auto';
       this.noteGraph = new NoteGraph({
         dimensions: this.lastDimensions
       });
@@ -183,9 +196,30 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  private updateSettings(settings: DopplerSynthSettings) {
+    if (this.settings.mode !== settings.mode) {
+      this.updateMode(settings.mode);
+    }
+
+    // Create or destroy notegraph
+    if (this.settings.sprites.noteGraph !== settings.sprites.noteGraph) {
+      if (settings.sprites.noteGraph) {
+        this.updateMode(settings.mode);
+      } else {
+        this.noteGraphController.destroy();
+      }
+    }
+
+    // Create or destroy  wanderers
+    this.beat.setCollection(settings.sprites);
+
+    this.settings = settings;
+
+    this.updateMenu();
+  }
+
   public updateMode(mode: DopplerSynthMode) {
     this.noteGraphController.destroy();
-    this.mode = mode;
     if (mode === 'midi') {
       this.updateAudioSettings({
         ...this.noteGraphController.audioSettings,
@@ -225,10 +259,10 @@ export class DopplerSynthGame implements Game {
         <fieldset className='doppler-synth-menu-mode'>
           <label>DopplerSynth</label>
           <JsonSchemaForm
-            value={this.mode}
-            onChange={this.updateMode}
+            value={this.settings}
+            onChange={this.updateSettings}
             schema={{
-              ...DopplerSynthModeSchema,
+              ...DopplerSynthSettingsSchema,
               title: 'Mode'
             }}
           />

@@ -43,6 +43,8 @@ export function JsonSchemaForm<T>(props: JsonSchemaFormProps<T>): React.ReactEle
     return JsonSchemaNumberForm(props as any);
   } else if (schema.type === 'array' && schema.uniqueItems && schema.items?.enum) {
     return JsonSchemaMultiSelect(props as any);
+  } else if (schema.type === 'boolean') {
+    return JsonSchemaCheckbox(props as any);
   } else {
     throw new Error(`Unspported type ${schema.type}`);
   }
@@ -294,6 +296,24 @@ function JsonSchemaMultiSelect(
           );
         })}
       </select>
+    </div>
+  );
+}
+
+function JsonSchemaCheckbox(props: JsonSchemaFormProps<boolean>): React.ReactElement {
+  const {onChange, schema, value} = props;
+
+  const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    onChange(checked);
+  };
+
+  return (
+    <div className='jsonschema-checbox'>
+      <label>
+        <input type='checkbox' checked={value} onChange={onCheckboxChange} />
+        {schema.title}
+      </label>
     </div>
   );
 }

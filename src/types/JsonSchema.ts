@@ -2,7 +2,7 @@ export interface JsonSchema {
   $id?: string;
   $ref?: string;
   title?: string;
-  type?: 'string' | 'number' | 'integer' | 'object' | 'array';
+  type?: 'string' | 'number' | 'integer' | 'object' | 'array' | 'boolean';
   format?: string;
   default?: any;
   properties?: {

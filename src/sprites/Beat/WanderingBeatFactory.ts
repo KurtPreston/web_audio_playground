@@ -1,4 +1,5 @@
-import {random, sample, times} from 'lodash';
+import {autobind} from 'core-decorators';
+import {each, random, sample} from 'lodash';
 import {MonoSynth, Player} from 'tone';
 import {Subdivision} from 'tone/build/esm/core/type/Units';
 import {Chord} from '../../audio/chords';
@@ -12,25 +13,43 @@ import {Microphone} from '../Microphone/Microphone';
 import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
 import {WanderingBeat} from './WanderingBeat';
+import {WanderingBeatCollection} from './WanderingBeatCollection.generated';
 
 interface WanderingBeatParams {
   dimensions: Dimensions;
   mic: Microphone;
-  sequencer: Sequencer;
 }
 
-export class WanderingBeatFactory implements Sprite {
-  private readonly beats: Set<WanderingBeat> = new Set<WanderingBeat>();
-  private readonly unsubscribeFromSequencer: () => void;
-  private currentChord: Chord | undefined;
+type WanderingBeatType = keyof WanderingBeatCollection;
 
-  constructor(params: WanderingBeatParams) {
-    // Create wandderers
-    times(1, () => this.createSnareWanderer(params));
-    times(1, () => this.createHatWanderer(params));
-    times(3, () => this.createKickWanderer(params));
-    times(4, () => this.createBassWanderer(params));
-    times(5, () => this.createMelodyWanderer(params));
+export interface WanderingBeatFactoryParams extends WanderingBeatParams {
+  sequencer: Sequencer;
+  collection: WanderingBeatCollection;
+}
+
+@autobind
+export class WanderingBeatFactory implements Sprite {
+  private readonly beats: Map<WanderingBeatType, Set<WanderingBeat>> = new Map();
+  private readonly unsubscribeFromSequencer: () => void;
+  private readonly mic: Microphone;
+  private dimensions: Dimensions;
+  private currentChord: Chord | undefined;
+  private factories: {
+    [key in WanderingBeatType]: (params: WanderingBeatParams) => WanderingBeat;
+  } = {
+    kickWanderers: this.createKickWanderer,
+    hatWanderers: this.createHatWanderer,
+    bassWanderers: this.createBassWanderer,
+    melodyWanderers: this.createMelodyWanderer,
+    snareWanderers: this.createSnareWanderer
+  };
+
+  constructor(params: WanderingBeatFactoryParams) {
+    this.mic = params.mic;
+    this.dimensions = params.dimensions;
+
+    // Create wanderers
+    this.setCollection(params.collection);
 
     // Subscrube to sequencer
     this.unsubscribeFromSequencer = params.sequencer.subscribe((chord: Chord) => {
@@ -39,15 +58,55 @@ export class WanderingBeatFactory implements Sprite {
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
-    this.beats.forEach((beat: WanderingBeat) => {
-      beat.render(canvas, world);
+    this.beats.forEach((beatSet: Set<WanderingBeat>) => {
+      beatSet.forEach((beat: WanderingBeat) => {
+        beat.render(canvas, world);
+      });
     });
   }
 
   public tick(world: WorldState) {
+    this.dimensions = world.dimensions;
+
     // Advance beat frames
-    this.beats.forEach((beat: WanderingBeat) => {
-      beat.tick(world);
+    this.beats.forEach((beatSet: Set<WanderingBeat>) => {
+      beatSet.forEach((beat: WanderingBeat) => {
+        beat.tick(world);
+      });
+    });
+  }
+
+  public setCollection(collection: WanderingBeatCollection) {
+    each(collection, (numWanderers: number, wandererType: string) => {
+      const type: WanderingBeatType = wandererType as WanderingBeatType;
+      const factory = this.factories[type];
+      if (!factory) {
+        // Some unrelated prop included in the collection object (i.e. noteGraph)
+        return;
+      }
+
+      if (!this.beats.has(type)) {
+        this.beats.set(type, new Set<WanderingBeat>());
+      }
+
+      const set = this.beats.get(type) as Set<WanderingBeat>;
+      while (set.size > numWanderers) {
+        const beatToDelete: WanderingBeat = set.values().next().value;
+        beatToDelete.destroy();
+        set.delete(beatToDelete);
+      }
+
+      while (set.size < numWanderers) {
+        const factory = this.factories[type];
+        if (!factory) {
+          continue;
+        }
+        const beat = factory({
+          mic: this.mic,
+          dimensions: this.dimensions
+        });
+        set.add(beat);
+      }
     });
   }
 
@@ -58,9 +117,9 @@ export class WanderingBeatFactory implements Sprite {
       fireworkSize: number;
       pattern: Subdivision;
     }
-  ) {
+  ): WanderingBeat {
     const {playbackRate, sample} = params;
-    const drumWanderer = new WanderingBeat({
+    return new WanderingBeat({
       sourceAudio: {
         source: sample,
         trigger: (time): boolean => {
@@ -82,12 +141,11 @@ export class WanderingBeatFactory implements Sprite {
       fireworkColor: randomColor(),
       mic: params.mic
     });
-    this.beats.add(drumWanderer);
   }
 
-  private createKickWanderer(params: WanderingBeatParams) {
+  private createKickWanderer(params: WanderingBeatParams): WanderingBeat {
     const kick = new Player('/samples/kick.wav');
-    this.createDrumWanderer({
+    return this.createDrumWanderer({
       ...params,
       sample: kick,
       playbackRate: 1,
@@ -96,10 +154,10 @@ export class WanderingBeatFactory implements Sprite {
     });
   }
 
-  private createSnareWanderer(params: WanderingBeatParams) {
+  private createSnareWanderer(params: WanderingBeatParams): WanderingBeat {
     const snare = new Player('/samples/snare.wav');
     snare.volume.value = -5;
-    this.createDrumWanderer({
+    return this.createDrumWanderer({
       ...params,
       sample: snare,
       playbackRate: 1,
@@ -108,11 +166,11 @@ export class WanderingBeatFactory implements Sprite {
     });
   }
 
-  private createHatWanderer(params: WanderingBeatParams) {
+  private createHatWanderer(params: WanderingBeatParams): WanderingBeat {
     const hat = new Player('/samples/hihat.wav');
     hat.volume.value = -10;
     hat.playbackRate = 4;
-    this.createDrumWanderer({
+    return this.createDrumWanderer({
       ...params,
       sample: hat,
       playbackRate: 4,
@@ -128,11 +186,11 @@ export class WanderingBeatFactory implements Sprite {
       fireworkSize: number;
       nextNote: () => Note | undefined;
     }
-  ) {
+  ): WanderingBeat {
     const instrument = new MonoSynth(randomSustainSynth());
     let note: Note | undefined;
     let freq: number | undefined;
-    const bassWanderer = new WanderingBeat({
+    return new WanderingBeat({
       sourceAudio: {
         source: instrument,
         trigger: (time: number): boolean => {
@@ -169,12 +227,10 @@ export class WanderingBeatFactory implements Sprite {
         }
       }
     });
-
-    this.beats.add(bassWanderer);
   }
 
-  private createMelodyWanderer(params: WanderingBeatParams) {
-    this.createInstrumentWanderer({
+  private createMelodyWanderer(params: WanderingBeatParams): WanderingBeat {
+    return this.createInstrumentWanderer({
       ...params,
       pattern: '16n',
       fireworkSize: 20,
@@ -192,9 +248,9 @@ export class WanderingBeatFactory implements Sprite {
     });
   }
 
-  private createBassWanderer(params: WanderingBeatParams) {
+  private createBassWanderer(params: WanderingBeatParams): WanderingBeat {
     const octave = random(2, 3);
-    this.createInstrumentWanderer({
+    return this.createInstrumentWanderer({
       ...params,
       fireworkSize: 200,
       pattern: '4n',

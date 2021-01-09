@@ -1,0 +1,59 @@
+{
+  "title": "Doppler Synth Settings",
+  "type": "object",
+  "properties": {
+    "sprites": {
+      "type": "object",
+      "properties": {
+        "noteGraph": {
+          "title": "Note Graph",
+          "type": "boolean"
+        },
+        "kickWanderers": {
+          "title": "Kick",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "snareWanderers": {
+          "title": "Snare",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "hatWanderers": {
+          "title": "Hi-hat",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "melodyWanderers": {
+          "title": "Melody",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "bassWanderers": {
+          "title": "Bass",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        }
+      },
+      "required": [
+        "noteGraph",
+        "kickWanderers",
+        "hatWanderers",
+        "snareWanderers",
+        "melodyWanderers",
+        "bassWanderers"
+      ],
+      "additionalProperties": false
+    },
+    "mode": {
+      "$ref": "DopplerSynthMode"
+    }
+  },
+  "required": ["sprites", "mode"],
+  "additionalProperties": false
+}

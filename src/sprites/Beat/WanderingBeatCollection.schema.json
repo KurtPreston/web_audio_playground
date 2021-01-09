@@ -1,0 +1,35 @@
+{
+  "title": "Wandering Beat Collection",
+  "type": "object",
+  "properties": {
+    "kickWanderers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "snareWanderers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hatWanderers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "melodyWanderers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bassWanderers": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "noteGraph",
+    "kickWanderers",
+    "snareWanderers",
+    "melodyWanderers",
+    "bassWanderers",
+    "hatWanderers"
+  ],
+  "additionalProperties": false
+}
