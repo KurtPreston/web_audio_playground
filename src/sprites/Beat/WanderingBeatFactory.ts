@@ -152,7 +152,7 @@ export class WanderingBeatFactory implements Sprite {
       fireworkSize: 50,
       pattern: {
         frequency: '1m',
-        times: ['+0:0', '+0:3:7']
+        times: ['+0:0']
       }
     });
   }
@@ -191,6 +191,7 @@ export class WanderingBeatFactory implements Sprite {
   private createInstrumentWanderer(
     params: WanderingBeatParams & {
       pattern: Pattern;
+      noteDuration: Time;
       shipSize: number;
       fireworkSize: number;
       nextNote: () => Note | undefined;
@@ -207,7 +208,7 @@ export class WanderingBeatFactory implements Sprite {
           if (note) {
             freq = midiNoteToFreq(note);
             try {
-              instrument.triggerAttackRelease(freq, '8n', time);
+              instrument.triggerAttackRelease(freq, params.noteDuration, time);
               return true;
             } catch (e) {
               console.error(e);
@@ -245,6 +246,7 @@ export class WanderingBeatFactory implements Sprite {
         frequency: '16n',
         times: ['+0']
       },
+      noteDuration: '8n',
       fireworkSize: 20,
       shipSize: 0,
       nextNote: () => {
@@ -269,6 +271,7 @@ export class WanderingBeatFactory implements Sprite {
         frequency: '4n',
         times: ['+0:0']
       },
+      noteDuration: '4n',
       shipSize: 0,
       nextNote: () => {
         if (this.currentChord) {

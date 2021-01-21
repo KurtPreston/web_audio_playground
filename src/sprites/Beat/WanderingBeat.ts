@@ -97,11 +97,15 @@ export class WanderingBeat implements Sprite {
 
     // Trigger samples
     this.triggerSample = sourceAudio.trigger;
-    this.loop = Transport.scheduleRepeat((time: number) => {
-      pattern.times.forEach((time: Time) => {
-        this.beat(time);
-      });
-    }, pattern.frequency);
+    this.loop = Transport.scheduleRepeat(
+      (time: number) => {
+        pattern.times.forEach((time: Time) => {
+          this.beat(time);
+        });
+      },
+      pattern.frequency,
+      0
+    );
   }
 
   private beat(time: Time) {
@@ -167,6 +171,6 @@ export class WanderingBeat implements Sprite {
   public destroy() {
     this.micConnection.destroy();
     this.fireworks.clear();
-    Transport.cancel(this.loop);
+    Transport.clear(this.loop);
   }
 }

@@ -30,6 +30,7 @@ export class Sequencer {
     }, '1m');
 
     Transport.bpm.value = sequencerOptions.bpm;
+    Transport.setLoopPoints(0, '4m');
     Transport.start();
   }
 
