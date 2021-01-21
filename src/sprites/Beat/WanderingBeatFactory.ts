@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import {each, random, sample} from 'lodash';
 import {MonoSynth, Player} from 'tone';
-import {Subdivision} from 'tone/build/esm/core/type/Units';
+import {Time} from 'tone/build/esm/core/type/Units';
 import {Chord} from '../../audio/chords';
 import {midiNoteToFreq} from '../../audio/midi';
 import {Note} from '../../audio/Note';
@@ -12,7 +12,7 @@ import {randomColor} from '../../util/color';
 import {Microphone} from '../Microphone/Microphone';
 import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
-import {WanderingBeat} from './WanderingBeat';
+import {Pattern, WanderingBeat} from './WanderingBeat';
 import {WanderingBeatCollection} from './WanderingBeatCollection.generated';
 
 interface WanderingBeatParams {
@@ -115,7 +115,7 @@ export class WanderingBeatFactory implements Sprite {
       sample: Player;
       playbackRate: number;
       fireworkSize: number;
-      pattern: Subdivision;
+      pattern: Pattern;
     }
   ): WanderingBeat {
     const {playbackRate, sample} = params;
@@ -150,7 +150,10 @@ export class WanderingBeatFactory implements Sprite {
       sample: kick,
       playbackRate: 1,
       fireworkSize: 50,
-      pattern: '4n'
+      pattern: {
+        frequency: '1m',
+        times: ['+0:0', '+0:3:7']
+      }
     });
   }
 
@@ -162,7 +165,10 @@ export class WanderingBeatFactory implements Sprite {
       sample: snare,
       playbackRate: 1,
       fireworkSize: 50,
-      pattern: '2n'
+      pattern: {
+        frequency: '1m',
+        times: ['+0:1', '+0:3']
+      }
     });
   }
 
@@ -175,13 +181,16 @@ export class WanderingBeatFactory implements Sprite {
       sample: hat,
       playbackRate: 4,
       fireworkSize: 15,
-      pattern: '8n'
+      pattern: {
+        frequency: '8n',
+        times: ['+0:0']
+      }
     });
   }
 
   private createInstrumentWanderer(
     params: WanderingBeatParams & {
-      pattern: Subdivision;
+      pattern: Pattern;
       shipSize: number;
       fireworkSize: number;
       nextNote: () => Note | undefined;
@@ -193,12 +202,12 @@ export class WanderingBeatFactory implements Sprite {
     return new WanderingBeat({
       sourceAudio: {
         source: instrument,
-        trigger: (time: number): boolean => {
+        trigger: (time: Time): boolean => {
           note = params.nextNote();
           if (note) {
             freq = midiNoteToFreq(note);
             try {
-              instrument.triggerAttackRelease(freq, params.pattern, time);
+              instrument.triggerAttackRelease(freq, '8n', time);
               return true;
             } catch (e) {
               console.error(e);
@@ -232,7 +241,10 @@ export class WanderingBeatFactory implements Sprite {
   private createMelodyWanderer(params: WanderingBeatParams): WanderingBeat {
     return this.createInstrumentWanderer({
       ...params,
-      pattern: '16n',
+      pattern: {
+        frequency: '16n',
+        times: ['+0']
+      },
       fireworkSize: 20,
       shipSize: 0,
       nextNote: () => {
@@ -253,7 +265,10 @@ export class WanderingBeatFactory implements Sprite {
     return this.createInstrumentWanderer({
       ...params,
       fireworkSize: 200,
-      pattern: '4n',
+      pattern: {
+        frequency: '4n',
+        times: ['+0:0']
+      },
       shipSize: 0,
       nextNote: () => {
         if (this.currentChord) {

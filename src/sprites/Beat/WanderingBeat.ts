@@ -1,6 +1,6 @@
 import {isFunction, random} from 'lodash';
 import {ToneAudioNode, Transport} from 'tone';
-import {Subdivision} from 'tone/build/esm/core/type/Units';
+import {Subdivision, Time} from 'tone/build/esm/core/type/Units';
 import {randomWalkFactory} from '../../frameTickers/randomWalk';
 import {CanvasBlendMode} from '../../games/Cables/CablesOptions.generated';
 import {timingFunction, TimingFunctionType} from '../../math/timingFunctions';
@@ -11,15 +11,20 @@ import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
 import {Sprite} from '../Sprite';
 import {Firework} from './Firework';
 
+export interface Pattern {
+  frequency: Subdivision;
+  times: Time[];
+}
+
 interface WanderingBeatParams {
   // Audio sample
   sourceAudio: {
     source: ToneAudioNode;
     pitchBend: (ratio: number) => void;
-    trigger: (time: number) => boolean;
+    trigger: (time: Time) => boolean;
   };
 
-  pattern: Subdivision;
+  pattern: Pattern;
   dimensions: Dimensions;
   shipSize: number;
   fireworkSize: number;
@@ -35,8 +40,8 @@ export class WanderingBeat implements Sprite {
   private readonly shipSize: number;
 
   // Audio
-  private readonly scheduledRepeat: number;
-  private readonly triggerSample: (time: number) => boolean;
+  private readonly loop: number;
+  private readonly triggerSample: (time: Time) => boolean;
   private readonly micConnection: MicrophoneConnection;
 
   // Fireworks
@@ -92,12 +97,14 @@ export class WanderingBeat implements Sprite {
 
     // Trigger samples
     this.triggerSample = sourceAudio.trigger;
-    this.scheduledRepeat = Transport.scheduleRepeat((time) => {
-      this.beat(time);
-    }, pattern);
+    this.loop = Transport.scheduleRepeat((time: number) => {
+      pattern.times.forEach((time: Time) => {
+        this.beat(time);
+      });
+    }, pattern.frequency);
   }
 
-  private beat(time: number) {
+  private beat(time: Time) {
     // Trigger sample
     const triggered = this.triggerSample(time);
     if (triggered) {
@@ -160,6 +167,6 @@ export class WanderingBeat implements Sprite {
   public destroy() {
     this.micConnection.destroy();
     this.fireworks.clear();
-    Transport.clear(this.scheduledRepeat);
+    Transport.cancel(this.loop);
   }
 }
