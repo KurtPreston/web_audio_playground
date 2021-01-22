@@ -1,17 +1,29 @@
 import {Transport} from 'tone';
 import {circleOfFifths, majorProgression, minorProgression} from '../chordProgression';
-import {Chord} from '../chords';
+import {Chord, randomChord} from '../chords';
+import {generateRelatedChord} from '../harmony';
 import {Sequence, SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;
 
-const chordProgressions: {[key in Sequence]: Chord[]} = {
-  majMin: circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
-  maj251: circleOfFifths(majorProgression([2, 5, 1, 1])),
-  min251: circleOfFifths(minorProgression([2, 5, 1, 1])),
-  majBlues: circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
-  minBlues: circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
-  random: []
+const chordProgressions: {[key in Sequence]: () => Chord[]} = {
+  majMin: () => circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
+  maj251: () => circleOfFifths(majorProgression([2, 5, 1, 1])),
+  min251: () => circleOfFifths(minorProgression([2, 5, 1, 1])),
+  majBlues: () => circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
+  minBlues: () => circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
+  random: () => {
+    let chord: Chord = randomChord();
+    const chords: Chord[] = [chord];
+    for (let i = 0; i < 63; i++) {
+      if (Math.random() < 0.25) {
+        chord = generateRelatedChord(chord.notes);
+      }
+      chords.push(chord);
+    }
+
+    return chords;
+  }
 };
 
 export class Sequencer {
@@ -23,7 +35,7 @@ export class Sequencer {
 
   constructor(private sequencerOptions: SequencerOptions) {
     this.chordProgression = [];
-    this.chordProgression = chordProgressions[sequencerOptions.sequence];
+    this.chordProgression = chordProgressions[sequencerOptions.sequence]();
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
     }, '1m');
@@ -36,7 +48,7 @@ export class Sequencer {
   public setOptions(options: SequencerOptions) {
     if (this.sequencerOptions.sequence !== options.sequence) {
       this.chordIdx = -1;
-      this.chordProgression = chordProgressions[options.sequence];
+      this.chordProgression = chordProgressions[options.sequence]();
       this.nextMeasure();
     }
     this.sequencerOptions = options;
