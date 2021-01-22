@@ -88,7 +88,8 @@ export class DopplerSynthGame implements Game {
       maxVolume: -10
     };
     this.sequencerOptions = {
-      bpm: 90
+      bpm: 90,
+      sequence: 'majMin'
     };
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({

@@ -1,30 +1,29 @@
 import {Transport} from 'tone';
 import {circleOfFifths, majorProgression, minorProgression} from '../chordProgression';
 import {Chord} from '../chords';
-import {SequencerOptions} from './SequencerOptions.generated';
+import {Sequence, SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;
 
+const chordProgressions: {[key in Sequence]: Chord[]} = {
+  majMin: circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
+  maj251: circleOfFifths(majorProgression([2, 5, 1, 1])),
+  min251: circleOfFifths(minorProgression([2, 5, 1, 1])),
+  majBlues: circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
+  minBlues: circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
+  random: []
+};
+
 export class Sequencer {
   private readonly subscribers = new Set<SequencerCallback>();
-  public readonly chordProgression: Chord[];
+  public chordProgression: Chord[];
   private chordIdx: number = 0;
 
   private readonly scheduledRepeat: number;
 
   constructor(private sequencerOptions: SequencerOptions) {
-    this.chordProgression = [
-      // Major/minor
-      ...circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
-
-      // 2-5-1s
-      ...circleOfFifths(minorProgression([2, 5, 1, 1])),
-      ...circleOfFifths(majorProgression([2, 5, 1, 1])),
-
-      // Blues
-      ...circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
-      ...circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1]))
-    ];
+    this.chordProgression = [];
+    this.chordProgression = chordProgressions[sequencerOptions.sequence];
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
     }, '1m');
@@ -35,7 +34,13 @@ export class Sequencer {
   }
 
   public setOptions(options: SequencerOptions) {
+    if (this.sequencerOptions.sequence !== options.sequence) {
+      this.chordIdx = -1;
+      this.chordProgression = chordProgressions[options.sequence];
+      this.nextMeasure();
+    }
     this.sequencerOptions = options;
+
     Transport.bpm.rampTo(options.bpm);
   }
 

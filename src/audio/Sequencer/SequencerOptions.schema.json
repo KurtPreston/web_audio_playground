@@ -7,7 +7,21 @@
       "type": "integer",
       "minimum": 40,
       "maximum": 180
+    },
+    "sequence": {
+      "title": "Sequence",
+      "type": "string",
+      "enum": ["majMin", "maj251", "min251", "majBlues", "minBlues", "random"],
+      "enumNames": [
+        "Major/Minor",
+        "Major 2-5-1",
+        "Minor 2-5-1",
+        "Major Blues",
+        "Minor Blues",
+        "Random"
+      ]
     }
   },
-  "required": ["bpm"]
+  "additionalProperties": false,
+  "required": ["bpm", "sequence"]
 }
