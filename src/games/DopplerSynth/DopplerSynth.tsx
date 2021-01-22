@@ -37,11 +37,11 @@ const defaultSettings: DopplerSynthSettings = {
   mode: 'auto',
   sprites: {
     noteGraph: true,
-    snareWanderers: 1,
-    hatWanderers: 1,
-    kickWanderers: 3,
-    bassWanderers: 4,
-    melodyWanderers: 5
+    snareWanderers: 0,
+    hatWanderers: 0,
+    kickWanderers: 0,
+    bassWanderers: 0,
+    melodyWanderers: 0
   }
 };
 
@@ -269,6 +269,13 @@ export class DopplerSynthGame implements Game {
           {this.noteGraphController.controls && this.noteGraphController.controls()}
         </fieldset>
         <fieldset>
+          <JsonSchemaForm
+            value={this.sequencerOptions}
+            onChange={this.updateSequencerOptions}
+            schema={SequencerOptionsSchema}
+          />
+        </fieldset>
+        <fieldset>
           <label>Progression</label>
           <table>
             <tbody>
@@ -326,11 +333,7 @@ export class DopplerSynthGame implements Game {
             </div>
           </div>
         </fieldset>
-        <JsonSchemaForm
-          value={this.sequencerOptions}
-          onChange={this.updateSequencerOptions}
-          schema={SequencerOptionsSchema}
-        />
+
         <JsonSchemaForm
           value={this.audioSettings}
           onChange={this.updateAudioSettings}
