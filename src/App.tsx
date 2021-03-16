@@ -8,10 +8,11 @@ import {DopplerSynth} from './games/DopplerSynth/DopplerSynth';
 import {GameInfo} from './games/Game';
 import {GameRunner} from './games/GameRunner';
 import {Hadouken} from './games/Hadouken';
+import {Solo} from './games/Solo/Solo';
 import {Tadpole} from './games/Tadpole';
 import {Wamflap} from './games/Wamflap';
 
-const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo, Cables];
+const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo, Cables, Solo];
 
 @autobind
 export class App extends React.Component<{}> {
