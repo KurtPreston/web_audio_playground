@@ -1,10 +1,18 @@
 import {flatten, random, sample, times, uniq} from 'lodash';
 import {getNoteName, Note, noteToNoteValue, NoteValue} from './Note';
 
-export interface Chord {
-  type: ChordType;
-  root: NoteValue;
-  notes: Set<NoteValue>;
+export class Chord {
+  public readonly root: NoteValue;
+  public readonly type: ChordType;
+  public readonly notes: Note[];
+  public readonly noteValues: Set<NoteValue>;
+
+  constructor(params: {type: ChordType; root: NoteValue; notes: NoteValue[]}) {
+    this.type = params.type;
+    this.root = params.root;
+    this.notes = params.notes;
+    this.noteValues = new Set(params.notes.map(noteToNoteValue));
+  }
 }
 
 export enum ChordType {
@@ -45,11 +53,11 @@ export const majorChord: ChordGenerator = (root: NoteValue): Chord => {
   const third = noteToNoteValue(root + 4);
   const fifth = noteToNoteValue(root + 7);
 
-  return {
+  return new Chord({
     type: ChordType.major,
-    notes: new Set<NoteValue>([root, third, fifth]),
+    notes: [root, third, fifth],
     root
-  };
+  });
 };
 
 export const major7Chord: ChordGenerator = (root: NoteValue): Chord => {
@@ -57,11 +65,11 @@ export const major7Chord: ChordGenerator = (root: NoteValue): Chord => {
   const fifth = noteToNoteValue(root + 7);
   const seventh = noteToNoteValue(root + 11);
 
-  return {
+  return new Chord({
     type: ChordType.major7,
-    notes: new Set<NoteValue>([root, third, fifth, seventh]),
+    notes: [root, third, fifth, seventh],
     root
-  };
+  });
 };
 
 export const major6Chord: ChordGenerator = (root: NoteValue): Chord => {
@@ -69,11 +77,11 @@ export const major6Chord: ChordGenerator = (root: NoteValue): Chord => {
   const fifth = noteToNoteValue(root + 7);
   const sixth = noteToNoteValue(root + 9);
 
-  return {
+  return new Chord({
     type: ChordType.major6,
-    notes: new Set<NoteValue>([root, third, fifth, sixth]),
+    notes: [root, third, fifth, sixth],
     root
-  };
+  });
 };
 
 export const dominant7Chord: ChordGenerator = (root: NoteValue): Chord => {
@@ -81,22 +89,22 @@ export const dominant7Chord: ChordGenerator = (root: NoteValue): Chord => {
   const fifth = noteToNoteValue(root + 7);
   const seventh = noteToNoteValue(root + 10);
 
-  return {
+  return new Chord({
     type: ChordType.dominant7,
-    notes: new Set<NoteValue>([root, third, fifth, seventh]),
+    notes: [root, third, fifth, seventh],
     root
-  };
+  });
 };
 
 export const minorChord: ChordGenerator = (root: NoteValue): Chord => {
   const third = noteToNoteValue(root + 3);
   const fifth = noteToNoteValue(root + 7);
 
-  return {
+  return new Chord({
     type: ChordType.minor,
-    notes: new Set<NoteValue>([root, third, fifth]),
+    notes: [root, third, fifth],
     root
-  };
+  });
 };
 
 export const minor6Chord: ChordGenerator = (root: NoteValue): Chord => {
@@ -104,11 +112,11 @@ export const minor6Chord: ChordGenerator = (root: NoteValue): Chord => {
   const fifth = noteToNoteValue(root + 7);
   const sixth = noteToNoteValue(root + 8);
 
-  return {
+  return new Chord({
     type: ChordType.minor6,
-    notes: new Set<NoteValue>([root, third, fifth, sixth]),
+    notes: [root, third, fifth, sixth],
     root
-  };
+  });
 };
 
 export const minor7Chord: ChordGenerator = (root: NoteValue): Chord => {
@@ -116,54 +124,54 @@ export const minor7Chord: ChordGenerator = (root: NoteValue): Chord => {
   const fifth = noteToNoteValue(root + 7);
   const seventh = noteToNoteValue(root + 10);
 
-  return {
+  return new Chord({
     type: ChordType.minor7,
-    notes: new Set<NoteValue>([root, third, fifth, seventh]),
+    notes: [root, third, fifth, seventh],
     root
-  };
+  });
 };
 
 export const sus4Chord: ChordGenerator = (root: NoteValue): Chord => {
   const fourth = noteToNoteValue(root + 5);
   const fifth = noteToNoteValue(root + 7);
 
-  return {
+  return new Chord({
     type: ChordType.sus4,
-    notes: new Set<NoteValue>([root, fourth, fifth]),
+    notes: [root, fourth, fifth],
     root
-  };
+  });
 };
 
 export const sus2Chord: ChordGenerator = (root: NoteValue): Chord => {
   const second = noteToNoteValue(root + 2);
   const fifth = noteToNoteValue(root + 7);
 
-  return {
+  return new Chord({
     type: ChordType.sus2,
-    notes: new Set<NoteValue>([root, second, fifth]),
+    notes: [root, second, fifth],
     root
-  };
+  });
 };
 
 export const fiveChord: ChordGenerator = (root: NoteValue): Chord => {
   const fifth = noteToNoteValue(root + 7);
 
-  return {
+  return new Chord({
     type: ChordType.five,
-    notes: new Set<NoteValue>([root, fifth]),
+    notes: [root, fifth],
     root
-  };
+  });
 };
 
 export const dimChord: ChordGenerator = (root: NoteValue): Chord => {
   const third = noteToNoteValue(root + 3);
   const flatFive = noteToNoteValue(root + 6);
 
-  return {
+  return new Chord({
     type: ChordType.dim,
-    notes: new Set<NoteValue>([root, third, flatFive]),
+    notes: [root, third, flatFive],
     root
-  };
+  });
 };
 
 export const dim7Chord: ChordGenerator = (root: NoteValue): Chord => {
@@ -171,11 +179,11 @@ export const dim7Chord: ChordGenerator = (root: NoteValue): Chord => {
   const flatFive = noteToNoteValue(root + 6);
   const flatSeven = noteToNoteValue(root + 9);
 
-  return {
+  return new Chord({
     type: ChordType.dim7,
-    notes: new Set<NoteValue>([root, third, flatFive, flatSeven]),
+    notes: [root, third, flatFive, flatSeven],
     root
-  };
+  });
 };
 
 export const halfdim: ChordGenerator = (root: NoteValue): Chord => {
@@ -183,11 +191,11 @@ export const halfdim: ChordGenerator = (root: NoteValue): Chord => {
   const flatFive = noteToNoteValue(root + 6);
   const seven = noteToNoteValue(root + 10);
 
-  return {
+  return new Chord({
     type: ChordType.halfdim,
-    notes: new Set<NoteValue>([root, third, flatFive, seven]),
+    notes: [root, third, flatFive, seven],
     root
-  };
+  });
 };
 
 const chordGenerators: ChordGenerator[] = [
@@ -217,26 +225,30 @@ export const AllChords: Chord[] = flatten(
 
 // Return all chords that exactly match the notes
 export function chordsMatching(notes: Note[]): Chord[] {
-  const noteValues: NoteValue[] = normalizeChord(notes);
+  const inputNoteValues: NoteValue[] = normalizeChord(notes);
   return AllChords.filter(
-    ({notes}: Chord) => noteValues.length === notes.size && noteValues.every((nv) => notes.has(nv))
+    ({noteValues}: Chord) =>
+      inputNoteValues.length === noteValues.size &&
+      inputNoteValues.every((nv) => noteValues.has(nv))
   );
 }
 
 // Returns chords containing these notes and more
 export function superChords(notes: Note[]): Chord[] {
-  const noteValues: NoteValue[] = normalizeChord(notes);
+  const inputNoteValues: NoteValue[] = normalizeChord(notes);
   return AllChords.filter(
-    ({notes}: Chord) => notes.size > noteValues.length && noteValues.every((nv) => notes.has(nv))
+    ({noteValues}: Chord) =>
+      noteValues.size > inputNoteValues.length && inputNoteValues.every((nv) => noteValues.has(nv))
   );
 }
 
 // Return chords containing a subset of the notes in this chord
 export function subChords(notes: Note[]): Chord[] {
-  const noteValues: NoteValue[] = normalizeChord(notes);
+  const inputNoteValues: NoteValue[] = normalizeChord(notes);
   return AllChords.filter(
-    ({notes}: Chord) =>
-      notes.size < noteValues.length && Array.from(notes).every((nv) => noteValues.includes(nv))
+    ({noteValues}: Chord) =>
+      noteValues.size < inputNoteValues.length &&
+      Array.from(noteValues).every((nv) => inputNoteValues.includes(nv))
   );
 }
 
@@ -274,7 +286,7 @@ function chordSetFor(root: NoteValue): ChordSet {
   };
 }
 
-export const Chord = {
+export const Chords = {
   A: chordSetFor(NoteValue.A),
   Asharp: chordSetFor(NoteValue.Asharp),
   Bflat: chordSetFor(NoteValue.Bflat),
@@ -291,3 +303,5 @@ export const Chord = {
   G: chordSetFor(NoteValue.G),
   Gsharp: chordSetFor(NoteValue.Gsharp)
 };
+
+export const SampleProgression: Chord[] = [Chords.C.major, Chords.A.minor];

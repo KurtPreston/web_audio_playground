@@ -28,7 +28,7 @@ export function generateRelatedChord(notes: Set<NoteValue>): Chord {
 
   const sups: Chord[] = superChords(Array.from(notes));
   if (sups.length > 0) {
-    const chordsBySize = groupBy(sups, (chord) => chord.notes.size);
+    const chordsBySize = groupBy(sups, (chord) => chord.noteValues.size);
     const smallestSupLength = Object.keys(chordsBySize).sort()[0];
     const smallestSupGroup: Chord[] = chordsBySize[smallestSupLength];
     const chord: Chord = sample(smallestSupGroup) as Chord;
@@ -37,7 +37,7 @@ export function generateRelatedChord(notes: Set<NoteValue>): Chord {
 
   const subs: Chord[] = subChords(Array.from(notes));
   if (subs.length > 0) {
-    const orderedSubs = groupBy(subs, (chord) => chord.notes.size * -1);
+    const orderedSubs = groupBy(subs, (chord) => chord.noteValues.size * -1);
     const largestSubLength = Object.keys(orderedSubs).sort()[size(orderedSubs) - 1];
     const largestSubGroup: Chord[] = orderedSubs[largestSubLength];
     const chord: Chord = sample(largestSubGroup) as Chord;
