@@ -1629,6 +1629,11 @@
     "@types/node" "*"
     "@types/undertaker-registry" "*"
 
+"@types/vexflow@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/vexflow/-/vexflow-3.0.0.tgz#f13ce2a6c8721c22c6ea109e7f4b9ad9776065b9"
+  integrity sha512-53QdJHpx5zf+lHW0vXfgugPTK7PSMlUl/jKl2fHmagmLQyUHl+59tSPGO1NjYN2+QKkPtwCc7KMI/YLzzuHrmA==
+
 "@types/vinyl-fs@*":
   version "2.4.11"
   resolved "https://registry.yarnpkg.com/@types/vinyl-fs/-/vinyl-fs-2.4.11.tgz#b98119b8bb2494141eaf649b09fbfeb311161206"
@@ -12253,6 +12258,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vexflow@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/vexflow/-/vexflow-3.0.9.tgz#85bc89ae5224670d3837d0b34c521b9e69abc89c"
+  integrity sha512-JzDUC3SZvyRxvALv0UrlgCJSH7WzNSShNjXK0rTWqDJscCcytrTWLT3LYtsDvby8qbszdaD708xOe9D79FLTFA==
 
 vinyl-fs@^3.0.0:
   version "3.0.3"

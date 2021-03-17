@@ -1,11 +1,14 @@
 import {autobind} from 'core-decorators';
+import {chunk} from 'lodash';
 import React from 'react';
 import {Compressor, ToneAudioNode, Transport} from 'tone';
+import {chordName} from '../../audio/chords';
 import {NoteValue} from '../../audio/Note';
 import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {OuterSpace} from '../../sprites/OuterSpace';
+import {SheetMusic} from '../../sprites/SheetMusic';
 import {Sprite} from '../../sprites/Sprite';
 import {SequencerOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
@@ -17,6 +20,7 @@ export class SoloGame implements Game {
   // Sprites
   private readonly bg: Sprite;
   private readonly sequencer: Sequencer;
+  private readonly sheetMusic: SheetMusic;
 
   // Other state
   private sequencerOptions: SequencerOptions;
@@ -42,11 +46,12 @@ export class SoloGame implements Game {
     };
     this.bg = new OuterSpace(dimensions);
     this.sequencer = new Sequencer(this.sequencerOptions);
+    this.sheetMusic = new SheetMusic(this.sequencer);
     this.updateMenu = updateMenu;
   }
 
   public sprites(): Sprite[] {
-    return [this.bg];
+    return [this.bg, this.sheetMusic];
   }
 
   public gameTick(world: WorldState) {}
@@ -66,6 +71,28 @@ export class SoloGame implements Game {
             onChange={this.updateSequencerOptions}
             schema={SequencerOptionsSchema}
           />
+        </fieldset>
+        <fieldset>
+          <label>Progression</label>
+          <table>
+            <tbody>
+              {chunk(this.sequencer.chordProgression, 4).map((chords, chunkIdx) => (
+                <tr key={chunkIdx}>
+                  {chords.map((chord, i) => {
+                    if (this.sequencer.idx === i + chunkIdx * 4) {
+                      return (
+                        <td key={i}>
+                          <b>{chordName(chord)}</b>
+                        </td>
+                      );
+                    } else {
+                      return <td key={i}>{chordName(chord)}</td>;
+                    }
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </fieldset>
       </div>
     );

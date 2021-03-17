@@ -20,7 +20,7 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
   constructor(params: MidiSourceParams<ChordGeneratorOptions>) {
     this.options = params.options;
     this.publish = params.publish;
-    this.setChord(this.progression[0].notes);
+    this.setChord(this.progression[0].noteValues);
     this.chordChangeInterval = setInterval(this.nextChord, 750);
   }
 
@@ -30,7 +30,7 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
 
   private nextChord() {
     this.progressionIdx = (this.progressionIdx + 1) % this.progression.length;
-    this.setChord(this.progression[this.progressionIdx].notes);
+    this.setChord(this.progression[this.progressionIdx].noteValues);
   }
 
   private setChord(newChord: Set<NoteValue>) {
@@ -67,7 +67,7 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
 
   private loadRelatedChord() {
     const currentChord = new Set<NoteValue>(this.chord.keys());
-    this.setChord(generateRelatedChord(currentChord).notes);
+    this.setChord(generateRelatedChord(currentChord).noteValues);
   }
 
   public destroy() {

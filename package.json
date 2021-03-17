@@ -18,6 +18,7 @@
     "tinycolor2": "^1.4.1",
     "tone": "^14.7.3",
     "typescript": "^3.9.5",
+    "vexflow": "^3.0.9",
     "worker-timers": "^6.0.14",
     "workerize-loader": "^1.2.1"
   },
@@ -39,6 +40,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/tinycolor2": "^1.4.2",
+    "@types/vexflow": "^3.0.0",
     "@types/webmidi": "^2.0.4",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",

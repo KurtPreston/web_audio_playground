@@ -48,7 +48,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
     // Create nodes
     const numNodes = random(8, 16);
-    this.noteValues = randomChord().notes;
+    this.noteValues = randomChord().noteValues;
     times(numNodes, this.createNode);
 
     // Set publicly accessible actions
@@ -83,7 +83,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
     // Follow sequencer
     this.unsubscribeFromSequencer = params.sequencer.subscribe((chord: Chord) => {
-      this.setChord(chord.notes);
+      this.setChord(chord.noteValues);
     });
 
     // Create random actions
@@ -314,7 +314,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   public loadRelatedChord() {
     const relatedChord = generateRelatedChord(this.noteValues);
-    this.setChord(relatedChord.notes);
+    this.setChord(relatedChord.noteValues);
   }
 
   private randomNote(noteValue?: NoteValue): Note | undefined {

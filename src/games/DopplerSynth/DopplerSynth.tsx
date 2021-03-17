@@ -97,7 +97,7 @@ export class DopplerSynthGame implements Game {
     });
     this.astronaut = new Astronaut({
       bubbleSize: this.audioSettings.maxAudibleDistance,
-      getNoteValues: () => this.sequencer.chord.notes,
+      getNoteValues: () => this.sequencer.chord.noteValues,
       channel: this.channel,
       dimensions: world.dimensions
     });
