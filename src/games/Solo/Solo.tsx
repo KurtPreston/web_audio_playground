@@ -28,7 +28,8 @@ export class SoloGame implements Game {
   private readonly channel: ToneAudioNode;
 
   // References
-  private updateMenu: () => void;
+  private readonly updateMenu: () => void;
+  private readonly sequencerSubscription: () => void;
 
   constructor(world: WorldState, initializers: ResourceInitializers, updateMenu: () => void) {
     this.channel = new Compressor({
@@ -50,6 +51,7 @@ export class SoloGame implements Game {
     this.sheetMusic = new SheetMusic(this.sequencer);
     this.chordName = new ChordName(this.sequencer);
     this.updateMenu = updateMenu;
+    this.sequencerSubscription = this.sequencer.subscribe(this.updateMenu);
   }
 
   public sprites(): Sprite[] {
@@ -98,6 +100,10 @@ export class SoloGame implements Game {
         </fieldset>
       </div>
     );
+  }
+
+  public destroy() {
+    this.sequencerSubscription();
   }
 }
 

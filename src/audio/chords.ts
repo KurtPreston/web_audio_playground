@@ -220,7 +220,7 @@ const chordGenerators: ChordGenerator[] = [
   fiveChord
 ];
 
-// List of all chords for lookup in chordName
+// List of all chords for lookup in chordsMatching
 export const AllChords: Chord[] = flatten(
   times(12, (root: Note) => {
     return chordGenerators.map((chordGen) => chordGen(root));
