@@ -13,6 +13,10 @@ export class Chord {
     this.notes = params.notes;
     this.noteValues = new Set(params.notes.map(noteToNoteValue));
   }
+
+  public get name(): string {
+    return chordName(this);
+  }
 }
 
 export enum ChordType {
