@@ -2,7 +2,6 @@ import {autobind} from 'core-decorators';
 import {chunk} from 'lodash';
 import React from 'react';
 import {Compressor, ToneAudioNode, Transport} from 'tone';
-import {chordName} from '../../audio/chords';
 import {NoteValue} from '../../audio/Note';
 import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated';
@@ -85,11 +84,11 @@ export class SoloGame implements Game {
                     if (this.sequencer.idx === i + chunkIdx * 4) {
                       return (
                         <td key={i}>
-                          <b>{chordName(chord)}</b>
+                          <b>{chord.name}</b>
                         </td>
                       );
                     } else {
-                      return <td key={i}>{chordName(chord)}</td>;
+                      return <td key={i}>{chord.name}</td>;
                     }
                   })}
                 </tr>

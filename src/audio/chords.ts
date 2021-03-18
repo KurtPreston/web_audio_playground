@@ -15,7 +15,7 @@ export class Chord {
   }
 
   public get name(): string {
-    return chordName(this);
+    return `${getNoteName(this.root)}${chordTypeSymbol[this.type]}`;
   }
 }
 
@@ -264,10 +264,6 @@ export function randomChord(rootNote?: Note): Chord {
 
 export function normalizeChord(notes: Note[]): NoteValue[] {
   return uniq(notes.map(noteToNoteValue));
-}
-
-export function chordName(chord: Chord): string {
-  return `${getNoteName(chord.root)}${chordTypeSymbol[chord.type]}`;
 }
 
 export type ChordSet = {[type in ChordType]: Chord};

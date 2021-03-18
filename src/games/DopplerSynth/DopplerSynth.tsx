@@ -2,7 +2,7 @@ import {autobind} from 'core-decorators';
 import {chunk, random, times} from 'lodash';
 import React from 'react';
 import {Compressor, ToneAudioNode, Transport} from 'tone';
-import {chordName, chordsMatching} from '../../audio/chords';
+import {chordsMatching} from '../../audio/chords';
 import {getNoteName, NoteValue} from '../../audio/Note';
 import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated';
@@ -286,11 +286,11 @@ export class DopplerSynthGame implements Game {
                     if (this.sequencer.idx === i + chunkIdx * 4) {
                       return (
                         <td key={i}>
-                          <b>{chordName(chord)}</b>
+                          <b>{chord.name}</b>
                         </td>
                       );
                     } else {
-                      return <td key={i}>{chordName(chord)}</td>;
+                      return <td key={i}>{chord.name}</td>;
                     }
                   })}
                 </tr>
@@ -299,7 +299,11 @@ export class DopplerSynthGame implements Game {
           </table>
           <label>Notes</label>
           <div>
-            <strong>{chordsMatching(notesArray).map(chordName).join(' or ')}</strong>
+            <strong>
+              {chordsMatching(notesArray)
+                .map((c) => c.name)
+                .join(' or ')}
+            </strong>
             <br />
             {notesArray.map((note: NoteValue) => getNoteName(note)).join(', ')}
           </div>
