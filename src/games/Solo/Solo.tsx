@@ -2,11 +2,13 @@ import {autobind} from 'core-decorators';
 import {chunk} from 'lodash';
 import React from 'react';
 import {Compressor, ToneAudioNode, Transport} from 'tone';
-import {NoteValue} from '../../audio/Note';
+import {Chord} from '../../audio/chords';
+import {Note, NoteValue} from '../../audio/Note';
 import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {ChordName} from '../../sprites/ChordName';
+import {Keyboard} from '../../sprites/Keyboard';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {SheetMusic} from '../../sprites/SheetMusic';
 import {Sprite} from '../../sprites/Sprite';
@@ -22,6 +24,7 @@ export class SoloGame implements Game {
   private readonly sequencer: Sequencer;
   private readonly sheetMusic: SheetMusic;
   private readonly chordName: ChordName;
+  private readonly keyboard: Keyboard;
 
   // Other state
   private sequencerOptions: SequencerOptions;
@@ -50,12 +53,21 @@ export class SoloGame implements Game {
     this.sequencer = new Sequencer(this.sequencerOptions);
     this.sheetMusic = new SheetMusic(this.sequencer);
     this.chordName = new ChordName(this.sequencer);
+    const activeNotes = new Set<Note>();
+    this.keyboard = new Keyboard(activeNotes);
     this.updateMenu = updateMenu;
-    this.sequencerSubscription = this.sequencer.subscribe(this.updateMenu);
+    this.sequencerSubscription = this.sequencer.subscribe((chord: Chord) => {
+      // Update menu
+      this.updateMenu();
+
+      // Setup keyboard link
+      activeNotes.clear();
+      chord.notes.forEach((note: Note) => activeNotes.add(note + 36));
+    });
   }
 
   public sprites(): Sprite[] {
-    return [this.bg, this.sheetMusic, this.chordName];
+    return [this.bg, this.sheetMusic, this.chordName, this.keyboard];
   }
 
   public gameTick(world: WorldState) {}
