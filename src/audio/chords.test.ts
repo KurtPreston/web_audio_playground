@@ -13,17 +13,17 @@ import {
 } from './chords';
 import {NoteValue} from './Note';
 
-const bChord: Chord = {
-  notes: new Set([NoteValue.B, NoteValue.Dsharp, NoteValue.Fsharp]),
+const bChord: Chord = new Chord({
+  notes: [NoteValue.B, NoteValue.Dsharp, NoteValue.Fsharp],
   root: NoteValue.B,
   type: ChordType.major
-};
+});
 
-const asharp7chord: Chord = {
-  notes: new Set([NoteValue.Asharp, NoteValue.D, NoteValue.F, NoteValue.Gsharp]),
+const asharp7chord: Chord = new Chord({
+  notes: [NoteValue.Asharp, NoteValue.D, NoteValue.F, NoteValue.Gsharp],
   root: NoteValue.Asharp,
   type: ChordType.dominant7
-};
+});
 
 describe('majorChord', () => {
   it('generates major chords', () => {

@@ -50,8 +50,8 @@ const chordTypeSymbol: {[type in ChordType]: string} = {
 export type ChordGenerator = (rootNote: Note) => Chord;
 
 export const majorChord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 4);
-  const fifth = noteToNoteValue(root + 7);
+  const third = root + 4;
+  const fifth = root + 7;
 
   return new Chord({
     type: ChordType.major,
@@ -61,9 +61,9 @@ export const majorChord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const major7Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 4);
-  const fifth = noteToNoteValue(root + 7);
-  const seventh = noteToNoteValue(root + 11);
+  const third = root + 4;
+  const fifth = root + 7;
+  const seventh = root + 11;
 
   return new Chord({
     type: ChordType.major7,
@@ -73,9 +73,9 @@ export const major7Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const major6Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 4);
-  const fifth = noteToNoteValue(root + 7);
-  const sixth = noteToNoteValue(root + 9);
+  const third = root + 4;
+  const fifth = root + 7;
+  const sixth = root + 9;
 
   return new Chord({
     type: ChordType.major6,
@@ -85,9 +85,9 @@ export const major6Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const dominant7Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 4);
-  const fifth = noteToNoteValue(root + 7);
-  const seventh = noteToNoteValue(root + 10);
+  const third = root + 4;
+  const fifth = root + 7;
+  const seventh = root + 10;
 
   return new Chord({
     type: ChordType.dominant7,
@@ -97,8 +97,8 @@ export const dominant7Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const minorChord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 3);
-  const fifth = noteToNoteValue(root + 7);
+  const third = root + 3;
+  const fifth = root + 7;
 
   return new Chord({
     type: ChordType.minor,
@@ -108,9 +108,9 @@ export const minorChord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const minor6Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 3);
-  const fifth = noteToNoteValue(root + 7);
-  const sixth = noteToNoteValue(root + 8);
+  const third = root + 3;
+  const fifth = root + 7;
+  const sixth = root + 8;
 
   return new Chord({
     type: ChordType.minor6,
@@ -120,9 +120,9 @@ export const minor6Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const minor7Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 3);
-  const fifth = noteToNoteValue(root + 7);
-  const seventh = noteToNoteValue(root + 10);
+  const third = root + 3;
+  const fifth = root + 7;
+  const seventh = root + 10;
 
   return new Chord({
     type: ChordType.minor7,
@@ -132,8 +132,8 @@ export const minor7Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const sus4Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const fourth = noteToNoteValue(root + 5);
-  const fifth = noteToNoteValue(root + 7);
+  const fourth = root + 5;
+  const fifth = root + 7;
 
   return new Chord({
     type: ChordType.sus4,
@@ -143,8 +143,8 @@ export const sus4Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const sus2Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const second = noteToNoteValue(root + 2);
-  const fifth = noteToNoteValue(root + 7);
+  const second = root + 2;
+  const fifth = root + 7;
 
   return new Chord({
     type: ChordType.sus2,
@@ -154,7 +154,7 @@ export const sus2Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const fiveChord: ChordGenerator = (root: NoteValue): Chord => {
-  const fifth = noteToNoteValue(root + 7);
+  const fifth = root + 7;
 
   return new Chord({
     type: ChordType.five,
@@ -164,8 +164,8 @@ export const fiveChord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const dimChord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 3);
-  const flatFive = noteToNoteValue(root + 6);
+  const third = root + 3;
+  const flatFive = root + 6;
 
   return new Chord({
     type: ChordType.dim,
@@ -175,9 +175,9 @@ export const dimChord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const dim7Chord: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 3);
-  const flatFive = noteToNoteValue(root + 6);
-  const flatSeven = noteToNoteValue(root + 9);
+  const third = root + 3;
+  const flatFive = root + 6;
+  const flatSeven = root + 9;
 
   return new Chord({
     type: ChordType.dim7,
@@ -187,9 +187,9 @@ export const dim7Chord: ChordGenerator = (root: NoteValue): Chord => {
 };
 
 export const halfdim: ChordGenerator = (root: NoteValue): Chord => {
-  const third = noteToNoteValue(root + 3);
-  const flatFive = noteToNoteValue(root + 6);
-  const seven = noteToNoteValue(root + 10);
+  const third = root + 3;
+  const flatFive = root + 6;
+  const seven = root + 10;
 
   return new Chord({
     type: ChordType.halfdim,
@@ -303,5 +303,7 @@ export const Chords = {
   G: chordSetFor(NoteValue.G),
   Gsharp: chordSetFor(NoteValue.Gsharp)
 };
+
+(window as any).Chords = Chords;
 
 export const SampleProgression: Chord[] = [Chords.C.major, Chords.A.minor];

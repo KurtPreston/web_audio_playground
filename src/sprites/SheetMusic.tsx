@@ -25,7 +25,7 @@ export class SheetMusic implements Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {vexCanvasContext} = this;
     const notes: Note[] = this.sequencer.chord.notes.map((note: Note) => note + 5 * 12);
-    const [x, y] = [100, 100];
+    const [x, y] = [300, 100];
     const width = 200;
 
     // Styles
