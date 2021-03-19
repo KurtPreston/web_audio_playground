@@ -9,6 +9,7 @@ import {SequencerOptions} from '../../audio/Sequencer/SequencerOptions.generated
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {ChordName} from '../../sprites/ChordName';
 import {Keyboard} from '../../sprites/Keyboard';
+import {Metronome} from '../../sprites/Metronome';
 import {OuterSpace} from '../../sprites/OuterSpace';
 import {SheetMusic} from '../../sprites/SheetMusic';
 import {Sprite} from '../../sprites/Sprite';
@@ -25,6 +26,7 @@ export class SoloGame implements Game {
   private readonly sheetMusic: SheetMusic;
   private readonly chordName: ChordName;
   private readonly keyboard: Keyboard;
+  private readonly metronome: Metronome;
 
   // Other state
   private sequencerOptions: SequencerOptions;
@@ -53,6 +55,7 @@ export class SoloGame implements Game {
     this.sequencer = new Sequencer(this.sequencerOptions);
     this.sheetMusic = new SheetMusic(this.sequencer);
     this.chordName = new ChordName(this.sequencer);
+    this.metronome = new Metronome();
     const activeNotes = new Set<Note>();
     this.keyboard = new Keyboard(activeNotes);
     this.updateMenu = updateMenu;
@@ -67,7 +70,7 @@ export class SoloGame implements Game {
   }
 
   public sprites(): Sprite[] {
-    return [this.bg, this.sheetMusic, this.chordName, this.keyboard];
+    return [this.bg, this.sheetMusic, this.chordName, this.keyboard, this.metronome];
   }
 
   public gameTick(world: WorldState) {}
