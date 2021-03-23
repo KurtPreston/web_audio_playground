@@ -13,14 +13,16 @@ export class Metronome implements Sprite {
 
   constructor() {
     const tonejsScheduleId = Transport.scheduleRepeat(this.onBeat, '4n');
+
     this.transportSubscription = () => Transport.cancel(tonejsScheduleId);
   }
 
-  private onBeat(time: Seconds) {
-    this.beat++;
+  private onBeat(time: Seconds): void {
+    const beat = Transport.position.toString().split(':')[1];
+    this.beat = parseInt(beat);
   }
 
-  public tick() {}
+  public tick(): void {}
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     canvas.fillStyle = 'white';

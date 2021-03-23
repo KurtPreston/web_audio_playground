@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import {chunk} from 'lodash';
 import React from 'react';
-import {Compressor, ToneAudioNode, Transport} from 'tone';
+import {Compressor, ToneAudioNode} from 'tone';
 import {Chord} from '../../audio/chords';
 import {Note, NoteValue} from '../../audio/Note';
 import {Sequencer} from '../../audio/Sequencer/Sequencer';
@@ -45,10 +45,8 @@ export class SoloGame implements Game {
     this.channel.connect(initializers.analyserNode);
     const {dimensions} = world;
 
-    Transport.bpm.value = 90;
-
     this.sequencerOptions = {
-      bpm: 90,
+      bpm: 60,
       sequence: 'majMin'
     };
     this.bg = new OuterSpace(dimensions);

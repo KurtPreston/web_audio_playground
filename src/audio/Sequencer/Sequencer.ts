@@ -36,6 +36,7 @@ export class Sequencer {
   constructor(private sequencerOptions: SequencerOptions) {
     this.chordProgression = [];
     this.chordProgression = chordProgressions[sequencerOptions.sequence]();
+    Transport.position = '0:0:0';
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
     }, '1m');
