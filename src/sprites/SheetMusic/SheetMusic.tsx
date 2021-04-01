@@ -1,25 +1,40 @@
 import {autobind} from 'core-decorators';
 import Vex from 'vexflow';
-import {getNoteInfo, Note, NoteInfo} from '../audio/Note';
-import {Sequencer} from '../audio/Sequencer/Sequencer';
-import {WorldState} from '../types/State';
-import {circle} from './renderHelpers/circle';
-import {Sprite} from './Sprite';
+import {getNoteInfo, Note, NoteInfo} from '../../audio/Note';
+import {Sequencer} from '../../audio/Sequencer/Sequencer';
+import {WorldState} from '../../types/State';
+import {Sprite} from '../Sprite';
 
 export interface SheetMusicProps {
   sequencer: Sequencer;
+  noteAnnotators: NoteAnnotator[];
 }
+
+export interface NoteAnnotatorParams {
+  canvas: CanvasRenderingContext2D;
+  note: Note;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export type NoteAnnotator = (params: NoteAnnotatorParams) => void;
 
 @autobind
 export class SheetMusic implements Sprite {
   private readonly vexCanvasContext: Vex.Flow.CanvasContext;
+  private readonly sequencer: Sequencer;
+  private readonly noteAnnotators: NoteAnnotator[];
 
-  constructor(private readonly sequencer: Sequencer) {
+  constructor(params: SheetMusicProps) {
     const canvasEl: HTMLCanvasElement = document.querySelector('.game canvas') as HTMLCanvasElement;
     this.vexCanvasContext = Vex.Flow.Renderer.getCanvasContext(
       canvasEl,
       Vex.Flow.Renderer.Backends.CANVAS
     );
+    this.sequencer = params.sequencer;
+    this.noteAnnotators = params.noteAnnotators;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -78,16 +93,23 @@ export class SheetMusic implements Sprite {
     voice.draw(vexCanvasContext, stave);
 
     // Draw annotations beneath notes
-    canvas.beginPath();
-    vexNotes.forEach((note: Vex.Flow.StaveNote) => {
-      circle({
-        x: note.getAbsoluteX(),
-        y: y + 150,
-        r: 20,
-        fill: 'cyan',
-        canvas
-      });
-    });
+    let annotatorY = y + stave.getHeight();
+    const annotatorWidth = width / (2 * notes.length + 1);
+    const annotatorHeight = 50;
+    for (const noteAnnotator of this.noteAnnotators) {
+      annotatorY += annotatorHeight;
+      for (const [i, vexNote] of vexNotes.entries()) {
+        const note = notes[i];
+        noteAnnotator({
+          x: vexNote.getAbsoluteX(),
+          y: annotatorY,
+          canvas,
+          note,
+          width: annotatorWidth,
+          height: annotatorHeight
+        });
+      }
+    }
   }
 
   public tick(world: WorldState): void {}

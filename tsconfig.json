@@ -14,7 +14,8 @@
     "noEmit": true,
     "jsx": "react",
     "experimentalDecorators": true,
-    "module": "esnext"
+    "module": "esnext",
+    "downlevelIteration": true
   },
   "ts-node": {
     "compilerOptions": {

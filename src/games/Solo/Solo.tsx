@@ -11,7 +11,9 @@ import {ChordName} from '../../sprites/ChordName';
 import {Keyboard} from '../../sprites/Keyboard';
 import {Metronome} from '../../sprites/Metronome';
 import {OuterSpace} from '../../sprites/OuterSpace';
-import {SheetMusic} from '../../sprites/SheetMusic';
+import {drawSaxFingeringChart} from '../../sprites/SheetMusic/saxFingering';
+import {SheetMusic} from '../../sprites/SheetMusic/SheetMusic';
+import {testAnnotator} from '../../sprites/SheetMusic/testAnnotator';
 import {Sprite} from '../../sprites/Sprite';
 import {SequencerOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
@@ -51,7 +53,10 @@ export class SoloGame implements Game {
     };
     this.bg = new OuterSpace(dimensions);
     this.sequencer = new Sequencer(this.sequencerOptions);
-    this.sheetMusic = new SheetMusic(this.sequencer);
+    this.sheetMusic = new SheetMusic({
+      sequencer: this.sequencer,
+      noteAnnotators: [testAnnotator, drawSaxFingeringChart]
+    });
     this.chordName = new ChordName(this.sequencer);
     this.metronome = new Metronome();
     const activeNotes = new Set<Note>();
