@@ -6,8 +6,7 @@ import {WorldState} from '../types/State';
 import {Sprite} from './Sprite';
 
 export interface SheetMusicProps {
-  note: Note;
-  height: number;
+  sequencer: Sequencer;
 }
 
 @autobind
@@ -76,6 +75,15 @@ export class SheetMusic implements Sprite {
     const formatter = new Vex.Flow.Formatter();
     formatter.joinVoices([voice]).format([voice], width);
     voice.draw(vexCanvasContext, stave);
+
+    // Draw annotations beneath notes
+    canvas.beginPath();
+    vexNotes.forEach((note: Vex.Flow.StaveNote) => {
+      canvas.fillStyle = 'cyan';
+      canvas.arc(note.getAbsoluteX(), y + 150, 20, 0, 2 * Math.PI);
+      canvas.fill();
+      canvas.closePath();
+    });
   }
 
   public tick(world: WorldState): void {}
