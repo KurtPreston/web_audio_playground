@@ -8,6 +8,7 @@ import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../../types/State
 import {randomColor} from '../../util/color';
 import {Microphone} from '../Microphone/Microphone';
 import {MicrophoneConnection} from '../Microphone/MicrophoneConnection';
+import {circle} from '../renderHelpers/circle';
 import {Sprite} from '../Sprite';
 import {Firework} from './Firework';
 
@@ -129,15 +130,17 @@ export class WanderingBeat implements Sprite {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     // Render head
-    canvas.fillStyle = isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor;
     canvas.globalCompositeOperation = this.fireworkBlendMode;
-    canvas.beginPath();
-    canvas.arc(this.head.x, this.head.y, this.shipSize, 0, 2 * Math.PI);
-    canvas.fill();
+    circle({
+      x: this.head.x,
+      y: this.head.y,
+      r: this.shipSize,
+      fill: isFunction(this.fireworkColor) ? this.fireworkColor() : this.fireworkColor,
+      canvas
+    });
 
     // Render fireworks
     this.fireworks.forEach(({position, frame, numFrames, maxSize, color}) => {
-      canvas.fillStyle = color;
       const size = timingFunction({
         type: TimingFunctionType.quad,
         maxValue: maxSize,
@@ -146,9 +149,13 @@ export class WanderingBeat implements Sprite {
         reverse: true
       });
       const {x, y} = position;
-      canvas.beginPath();
-      canvas.arc(x, y, size, 0, 2 * Math.PI);
-      canvas.fill();
+      circle({
+        x,
+        y,
+        r: size,
+        fill: color,
+        canvas
+      });
     });
   }
 

@@ -2,6 +2,7 @@ import {autobind} from 'core-decorators';
 import {scale} from '../math/scale';
 import {CanvasBlendMode} from '../types/CanvasBlendMode.generated';
 import {IPosition, WorldState} from '../types/State';
+import {circle} from './renderHelpers/circle';
 import {Sprite} from './Sprite';
 
 export interface PowerUpParams {
@@ -41,11 +42,14 @@ export class PowerUp implements Sprite {
     });
 
     canvas.restore();
-    canvas.fillStyle = this.color;
     canvas.globalCompositeOperation = this.blendMode;
-    canvas.beginPath();
-    canvas.arc(this.position.x, this.position.y, size, 0, 2 * Math.PI);
-    canvas.fill();
+    circle({
+      x: this.position.x,
+      y: this.position.y,
+      r: size,
+      fill: this.color,
+      canvas
+    });
   }
 
   public tick(world: WorldState) {

@@ -5,6 +5,7 @@ import {midiNoteToFreq} from '../audio/midi';
 import {getNoteFrequencyRange, getNoteName, Note} from '../audio/Note';
 import {OverflowMode, scale} from '../math/scale';
 import {AudioData} from '../types/AudioData';
+import {circle} from './renderHelpers/circle';
 import {Sprite} from './Sprite';
 
 export interface NoteGridParams {
@@ -169,8 +170,12 @@ export class NoteGrid implements Sprite {
       return;
     }
     const {x, y} = peakFreqPosition;
-    canvas.beginPath();
-    canvas.arc(x, y, 5, 0, 2 * Math.PI);
-    canvas.fill();
+    circle({
+      x,
+      y,
+      r: 5,
+      canvas,
+      fill: 'white'
+    });
   }
 }

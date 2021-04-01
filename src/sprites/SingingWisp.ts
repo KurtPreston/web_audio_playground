@@ -8,6 +8,7 @@ import {IPosition, ITraveler, IVector, WorldState} from '../types/State';
 import {Microphone} from './Microphone/Microphone';
 import {MicrophoneConnection} from './Microphone/MicrophoneConnection';
 import {NoteNode} from './NoteGraph/NoteGraph';
+import {circle} from './renderHelpers/circle';
 import {Sprite} from './Sprite';
 
 export class SingingWisp implements Sprite, NoteNode {
@@ -52,11 +53,13 @@ export class SingingWisp implements Sprite, NoteNode {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState) {
     const {x, y} = this.traveler.position;
-    canvas.beginPath();
-    canvas.arc(x, y, this.size, 0, 2 * Math.PI);
-    canvas.fillStyle = this.color;
-    canvas.fill();
-    canvas.closePath();
+    circle({
+      x,
+      y,
+      r: this.size,
+      fill: this.color,
+      canvas
+    });
   }
 
   public tick(world: WorldState) {

@@ -6,6 +6,7 @@ import {nodeGroups} from '../../math/graph/nodeGroups';
 import {electricalForce} from '../../math/physics/electricalForce';
 import {springForce} from '../../math/physics/springForce';
 import {Dimensions, FRAME_RATE, IPosition, IVector, WorldState} from '../../types/State';
+import {circle} from '../renderHelpers/circle';
 import {noteColor} from '../renderHelpers/noteColor';
 import {Sprite} from '../Sprite';
 import {NoteGraphOptions} from './NoteGraphOptions.generated';
@@ -230,14 +231,16 @@ export class NoteGraph implements Sprite {
 
       // Draw nodes
       const color = noteColor(note, 0.7);
-      canvas.globalCompositeOperation = this.options.mixBlendMode;
       const nodeSize = Math.max(size, 0.001);
       const fontSize = 0.8 * size;
-      canvas.beginPath();
-      canvas.arc(x, y, nodeSize, 0, 2 * Math.PI);
-      canvas.fillStyle = color;
-      canvas.fill();
-      canvas.closePath();
+      canvas.globalCompositeOperation = this.options.mixBlendMode;
+      circle({
+        x,
+        y,
+        r: nodeSize,
+        fill: color,
+        canvas
+      });
 
       // Draw letters
       if (!node.flaggedForDelete) {

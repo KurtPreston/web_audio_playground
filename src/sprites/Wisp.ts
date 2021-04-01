@@ -4,6 +4,7 @@ import {scale} from '../math/scale';
 import {CanvasBlendMode} from '../types/CanvasBlendMode.generated';
 import {Dimensions, IWanderer, SpriteTicker, WorldState} from '../types/State';
 import {randomColor} from '../util/color';
+import {circle} from './renderHelpers/circle';
 import {Sprite} from './Sprite';
 
 export interface WispParams {
@@ -62,11 +63,13 @@ export class Wisp implements Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {x, y, size} = this.state;
     canvas.globalCompositeOperation = this.mixBlendMode;
-    canvas.beginPath();
-    canvas.arc(x, y, size, 0, 2 * Math.PI);
-    canvas.fillStyle = this.color;
-    canvas.fill();
-    canvas.closePath();
+    circle({
+      x,
+      y,
+      r: size,
+      canvas,
+      fill: this.color
+    });
   }
 
   public tick(world: WorldState) {

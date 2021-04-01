@@ -3,6 +3,7 @@ import Vex from 'vexflow';
 import {getNoteInfo, Note, NoteInfo} from '../audio/Note';
 import {Sequencer} from '../audio/Sequencer/Sequencer';
 import {WorldState} from '../types/State';
+import {circle} from './renderHelpers/circle';
 import {Sprite} from './Sprite';
 
 export interface SheetMusicProps {
@@ -79,10 +80,13 @@ export class SheetMusic implements Sprite {
     // Draw annotations beneath notes
     canvas.beginPath();
     vexNotes.forEach((note: Vex.Flow.StaveNote) => {
-      canvas.fillStyle = 'cyan';
-      canvas.arc(note.getAbsoluteX(), y + 150, 20, 0, 2 * Math.PI);
-      canvas.fill();
-      canvas.closePath();
+      circle({
+        x: note.getAbsoluteX(),
+        y: y + 150,
+        r: 20,
+        fill: 'cyan',
+        canvas
+      });
     });
   }
 

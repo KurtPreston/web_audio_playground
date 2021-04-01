@@ -5,6 +5,7 @@ import {times} from 'lodash';
 import {Transport} from 'tone';
 import {Seconds} from 'tone/build/esm/core/type/Units';
 import {WorldState} from '../types/State';
+import {circle} from './renderHelpers/circle';
 
 @autobind
 export class Metronome implements Sprite {
@@ -28,15 +29,15 @@ export class Metronome implements Sprite {
     canvas.fillStyle = 'white';
     canvas.strokeStyle = 'white';
     times(4, (beat: number) => {
-      const x = ((beat % 4) + 1) * 50;
-      const y = 100;
-      canvas.beginPath();
-      canvas.arc(x, y, 25, 0, 2 * Math.PI);
-      if (beat === this.beat % 4) {
-        canvas.fill();
-      } else {
-        canvas.stroke();
-      }
+      const onBeat = beat === this.beat % 4;
+      circle({
+        x: ((beat % 4) + 1) * 50,
+        y: 100,
+        r: 25,
+        fill: onBeat ? 'white' : undefined,
+        stroke: onBeat ? undefined : 'white',
+        canvas
+      });
     });
   }
 
