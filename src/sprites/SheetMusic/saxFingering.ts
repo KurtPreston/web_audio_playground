@@ -527,36 +527,64 @@ export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams
   const stroke = 'white';
 
   // Left main keys
-  const {left1, left2, left3} = saxKeys;
-  if (left1 || left2 || left3) {
-    // Left 1
-    circle({
-      x,
-      y,
-      r: mainKeySize,
-      fill: left1 ? fill : undefined,
-      stroke: left1 ? undefined : stroke,
-      canvas
-    });
+  const {left1, left2, left3, right1, right2, right3} = saxKeys;
+  // Left 1
+  circle({
+    x,
+    y,
+    r: mainKeySize,
+    fill: left1 ? fill : undefined,
+    stroke: left1 ? undefined : stroke,
+    canvas
+  });
 
-    // Left 2
-    circle({
-      x,
-      y: y + unit,
-      r: mainKeySize,
-      fill: left2 ? fill : undefined,
-      stroke: left2 ? undefined : stroke,
-      canvas
-    });
+  // Left 2
+  circle({
+    x,
+    y: y + 4 * unit,
+    r: mainKeySize,
+    fill: left2 ? fill : undefined,
+    stroke: left2 ? undefined : stroke,
+    canvas
+  });
 
-    // Left 3
-    circle({
-      x,
-      y: y + 2 * unit,
-      r: mainKeySize,
-      fill: left3 ? fill : undefined,
-      stroke: left3 ? undefined : stroke,
-      canvas
-    });
-  }
+  // Left 3
+  circle({
+    x,
+    y: y + 8 * unit,
+    r: mainKeySize,
+    fill: left3 ? fill : undefined,
+    stroke: left3 ? undefined : stroke,
+    canvas
+  });
+
+  // Right 1
+  circle({
+    x,
+    y: y + 14 * unit,
+    r: mainKeySize,
+    fill: right1 ? fill : undefined,
+    stroke: right1 ? undefined : stroke,
+    canvas
+  });
+
+  // Right 2
+  circle({
+    x,
+    y: y + 18 * unit,
+    r: mainKeySize,
+    fill: right2 ? fill : undefined,
+    stroke: right2 ? undefined : stroke,
+    canvas
+  });
+
+  // Right 3
+  circle({
+    x,
+    y: y + 22 * unit,
+    r: mainKeySize,
+    fill: right3 ? fill : undefined,
+    stroke: right3 ? undefined : stroke,
+    canvas
+  });
 };
