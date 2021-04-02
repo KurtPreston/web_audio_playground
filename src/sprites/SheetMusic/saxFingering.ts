@@ -527,7 +527,7 @@ export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams
   const fill = 'white';
   const stroke = 'white';
 
-  const {left1, left2, left3, leftPinky1, right1, right2, right3} = saxKeys;
+  const {left1, left2, left3, right1, right2, right3} = saxKeys;
 
   // Left 1
   circle({
@@ -556,18 +556,6 @@ export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams
     r: mainKeySize,
     fill: left3 ? fill : undefined,
     stroke: left3 ? undefined : stroke,
-    canvas
-  });
-
-  // Left Pinky
-  ellipse({
-    cx: x + 3 * unit,
-    cy: y + 10 * unit,
-    rx: 2 * unit,
-    ry: unit,
-    rotation: -Math.PI / 8,
-    fill: leftPinky1 ? fill : undefined,
-    stroke: leftPinky1 ? undefined : stroke,
     canvas
   });
 
@@ -600,4 +588,19 @@ export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams
     stroke: right3 ? undefined : stroke,
     canvas
   });
+
+  const {leftPinky1} = saxKeys;
+  if (leftPinky1) {
+    // Left Pinky
+    ellipse({
+      cx: x + 3 * unit,
+      cy: y + 10 * unit,
+      rx: 2 * unit,
+      ry: unit,
+      rotation: -Math.PI / 8,
+      fill: leftPinky1 ? fill : undefined,
+      stroke: leftPinky1 ? undefined : stroke,
+      canvas
+    });
+  }
 };

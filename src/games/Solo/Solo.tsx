@@ -101,15 +101,23 @@ export class SoloGame implements Game {
               {chunk(this.sequencer.chordProgression, 4).map((chords, chunkIdx) => (
                 <tr key={chunkIdx}>
                   {chords.map((chord, i) => {
-                    if (this.sequencer.idx === i + chunkIdx * 4) {
-                      return (
-                        <td key={i}>
-                          <b>{chord.name}</b>
-                        </td>
-                      );
-                    } else {
-                      return <td key={i}>{chord.name}</td>;
-                    }
+                    const chordIdx = i + chunkIdx * 4;
+                    const isCurrentChord = this.sequencer.idx === chordIdx;
+                    const btnClass = [isCurrentChord && 'current-chord', 'chord-btn']
+                      .filter(Boolean)
+                      .join(' ');
+                    const setChord = () => {
+                      this.sequencer.setChordIdx(chordIdx);
+                      this.updateMenu();
+                    };
+
+                    return (
+                      <td key={i}>
+                        <button className={btnClass} onClick={setChord}>
+                          {chord.name}
+                        </button>
+                      </td>
+                    );
                   })}
                 </tr>
               ))}

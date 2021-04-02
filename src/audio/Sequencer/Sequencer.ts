@@ -57,6 +57,14 @@ export class Sequencer {
     Transport.bpm.rampTo(options.bpm);
   }
 
+  public setChordIdx(idx: number) {
+    this.chordIdx = idx;
+    const chord: Chord = this.chordProgression[this.chordIdx];
+    this.subscribers.forEach((sub: SequencerCallback) => {
+      sub(chord);
+    });
+  }
+
   public get chord(): Chord {
     return this.chordProgression[this.chordIdx];
   }
@@ -73,11 +81,8 @@ export class Sequencer {
   }
 
   private nextMeasure() {
-    this.chordIdx = (this.chordIdx + 1) % this.chordProgression.length;
-    const chord: Chord = this.chordProgression[this.chordIdx];
-    this.subscribers.forEach((sub: SequencerCallback) => {
-      sub(chord);
-    });
+    const chordIdx = (this.chordIdx + 1) % this.chordProgression.length;
+    this.setChordIdx(chordIdx);
   }
 
   public destroy() {
