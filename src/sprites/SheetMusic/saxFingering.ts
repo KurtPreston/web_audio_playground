@@ -603,4 +603,35 @@ export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams
       canvas
     });
   }
+
+  const {rightPinky1, rightPinky2} = saxKeys;
+  if (rightPinky1 || rightPinky2) {
+    // Right Pinky 1
+    ellipse({
+      cx: x + 3 * unit,
+      cy: y + 24 * unit,
+      rx: 2 * unit,
+      ry: 1.5 * unit,
+      rotation: -Math.PI / 8,
+      fill: rightPinky1 ? fill : undefined,
+      stroke: rightPinky1 ? undefined : stroke,
+      canvas,
+      startAngle: Math.PI,
+      stopAngle: 2 * Math.PI
+    });
+
+    // Right Pinky 2
+    ellipse({
+      cx: x + 3 * unit,
+      cy: y + 24 * unit,
+      rx: 2 * unit,
+      ry: 1.5 * unit,
+      rotation: -Math.PI / 8,
+      fill: rightPinky2 ? fill : undefined,
+      stroke: rightPinky2 ? undefined : stroke,
+      canvas,
+      startAngle: 0,
+      stopAngle: Math.PI
+    });
+  }
 };

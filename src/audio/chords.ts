@@ -8,14 +8,21 @@ export class Chord {
   public readonly noteValues: Set<NoteValue>;
 
   constructor(params: {type: ChordType; root: NoteValue; notes: NoteValue[]}) {
-    this.type = params.type;
-    this.root = params.root;
-    this.notes = params.notes;
+    const {type, root, notes} = params;
+    const octaveOffset = root - noteToNoteValue(root);
+
+    this.type = type;
+    this.root = root + octaveOffset;
+    this.notes = notes.map((note) => note - octaveOffset);
     this.noteValues = new Set(params.notes.map(noteToNoteValue));
   }
 
   public get name(): string {
     return `${getNoteName(this.root)}${chordTypeSymbol[this.type]}`;
+  }
+
+  public trebleClefChord(): Note[] {
+    return this.notes.map((note: Note) => note + 5 * 12);
   }
 }
 

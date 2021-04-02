@@ -40,7 +40,7 @@ export class SheetMusic implements Sprite {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {vexCanvasContext} = this;
-    const notes: Note[] = this.sequencer.chord.notes.map((note: Note) => note + 5 * 12);
+    const notes: Note[] = this.sequencer.chord.trebleClefChord();
     const x = world.dimensions.width / (2 * this.canvasScale);
     const y = 50 / this.canvasScale;
     const width = Math.min(
@@ -54,9 +54,10 @@ export class SheetMusic implements Sprite {
     vexCanvasContext.setStrokeStyle('white');
 
     // Draw clef
-    const {octave}: NoteInfo = getNoteInfo(notes[0], '#');
     const stave = new Vex.Flow.Stave(x, y, width);
-    const clef = octave <= 3 ? 'bass' : 'treble';
+    // const {octave}: NoteInfo = getNoteInfo(notes[0], '#');
+    // const clef = octave <= 3 ? 'bass' : 'treble';
+    const clef = 'treble';
     stave.addClef(clef);
     stave.setContext(vexCanvasContext).draw();
 
