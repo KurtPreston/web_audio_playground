@@ -100,8 +100,9 @@ export class SheetMusic implements Sprite {
       annotatorY += annotatorHeight;
       for (const [i, vexNote] of vexNotes.entries()) {
         const note = notes[i];
+        const annotatorX = vexNote.getAbsoluteX() + vexNote.getWidth() / 2;
         noteAnnotator({
-          x: vexNote.getAbsoluteX(),
+          x: annotatorX,
           y: annotatorY,
           canvas,
           note,
