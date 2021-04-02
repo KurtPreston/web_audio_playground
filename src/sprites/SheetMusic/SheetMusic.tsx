@@ -26,6 +26,7 @@ export class SheetMusic implements Sprite {
   private readonly vexCanvasContext: Vex.Flow.CanvasContext;
   private readonly sequencer: Sequencer;
   private readonly noteAnnotators: NoteAnnotator[];
+  private readonly canvasScale: number = 1.25; // Increase size
 
   constructor(params: SheetMusicProps) {
     const canvasEl: HTMLCanvasElement = document.querySelector('.game canvas') as HTMLCanvasElement;
@@ -40,10 +41,15 @@ export class SheetMusic implements Sprite {
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {vexCanvasContext} = this;
     const notes: Note[] = this.sequencer.chord.notes.map((note: Note) => note + 5 * 12);
-    const [x, y] = [300, 100];
-    const width = 200;
+    const x = world.dimensions.width / (2 * this.canvasScale);
+    const y = 50 / this.canvasScale;
+    const width = Math.min(
+      world.dimensions.width / (2 * this.canvasScale) - 50,
+      300 / this.canvasScale
+    );
 
     // Styles
+    vexCanvasContext.scale(1.25, 1.25);
     vexCanvasContext.setFillStyle('white');
     vexCanvasContext.setStrokeStyle('white');
 
@@ -95,7 +101,7 @@ export class SheetMusic implements Sprite {
     // Draw annotations beneath notes
     let annotatorY = y + stave.getHeight();
     const annotatorWidth = width / (2 * notes.length + 1);
-    const annotatorHeight = 50;
+    const annotatorHeight = 75;
     for (const noteAnnotator of this.noteAnnotators) {
       annotatorY += annotatorHeight;
       for (const [i, vexNote] of vexNotes.entries()) {
