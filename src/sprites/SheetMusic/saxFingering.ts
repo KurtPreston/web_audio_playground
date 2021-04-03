@@ -513,126 +513,130 @@ const fingering: {[note: number]: SaxKeys[]} = {
   ]
 };
 
-export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams) => {
-  const {canvas, note, x, y, width, height} = params;
+export const drawSaxFingeringChart: NoteAnnotator = {
+  name: 'Sax',
+  height: 80,
+  render: (params: NoteAnnotatorParams) => {
+    const {canvas, note, x, y, width, height} = params;
 
-  const saxKeys: SaxKeys = fingering[note - 12]?.[0];
-  if (!saxKeys) {
-    throw new Error(`No fingering found for ${note} (${getNoteName(note)})`);
-  }
+    const saxKeys: SaxKeys = fingering[note - 12]?.[0];
+    if (!saxKeys) {
+      throw new Error(`No fingering found for ${note} (${getNoteName(note)})`);
+    }
 
-  // Derived constants
-  const unit = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)) / 20;
-  const mainKeySize = unit * 2;
-  const fill = 'white';
-  const stroke = 'white';
+    // Derived constants
+    const unit = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)) / 20;
+    const mainKeySize = unit * 2;
+    const fill = 'white';
+    const stroke = 'white';
 
-  const {left1, left2, left3, right1, right2, right3} = saxKeys;
+    const {left1, left2, left3, right1, right2, right3} = saxKeys;
 
-  // Left 1
-  circle({
-    x,
-    y,
-    r: mainKeySize,
-    fill: left1 ? fill : undefined,
-    stroke: left1 ? undefined : stroke,
-    canvas
-  });
-
-  // Left 2
-  circle({
-    x,
-    y: y + 4 * unit,
-    r: mainKeySize,
-    fill: left2 ? fill : undefined,
-    stroke: left2 ? undefined : stroke,
-    canvas
-  });
-
-  // Left 3
-  circle({
-    x,
-    y: y + 8 * unit,
-    r: mainKeySize,
-    fill: left3 ? fill : undefined,
-    stroke: left3 ? undefined : stroke,
-    canvas
-  });
-
-  // Right 1
-  circle({
-    x,
-    y: y + 14 * unit,
-    r: mainKeySize,
-    fill: right1 ? fill : undefined,
-    stroke: right1 ? undefined : stroke,
-    canvas
-  });
-
-  // Right 2
-  circle({
-    x,
-    y: y + 18 * unit,
-    r: mainKeySize,
-    fill: right2 ? fill : undefined,
-    stroke: right2 ? undefined : stroke,
-    canvas
-  });
-
-  // Right 3
-  circle({
-    x,
-    y: y + 22 * unit,
-    r: mainKeySize,
-    fill: right3 ? fill : undefined,
-    stroke: right3 ? undefined : stroke,
-    canvas
-  });
-
-  const {leftPinky1} = saxKeys;
-  if (leftPinky1) {
-    // Left Pinky
-    ellipse({
-      cx: x + 3 * unit,
-      cy: y + 10 * unit,
-      rx: 2 * unit,
-      ry: unit,
-      rotation: -Math.PI / 8,
-      fill: leftPinky1 ? fill : undefined,
-      stroke: leftPinky1 ? undefined : stroke,
+    // Left 1
+    circle({
+      x,
+      y,
+      r: mainKeySize,
+      fill: left1 ? fill : undefined,
+      stroke: left1 ? undefined : stroke,
       canvas
     });
-  }
 
-  const {rightPinky1, rightPinky2} = saxKeys;
-  if (rightPinky1 || rightPinky2) {
-    const pinkies = {
-      cx: x - 3 * unit,
-      cy: y + 26 * unit,
-      rx: 2 * unit,
-      ry: 3 * unit,
-      rotation: Math.PI / 8,
-      canvas,
-      startAngle: Math.PI,
-      stopAngle: 2 * Math.PI
-    };
-
-    // Right Pinky 1
-    ellipse({
-      ...pinkies,
-      fill: rightPinky1 ? fill : undefined,
-      stroke: rightPinky1 ? undefined : stroke,
-      startAngle: Math.PI,
-      stopAngle: 2 * Math.PI
+    // Left 2
+    circle({
+      x,
+      y: y + 4 * unit,
+      r: mainKeySize,
+      fill: left2 ? fill : undefined,
+      stroke: left2 ? undefined : stroke,
+      canvas
     });
 
-    // Right Pinky 2
-    ellipse({
-      ...pinkies,
-      fill: rightPinky2 ? fill : undefined,
-      stroke: rightPinky2 ? undefined : stroke,
-      startAngle: 0,
-      stopAngle: Math.PI
+    // Left 3
+    circle({
+      x,
+      y: y + 8 * unit,
+      r: mainKeySize,
+      fill: left3 ? fill : undefined,
+      stroke: left3 ? undefined : stroke,
+      canvas
     });
+
+    // Right 1
+    circle({
+      x,
+      y: y + 14 * unit,
+      r: mainKeySize,
+      fill: right1 ? fill : undefined,
+      stroke: right1 ? undefined : stroke,
+      canvas
+    });
+
+    // Right 2
+    circle({
+      x,
+      y: y + 18 * unit,
+      r: mainKeySize,
+      fill: right2 ? fill : undefined,
+      stroke: right2 ? undefined : stroke,
+      canvas
+    });
+
+    // Right 3
+    circle({
+      x,
+      y: y + 22 * unit,
+      r: mainKeySize,
+      fill: right3 ? fill : undefined,
+      stroke: right3 ? undefined : stroke,
+      canvas
+    });
+
+    const {leftPinky1} = saxKeys;
+    if (leftPinky1) {
+      // Left Pinky
+      ellipse({
+        cx: x + 3 * unit,
+        cy: y + 10 * unit,
+        rx: 2 * unit,
+        ry: unit,
+        rotation: -Math.PI / 8,
+        fill: leftPinky1 ? fill : undefined,
+        stroke: leftPinky1 ? undefined : stroke,
+        canvas
+      });
+    }
+
+    const {rightPinky1, rightPinky2} = saxKeys;
+    if (rightPinky1 || rightPinky2) {
+      const pinkies = {
+        cx: x - 3 * unit,
+        cy: y + 26 * unit,
+        rx: 2 * unit,
+        ry: 3 * unit,
+        rotation: Math.PI / 8,
+        canvas,
+        startAngle: Math.PI,
+        stopAngle: 2 * Math.PI
+      };
+
+      // Right Pinky 1
+      ellipse({
+        ...pinkies,
+        fill: rightPinky1 ? fill : undefined,
+        stroke: rightPinky1 ? undefined : stroke,
+        startAngle: Math.PI,
+        stopAngle: 2 * Math.PI
+      });
+
+      // Right Pinky 2
+      ellipse({
+        ...pinkies,
+        fill: rightPinky2 ? fill : undefined,
+        stroke: rightPinky2 ? undefined : stroke,
+        startAngle: 0,
+        stopAngle: Math.PI
+      });
+    }
   }
 };

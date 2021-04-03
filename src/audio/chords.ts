@@ -1,7 +1,9 @@
+import {autobind} from 'core-decorators';
 import {flatten, random, sample, times, uniq} from 'lodash';
 import {getNoteName, Note, NoteAccidental, noteToNoteValue, NoteValue} from './Note';
 import {accidentalForKey} from './scales';
 
+@autobind
 export class Chord {
   public readonly root: NoteValue;
   public readonly type: ChordType;
