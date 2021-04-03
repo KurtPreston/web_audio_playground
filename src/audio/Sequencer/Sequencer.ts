@@ -2,6 +2,8 @@ import {Transport} from 'tone';
 import {circleOfFifths, majorProgression, minorProgression} from '../chordProgression';
 import {Chord, randomChord} from '../chords';
 import {generateRelatedChord} from '../harmony';
+import {NoteValue} from '../Note';
+import {majorScaleProgression, minorScaleProgression} from '../scales';
 import {Sequence, SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;
@@ -12,6 +14,8 @@ const chordProgressions: {[key in Sequence]: () => Chord[]} = {
   min251: () => circleOfFifths(minorProgression([2, 5, 1, 1])),
   majBlues: () => circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
   minBlues: () => circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
+  majorScale: () => circleOfFifths(majorScaleProgression),
+  minorScale: () => circleOfFifths(minorScaleProgression, NoteValue.A),
   random: () => {
     let chord: Chord = randomChord();
     const chords: Chord[] = [chord];
