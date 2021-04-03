@@ -606,30 +606,31 @@ export const drawSaxFingeringChart: NoteAnnotator = (params: NoteAnnotatorParams
 
   const {rightPinky1, rightPinky2} = saxKeys;
   if (rightPinky1 || rightPinky2) {
+    const pinkies = {
+      cx: x - 3 * unit,
+      cy: y + 26 * unit,
+      rx: 2 * unit,
+      ry: 3 * unit,
+      rotation: Math.PI / 8,
+      canvas,
+      startAngle: Math.PI,
+      stopAngle: 2 * Math.PI
+    };
+
     // Right Pinky 1
     ellipse({
-      cx: x + 3 * unit,
-      cy: y + 24 * unit,
-      rx: 2 * unit,
-      ry: 1.5 * unit,
-      rotation: -Math.PI / 8,
+      ...pinkies,
       fill: rightPinky1 ? fill : undefined,
       stroke: rightPinky1 ? undefined : stroke,
-      canvas,
       startAngle: Math.PI,
       stopAngle: 2 * Math.PI
     });
 
     // Right Pinky 2
     ellipse({
-      cx: x + 3 * unit,
-      cy: y + 24 * unit,
-      rx: 2 * unit,
-      ry: 1.5 * unit,
-      rotation: -Math.PI / 8,
+      ...pinkies,
       fill: rightPinky2 ? fill : undefined,
       stroke: rightPinky2 ? undefined : stroke,
-      canvas,
       startAngle: 0,
       stopAngle: Math.PI
     });
