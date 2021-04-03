@@ -11,7 +11,8 @@ import {ChordGeneratorOptions} from './AutoChordMidiSourceOptions.generated';
 @autobind
 export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
   public options: ChordGeneratorOptions;
-  private chord = new Map<NoteValue, Note[]>();
+  private chord: Chord;
+  private notes = new Map<NoteValue, Note[]>();
   private chordChangeInterval: NodeJS.Timeout;
   private progressionIdx: number = 0;
   private progression: Chord[] = circleOfFifths(minorProgression([1, 6, 4, 5]), NoteValue.C);
@@ -20,7 +21,8 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
   constructor(params: MidiSourceParams<ChordGeneratorOptions>) {
     this.options = params.options;
     this.publish = params.publish;
-    this.setChord(this.progression[0].noteValues);
+    this.chord = this.progression[0];
+    this.setChord(this.chord);
     this.chordChangeInterval = setInterval(this.nextChord, 750);
   }
 
@@ -30,18 +32,18 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
 
   private nextChord() {
     this.progressionIdx = (this.progressionIdx + 1) % this.progression.length;
-    this.setChord(this.progression[this.progressionIdx].noteValues);
+    this.setChord(this.progression[this.progressionIdx]);
   }
 
-  private setChord(newChord: Set<NoteValue>) {
+  private setChord(newChord: Chord) {
     // Add new notes
-    newChord.forEach((noteValue: NoteValue) => {
-      if (!this.chord.has(noteValue)) {
+    newChord.noteValues.forEach((noteValue: NoteValue) => {
+      if (!this.notes.has(noteValue)) {
         const notes: Note[] = sampleSize(
           [noteValue + 24, noteValue + 36, noteValue + 48, noteValue + 60],
           random(1, 4)
         );
-        this.chord.set(noteValue, notes);
+        this.notes.set(noteValue, notes);
         notes.forEach((note: Note) => {
           this.publish({
             note,
@@ -52,9 +54,9 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
     });
 
     // Delete old notes
-    this.chord.forEach((notes: Note[], noteValue: NoteValue) => {
-      if (!newChord.has(noteValue)) {
-        this.chord.delete(noteValue);
+    this.notes.forEach((notes: Note[], noteValue: NoteValue) => {
+      if (!newChord.noteValues.has(noteValue)) {
+        this.notes.delete(noteValue);
         notes.forEach((note: Note) => {
           this.publish({
             note,
@@ -63,11 +65,12 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
         });
       }
     });
+
+    this.chord = newChord;
   }
 
   private loadRelatedChord() {
-    const currentChord = new Set<NoteValue>(this.chord.keys());
-    this.setChord(generateRelatedChord(currentChord).noteValues);
+    this.setChord(generateRelatedChord(this.chord));
   }
 
   public destroy() {

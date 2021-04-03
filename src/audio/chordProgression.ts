@@ -9,6 +9,7 @@ import {
   minorChord
 } from './chords';
 import {NoteValue} from './Note';
+import {accidentalForKey} from './scales';
 
 export type ChordNum = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -41,10 +42,11 @@ const majorScaleOffset: {[num in ChordNum]: number} = {
 
 export function majorProgression(chordNums: ChordNum[]): ChordProgression {
   return (key: NoteValue): Chord[] => {
+    const accidental = accidentalForKey[key];
     return chordNums.map((chordNum: ChordNum) => {
       const chordGenerator: ChordGenerator = majorScaleChords[chordNum];
       const rootOffset = majorScaleOffset[chordNum];
-      return chordGenerator(key + rootOffset);
+      return chordGenerator(key + rootOffset, accidental);
     });
   };
 }
@@ -71,10 +73,11 @@ const minorScaleOffset: {[num in ChordNum]: number} = {
 
 export function minorProgression(chordNums: ChordNum[]): ChordProgression {
   return (key: NoteValue): Chord[] => {
+    const accidental = accidentalForKey[key];
     return chordNums.map((chordNum: ChordNum) => {
       const chordGenerator: ChordGenerator = minorScaleChords[chordNum];
       const rootOffset = minorScaleOffset[chordNum];
-      return chordGenerator(key + rootOffset);
+      return chordGenerator(key + rootOffset, accidental);
     });
   };
 }

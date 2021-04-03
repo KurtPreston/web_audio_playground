@@ -17,7 +17,7 @@ const chordProgressions: {[key in Sequence]: () => Chord[]} = {
     const chords: Chord[] = [chord];
     for (let i = 0; i < 63; i++) {
       if (Math.random() < 0.25) {
-        chord = generateRelatedChord(chord.noteValues);
+        chord = generateRelatedChord(chord);
       }
       chords.push(chord);
     }

@@ -29,7 +29,7 @@ interface NodeSynth {
 @autobind
 export class NoteGraphAutoplayer implements NoteGraphController {
   // Store which notes are currently being played
-  public readonly noteValues = new Set<NoteValue>();
+  public chord: Chord;
   private readonly nodeSynths = new Map<NoteNode, NodeSynth>();
 
   // References
@@ -48,7 +48,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
     // Create nodes
     const numNodes = random(8, 16);
-    this.noteValues = randomChord().noteValues;
+    this.chord = randomChord();
     times(numNodes, this.createNode);
 
     // Set publicly accessible actions
@@ -98,6 +98,10 @@ export class NoteGraphAutoplayer implements NoteGraphController {
     // this.randomActions.set(this.regenerateGraph, 500);
   }
 
+  public get noteValues(): Set<NoteValue> {
+    return this.chord.noteValues;
+  }
+
   public tick(world: WorldState) {
     // Play the audio
     this.noteGraph.nodes.forEach((node) => {
@@ -129,13 +133,13 @@ export class NoteGraphAutoplayer implements NoteGraphController {
 
   public setChord(chord: Set<NoteValue>) {
     const chordNotes: NoteValue[] = normalizeChord(Array.from(chord));
-    const newNotes = difference(chordNotes, Array.from(this.noteValues));
-    const yesterNotes = difference(Array.from(this.noteValues), chordNotes);
+    const newNotes = difference(chordNotes, Array.from(this.chord.noteValues));
+    const yesterNotes = difference(Array.from(this.chord.noteValues), chordNotes);
 
     // Rebuild any overlapping notes that have disappeared
     chord.forEach((noteValue: Note) => {
       const currentNodes: NoteNode[] = this.nodesWithNote(noteValue);
-      if (this.noteValues.has(noteValue) && currentNodes.length === 0) {
+      if (this.chord.noteValues.has(noteValue) && currentNodes.length === 0) {
         // All nodes with this note have been removed. Unacceptable!
         this.addNote(noteValue);
       }
@@ -313,7 +317,7 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   public loadRelatedChord() {
-    const relatedChord = generateRelatedChord(this.noteValues);
+    const relatedChord = generateRelatedChord(this.chord);
     this.setChord(relatedChord.noteValues);
   }
 
