@@ -5,6 +5,11 @@ export type Note = number;
 export type NoteLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type NoteAccidental = 'b' | '#' | null;
 
+const accidentalSymbol = {
+  b: '♭',
+  '#': '♯'
+};
+
 export enum NoteValue {
   C = 0,
   Csharp = 1,
@@ -62,11 +67,8 @@ export function getNoteName(
   params: NoteNameParams = {octave: false, accidental: '#'}
 ): string {
   const {letter, octave, accidental} = getNoteInfo(note, params.accidental);
-  if (params.octave) {
-    return `${letter}${accidental || ''}${octave}`;
-  } else {
-    return `${letter}${accidental || ''}`;
-  }
+  const symbol = (accidental && accidentalSymbol[accidental]) || '';
+  return `${letter}${symbol}${params.octave ? octave : ''}`;
 }
 
 export function getNoteNames(note: Note): string[] {
