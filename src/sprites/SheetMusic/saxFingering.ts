@@ -638,5 +638,19 @@ export const drawSaxFingeringChart: NoteAnnotator = {
         stopAngle: Math.PI
       });
     }
+
+    const {octave} = saxKeys;
+    if (octave) {
+      ellipse({
+        cx: x - 5 * unit,
+        cy: y + 3 * unit,
+        rx: 2 * unit,
+        ry: 3 * unit,
+        canvas,
+        startAngle: Math.PI,
+        stopAngle: 2 * Math.PI,
+        fill: 'white'
+      });
+    }
   }
 };
