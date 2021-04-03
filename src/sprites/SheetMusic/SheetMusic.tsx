@@ -52,7 +52,7 @@ export class SheetMusic implements Sprite {
     const y = 50 / this.canvasScale;
     const width = Math.min(
       world.dimensions.width / (2 * this.canvasScale) - 50,
-      300 / this.canvasScale
+      350 / this.canvasScale
     );
 
     // Styles

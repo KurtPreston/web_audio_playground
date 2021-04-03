@@ -59,7 +59,7 @@ export enum ChordType {
 const chordTypeSymbol: {[type in ChordType]: string} = {
   [ChordType.major]: '',
   [ChordType.minor]: 'm',
-  [ChordType.major7]: '△7',
+  [ChordType.major7]: '∆7',
   [ChordType.dominant7]: '7',
   [ChordType.minor7]: 'm7',
   [ChordType.minor6]: 'm6',
