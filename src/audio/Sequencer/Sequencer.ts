@@ -1,9 +1,14 @@
 import {Transport} from 'tone';
-import {circleOfFifths, majorProgression, minorProgression} from '../chordProgression';
+import {
+  circleOfFifths,
+  majorProgression,
+  majorScaleProgression,
+  minorProgression,
+  minorScaleProgression
+} from '../chordProgression';
 import {Chord, randomChord} from '../chords';
 import {generateRelatedChord} from '../harmony';
 import {NoteValue} from '../Note';
-import {majorScaleProgression, minorScaleProgression} from '../scales';
 import {Sequence, SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;

@@ -1,39 +1,28 @@
 import {
   AllChords,
   Chord,
-  chordName,
+  Chords,
   ChordType,
   dominant7Chord,
-  fiveChord,
-  major6Chord,
   majorChord,
-  minorChord,
   subChords,
   superChords
 } from './chords';
 import {NoteValue} from './Note';
 
-const bChord: Chord = new Chord({
-  notes: [NoteValue.B, NoteValue.Dsharp, NoteValue.Fsharp],
-  root: NoteValue.B,
-  type: ChordType.major
-});
+const bChord: Chord = Chords.B.major;
 
-const asharp7chord: Chord = new Chord({
-  notes: [NoteValue.Asharp, NoteValue.D, NoteValue.F, NoteValue.Gsharp],
-  root: NoteValue.Asharp,
-  type: ChordType.dominant7
-});
+const asharp7chord: Chord = Chords.Asharp.dominant7;
 
 describe('majorChord', () => {
   it('generates major chords', () => {
-    expect(majorChord(NoteValue.B)).toEqual(bChord);
+    expect(majorChord(NoteValue.B, '#')).toEqual(bChord);
   });
 });
 
 describe('dominant7Chord', () => {
   it('generates dominant7 chords', () => {
-    expect(dominant7Chord(NoteValue.Asharp)).toEqual(asharp7chord);
+    expect(dominant7Chord(NoteValue.Asharp, '#')).toEqual(asharp7chord);
   });
 });
 
@@ -48,19 +37,19 @@ describe('AllChords', () => {
 
 describe('chordName', () => {
   it('can name major chords', () => {
-    expect(chordName(bChord)).toEqual('B');
+    expect(bChord.name).toEqual('B');
   });
 
   it('can name dominant7 chords', () => {
-    expect(chordName(asharp7chord)).toEqual('A#7');
+    expect(asharp7chord.name).toEqual('A♯7');
   });
 });
 
 describe('superChords', () => {
   it('returns chords that are a superset of the chord', () => {
-    const c7Chord = dominant7Chord(NoteValue.C);
-    const c6Chord = major6Chord(NoteValue.C);
-    const cChord = majorChord(NoteValue.C);
+    const c7Chord = Chords.C.dominant7;
+    const c6Chord = Chords.C.major6;
+    const cChord = Chords.C.major;
 
     const sups = superChords(Array.from(cChord.notes));
     expect(sups).toContainEqual(c6Chord);
@@ -69,9 +58,9 @@ describe('superChords', () => {
   });
 
   it('handles 5 chords', () => {
-    const b5 = fiveChord(NoteValue.B);
-    const bMajor = majorChord(NoteValue.B);
-    const bMinor = minorChord(NoteValue.B);
+    const b5 = Chords.B.five;
+    const bMajor = Chords.B.major;
+    const bMinor = Chords.B.minor;
     const sups = superChords(Array.from(b5.notes));
     expect(sups).toContainEqual(bMajor);
     expect(sups).toContainEqual(bMinor);
@@ -80,8 +69,8 @@ describe('superChords', () => {
 
 describe('subChords', () => {
   it('returns chords that are a subset of the chord', () => {
-    const c6Chord = major6Chord(NoteValue.C);
-    const cChord = majorChord(NoteValue.C);
+    const c6Chord = Chords.C.major6;
+    const cChord = Chords.C.major;
 
     const subs = subChords(Array.from(c6Chord.notes));
     expect(subs).toContainEqual(cChord);
@@ -90,7 +79,7 @@ describe('subChords', () => {
 
   it('can handle f major 7', () => {
     const fM7 = [52, 53, 57, 60];
-    const fMajor = majorChord(NoteValue.F);
+    const fMajor = Chords.F.major;
 
     const subs = subChords(fM7);
     expect(subs).toContainEqual(fMajor);

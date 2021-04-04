@@ -2,14 +2,15 @@ import {flatten, times} from 'lodash';
 import {
   Chord,
   ChordGenerator,
+  ChordType,
   dimChord,
   major7Chord,
   majorChord,
   minor7Chord,
   minorChord
 } from './chords';
-import {NoteValue} from './Note';
-import {accidentalForKey} from './scales';
+import {NoteAccidental, NoteValue} from './Note';
+import {accidentalForKey, majorScale, minorScale} from './scales';
 
 export type ChordNum = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -81,3 +82,43 @@ export function minorProgression(chordNums: ChordNum[]): ChordProgression {
     });
   };
 }
+
+export const majorScaleChordGenerator: ChordGenerator = (
+  root: NoteValue,
+  accidental: NoteAccidental
+) => {
+  const notes = majorScale(root);
+
+  return new Chord({
+    type: ChordType.major,
+    notes,
+    root,
+    accidental
+  });
+};
+
+export const majorScaleProgression: ChordProgression = (key: NoteValue): Chord[] => {
+  const accidental: NoteAccidental = accidentalForKey[key];
+  const scale = majorScaleChordGenerator(key, accidental);
+  return new Array(4).fill(scale);
+};
+
+export const minorScaleChordGenerator: ChordGenerator = (
+  root: NoteValue,
+  accidental: NoteAccidental
+) => {
+  const notes = minorScale(root);
+
+  return new Chord({
+    type: ChordType.minor,
+    notes,
+    root,
+    accidental
+  });
+};
+
+export const minorScaleProgression: ChordProgression = (key: NoteValue): Chord[] => {
+  const accidental: NoteAccidental = accidentalForKey[key];
+  const scale = minorScaleChordGenerator(key, accidental);
+  return new Array(4).fill(scale);
+};

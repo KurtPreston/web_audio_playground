@@ -3,6 +3,22 @@ import {flatten, random, sample, times, uniq} from 'lodash';
 import {getNoteName, Note, NoteAccidental, noteToNoteValue, NoteValue} from './Note';
 import {accidentalForKey} from './scales';
 
+export enum ChordType {
+  major = 'major',
+  minor = 'minor',
+  major7 = 'major7',
+  dominant7 = 'dominant7',
+  minor7 = 'minor7',
+  minor6 = 'minor6',
+  major6 = 'major6',
+  sus2 = 'sus2',
+  sus4 = 'sus4',
+  five = 'five',
+  dim = 'dim',
+  dim7 = 'dim7',
+  halfdim = 'halfdim'
+}
+
 @autobind
 export class Chord {
   public readonly root: NoteValue;
@@ -38,22 +54,14 @@ export class Chord {
   public trebleClefChord(): Note[] {
     return this.notes.map((note: Note) => note + 5 * 12);
   }
-}
 
-export enum ChordType {
-  major = 'major',
-  minor = 'minor',
-  major7 = 'major7',
-  dominant7 = 'dominant7',
-  minor7 = 'minor7',
-  minor6 = 'minor6',
-  major6 = 'major6',
-  sus2 = 'sus2',
-  sus4 = 'sus4',
-  five = 'five',
-  dim = 'dim',
-  dim7 = 'dim7',
-  halfdim = 'halfdim'
+  public get fifth(): Note {
+    if (this.notes.length === 2) {
+      return this.notes[1];
+    } else {
+      return this.notes[2];
+    }
+  }
 }
 
 const chordTypeSymbol: {[type in ChordType]: string} = {
