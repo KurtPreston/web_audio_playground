@@ -89,7 +89,7 @@ export class DopplerSynthGame implements Game {
     };
     this.sequencerOptions = {
       bpm: 90,
-      sequence: 'random'
+      chart: 'random'
     };
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({
@@ -280,7 +280,7 @@ export class DopplerSynthGame implements Game {
           <label>Progression</label>
           <table>
             <tbody>
-              {chunk(this.sequencer.chordProgression, 4).map((chords, chunkIdx) => (
+              {chunk(this.sequencer.chords, 4).map((chords, chunkIdx) => (
                 <tr key={chunkIdx}>
                   {chords.map((chord, i) => {
                     if (this.sequencer.idx === i + chunkIdx * 4) {

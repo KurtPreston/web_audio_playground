@@ -1,4 +1,4 @@
-import {flatten, times} from 'lodash';
+import {times} from 'lodash';
 import {
   Chord,
   ChordGenerator,
@@ -9,17 +9,14 @@ import {
   minor7Chord,
   minorChord
 } from './chords';
-import {NoteAccidental, NoteValue} from './Note';
+import {NoteAccidental, noteToNoteValue, NoteValue} from './Note';
 import {accidentalForKey, majorScaleNotes} from './scales';
 
 export type ChordNum = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export type ChordProgression = (key: NoteValue) => Chord[];
 
-export function circleOfFifths(chart: ChordProgression, root: NoteValue = NoteValue.C): Chord[] {
-  const roots = times(12, (idx) => (root + 7 * idx) % 12);
-  return flatten(roots.map(chart));
-}
+export const circleOfFifths: NoteValue[] = times(12, (i) => noteToNoteValue(7 * i));
 
 export const majorScaleChords: {[num in ChordNum]: ChordGenerator} = {
   1: major7Chord,

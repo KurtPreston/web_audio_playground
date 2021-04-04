@@ -27,11 +27,15 @@ export type Round = {
 };
 
 export const cMajMin: Exercise = {
-  chart: {
-    key: NoteValue.C,
-    beatsPerChord: 4,
-    chords: majorProgression([1, 1, 6, 6])(NoteValue.C)
-  },
+  chart: new Chart({
+    sections: [
+      {
+        key: NoteValue.C,
+        beatsPerChord: 4,
+        chords: majorProgression([1, 1, 6, 6])(NoteValue.C)
+      }
+    ]
+  }),
   rounds: [
     {
       name: 'Roots',

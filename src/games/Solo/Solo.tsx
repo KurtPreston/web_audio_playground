@@ -49,7 +49,7 @@ export class SoloGame implements Game {
 
     this.sequencerOptions = {
       bpm: 60,
-      sequence: 'majMin'
+      chart: 'majMin'
     };
     this.bg = new OuterSpace(dimensions);
     this.sequencer = new Sequencer(this.sequencerOptions);
@@ -98,7 +98,7 @@ export class SoloGame implements Game {
           <label>Progression</label>
           <table>
             <tbody>
-              {chunk(this.sequencer.chordProgression, 4).map((chords, chunkIdx) => (
+              {chunk(this.sequencer.chords, 4).map((chords, chunkIdx) => (
                 <tr key={chunkIdx}>
                   {chords.map((chord, i) => {
                     const chordIdx = i + chunkIdx * 4;

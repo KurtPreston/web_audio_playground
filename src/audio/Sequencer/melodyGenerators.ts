@@ -1,7 +1,7 @@
 import {Chord} from '../chords';
 import {Scale, scaleForChord} from '../scales';
 import {upDownArp} from './arpeggios';
-import {Chart} from './chart';
+import {Chart, ChartSection} from './chart';
 import {Melody} from './melody';
 
 // MelodyGenerators take a Chart and produce a practice melody
@@ -9,29 +9,39 @@ import {Melody} from './melody';
 export type MelodyGenerator = (chart: Chart) => Melody;
 
 export const rootNoteMelodyGenerator: MelodyGenerator = (chart: Chart): Melody => {
-  return chart.chords.map((chord: Chord) => ({
-    note: chord.notes[0],
-    beats: 4
-  }));
-};
-
-export const rootFifthMelodyGenerator: MelodyGenerator = (chart: Chart): Melody => {
-  return chart.chords
-    .map((chord: Chord) => [
-      {
-        note: chord.root,
-        beats: 2
-      },
-      {
-        note: chord.fifth,
-        beats: 2
-      }
-    ])
+  return chart.sections
+    .map(({chords, beatsPerChord}) =>
+      chords.map((chord: Chord) => ({
+        note: chord.notes[0],
+        beats: beatsPerChord
+      }))
+    )
     .flat();
 };
 
+export const rootFifthMelodyGenerator: MelodyGenerator = (chart: Chart): Melody => {
+  return chart.sections
+    .map(({chords, beatsPerChord}) =>
+      chords.map((chord: Chord) => [
+        {
+          note: chord.root,
+          beats: beatsPerChord / 2
+        },
+        {
+          note: chord.fifth,
+          beats: beatsPerChord / 2
+        }
+      ])
+    )
+    .flat(2);
+};
+
 export const chordMelodyGenerator: MelodyGenerator = (chart: Chart): Melody => {
-  return chart.chords.map((chord: Chord) => upDownArp(chord.notes, chart.beatsPerChord)).flat();
+  return chart.sections
+    .map((section: ChartSection) =>
+      section.chords.map((chord: Chord) => upDownArp(chord.notes, section.beatsPerChord))
+    )
+    .flat(2);
 };
 
 export const pentatonicMelodyGenerator: MelodyGenerator = (chart: Chart) => {
@@ -40,10 +50,12 @@ export const pentatonicMelodyGenerator: MelodyGenerator = (chart: Chart) => {
 };
 
 export const scaleMelodyGenerator: MelodyGenerator = (chart: Chart) => {
-  return chart.chords
-    .map((chord: Chord) => {
-      const scale: Scale = scaleForChord(chart.key, chord);
-      return upDownArp(scale.notes, chart.beatsPerChord);
-    })
-    .flat();
+  return chart.sections
+    .map(({beatsPerChord, chords, key}) =>
+      chords.map((chord: Chord) => {
+        const scale: Scale = scaleForChord(key, chord);
+        return upDownArp(scale.notes, beatsPerChord);
+      })
+    )
+    .flat(2);
 };

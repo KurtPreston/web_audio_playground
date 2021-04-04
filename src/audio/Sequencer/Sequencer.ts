@@ -1,47 +1,65 @@
 import {Transport} from 'tone';
+import {NoteValue} from '../../midi/sources/MidiInputSource/MidiInputSourceOptions.generated';
+import {circleOfFifths} from '../chordProgression';
+import {Chord} from '../chords';
 import {
-  circleOfFifths,
-  majorProgression,
-  majorScaleProgression,
-  minorProgression
-} from '../chordProgression';
-import {Chord, randomChord} from '../chords';
-import {generateRelatedChord} from '../harmony';
-import {Sequence, SequencerOptions} from './SequencerOptions.generated';
+  Chart,
+  majorProgressionChartSection,
+  minorProgressionChartSection,
+  randomProgressionChart
+} from './chart';
+import {ChartPreset, SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;
 
-const chordProgressions: {[key in Sequence]: () => Chord[]} = {
-  majMin: () => circleOfFifths(majorProgression([1, 1, 6, 6, 1, 1, 6, 6])),
-  maj251: () => circleOfFifths(majorProgression([2, 5, 1, 1])),
-  min251: () => circleOfFifths(minorProgression([2, 5, 1, 1])),
-  majBlues: () => circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
-  minBlues: () => circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
-  majorScale: () => circleOfFifths(majorScaleProgression),
-  random: () => {
-    let chord: Chord = randomChord();
-    const chords: Chord[] = [chord];
-    for (let i = 0; i < 63; i++) {
-      if (Math.random() < 0.25) {
-        chord = generateRelatedChord(chord);
-      }
-      chords.push(chord);
-    }
-
-    return chords;
-  }
+const Charts: {[key in ChartPreset]: () => Chart} = {
+  majMin: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        majorProgressionChartSection(key, [1, 1, 6, 6])
+      )
+    }),
+  maj251: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        majorProgressionChartSection(key, [2, 5, 1, 1])
+      )
+    }),
+  min251: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        minorProgressionChartSection(key, [2, 5, 1, 1])
+      )
+    }),
+  majBlues: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        majorProgressionChartSection(key, [1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])
+      )
+    }),
+  minBlues: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        minorProgressionChartSection(key, [1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])
+      )
+    }),
+  random: randomProgressionChart
 };
 
 export class Sequencer {
   private readonly subscribers = new Set<SequencerCallback>();
-  public chordProgression: Chord[];
+  public chart: Chart;
+  public chords: Chord[]; // derived from chart
   private chordIdx: number = 0;
 
   private readonly scheduledRepeat: number;
 
   constructor(private sequencerOptions: SequencerOptions) {
-    this.chordProgression = [];
-    this.chordProgression = chordProgressions[sequencerOptions.sequence]();
+    // Fix typing complaings
+    this.chart = Charts[sequencerOptions.chart]();
+    this.chords = this.chart.sections.map(({chords}) => chords).flat();
+
+    this.setOptions(sequencerOptions);
     Transport.position = '0:0:0';
     this.scheduledRepeat = Transport.scheduleRepeat((time) => {
       this.nextMeasure();
@@ -53,9 +71,10 @@ export class Sequencer {
   }
 
   public setOptions(options: SequencerOptions) {
-    if (this.sequencerOptions.sequence !== options.sequence) {
+    if (this.sequencerOptions.chart !== options.chart) {
       this.chordIdx = -1;
-      this.chordProgression = chordProgressions[options.sequence]();
+      this.chart = Charts[options.chart]();
+      this.chords = this.chart.sections.map(({chords}) => chords).flat();
       this.nextMeasure();
     }
     this.sequencerOptions = options;
@@ -65,14 +84,17 @@ export class Sequencer {
 
   public setChordIdx(idx: number) {
     this.chordIdx = idx;
-    const chord: Chord = this.chordProgression[this.chordIdx];
+    const chord: Chord = this.chords[this.chordIdx];
+    if (!chord) {
+      debugger;
+    }
     this.subscribers.forEach((sub: SequencerCallback) => {
       sub(chord);
     });
   }
 
   public get chord(): Chord {
-    return this.chordProgression[this.chordIdx];
+    return this.chords[this.chordIdx];
   }
 
   public get idx(): number {
@@ -87,7 +109,7 @@ export class Sequencer {
   }
 
   private nextMeasure() {
-    const chordIdx = (this.chordIdx + 1) % this.chordProgression.length;
+    const chordIdx = (this.chordIdx + 1) % this.chords.length;
     this.setChordIdx(chordIdx);
   }
 

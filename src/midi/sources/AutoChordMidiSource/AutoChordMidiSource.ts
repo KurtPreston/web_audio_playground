@@ -15,7 +15,9 @@ export class AutoChordMidiSource implements IMidiSource<ChordGeneratorOptions> {
   private notes = new Map<NoteValue, Note[]>();
   private chordChangeInterval: NodeJS.Timeout;
   private progressionIdx: number = 0;
-  private progression: Chord[] = circleOfFifths(minorProgression([1, 6, 4, 5]), NoteValue.C);
+  private progression: Chord[] = circleOfFifths
+    .map((key: NoteValue) => minorProgression([1, 6, 4, 5])(key), NoteValue.C)
+    .flat();
   private readonly publish: MidiNotePublish;
 
   constructor(params: MidiSourceParams<ChordGeneratorOptions>) {
