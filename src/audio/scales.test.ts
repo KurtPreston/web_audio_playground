@@ -1,5 +1,6 @@
+import {Chords} from './chords';
 import {NoteValue} from './Note';
-import {Scales} from './scales';
+import {scaleForChord, Scales} from './scales';
 
 describe('majorScale', () => {
   it('computes a major scale', () => {
@@ -34,5 +35,17 @@ describe('majorScale', () => {
       NoteValue.B,
       NoteValue.Csharp + 12
     ]);
+  });
+});
+
+describe.only('scaleForChord', () => {
+  it('finds the scale for the chord in the key', () => {
+    expect(scaleForChord(NoteValue.C, Chords.D.minor)).toEqual(Scales.D.Dorian);
+  });
+
+  it('errors if the chord cannot be found in the scale', () => {
+    expect(() => {
+      scaleForChord(NoteValue.C, Chords.D.dim);
+    }).toThrowError();
   });
 });

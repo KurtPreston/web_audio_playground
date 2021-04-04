@@ -639,18 +639,18 @@ export const drawSaxFingeringChart: NoteAnnotator = {
       });
     }
 
-    const {octave} = saxKeys;
-    if (octave) {
-      ellipse({
-        cx: x - 5 * unit,
-        cy: y + 3 * unit,
-        rx: 2 * unit,
-        ry: 3 * unit,
-        canvas,
-        startAngle: Math.PI,
-        stopAngle: 2 * Math.PI,
-        fill: 'white'
-      });
-    }
+    // const {octave} = saxKeys;
+    // if (octave) {
+    //   ellipse({
+    //     cx: x - 5 * unit,
+    //     cy: y + 3 * unit,
+    //     rx: 2 * unit,
+    //     ry: 3 * unit,
+    //     canvas,
+    //     startAngle: Math.PI,
+    //     stopAngle: 2 * Math.PI,
+    //     fill: 'white'
+    //   });
+    // }
   }
 };

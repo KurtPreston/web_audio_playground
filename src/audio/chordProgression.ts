@@ -10,7 +10,7 @@ import {
   minorChord
 } from './chords';
 import {NoteAccidental, NoteValue} from './Note';
-import {accidentalForKey, majorScale, minorScale} from './scales';
+import {accidentalForKey, majorScaleNotes} from './scales';
 
 export type ChordNum = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -87,7 +87,7 @@ export const majorScaleChordGenerator: ChordGenerator = (
   root: NoteValue,
   accidental: NoteAccidental
 ) => {
-  const notes = majorScale(root);
+  const notes = majorScaleNotes(root);
 
   return new Chord({
     type: ChordType.major,
@@ -100,25 +100,5 @@ export const majorScaleChordGenerator: ChordGenerator = (
 export const majorScaleProgression: ChordProgression = (key: NoteValue): Chord[] => {
   const accidental: NoteAccidental = accidentalForKey[key];
   const scale = majorScaleChordGenerator(key, accidental);
-  return new Array(4).fill(scale);
-};
-
-export const minorScaleChordGenerator: ChordGenerator = (
-  root: NoteValue,
-  accidental: NoteAccidental
-) => {
-  const notes = minorScale(root);
-
-  return new Chord({
-    type: ChordType.minor,
-    notes,
-    root,
-    accidental
-  });
-};
-
-export const minorScaleProgression: ChordProgression = (key: NoteValue): Chord[] => {
-  const accidental: NoteAccidental = accidentalForKey[key];
-  const scale = minorScaleChordGenerator(key, accidental);
   return new Array(4).fill(scale);
 };

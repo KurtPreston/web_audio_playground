@@ -1,4 +1,5 @@
-import {Note, NoteAccidental, noteToNoteValue, NoteValue} from './Note';
+import {Chord} from './chords';
+import {getNoteName, Note, NoteAccidental, noteToNoteValue, NoteValue} from './Note';
 
 export const accidentalForKey: {[note in NoteValue]: NoteAccidental} = {
   [NoteValue.C]: 'b',
@@ -28,7 +29,7 @@ export enum Mode {
   Minor = 6
 }
 
-export type ModeName =
+export type ScaleNames =
   | 'Ionion'
   | 'Dorian'
   | 'Phrygian'
@@ -83,11 +84,12 @@ export function majorScaleNotes(key: NoteValue, mode: Mode = Mode.Ionion): Note[
 //     scale.notes[offset + 3],
 // }
 
-export type ScaleSet = {[mode in ModeName]: Scale};
+export type ScaleSet = {[mode in ScaleNames]: Scale};
 
 function scaleSetFor(key: NoteValue, accidental: NoteAccidental): ScaleSet {
   const major = new Scale({key, mode: Mode.Ionion, accidental});
   const minor = new Scale({key: key - 9, mode: Mode.Aeolian, accidental});
+
   return {
     // C Ionion: first mode of C
     Ionion: major,
@@ -112,6 +114,27 @@ function scaleSetFor(key: NoteValue, accidental: NoteAccidental): ScaleSet {
     // C Locrian: seventh mode of D,
     Locrian: new Scale({key: key - 11, mode: Mode.Locrian, accidental})
   };
+}
+
+export function scaleForChord(key: NoteValue, chord: Chord): Scale {
+  const noteValuesInScale = new Set<NoteValue>(majorScaleNotes(key).map(noteToNoteValue));
+  for (const note of chord.notes) {
+    if (!noteValuesInScale.has(noteToNoteValue(note))) {
+      const noteName = getNoteName(note, {
+        accidental: chord.accidental,
+        octave: false
+      });
+      throw new Error(`Note ${noteName} not found in scale`);
+    }
+  }
+
+  const rootIdx = majorScaleNotes(key).findIndex((k) => k === chord.root);
+  const mode: Mode = (rootIdx + 1) as Mode;
+  return new Scale({
+    key,
+    accidental: chord.accidental,
+    mode
+  });
 }
 
 export const Scales = {

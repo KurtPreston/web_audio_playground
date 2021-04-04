@@ -82,18 +82,6 @@ export class SheetMusic implements Sprite {
 
         if (accidental) {
           vexNote.addAccidental(0, new Vex.Flow.Accidental(accidental));
-          // const alternateNoteInfo: NoteInfo = getNoteInfo(note, 'b');
-          // const alternateNote = new Vex.Flow.StaveNote({
-          //   clef,
-          //   keys: [`${alternateNoteInfo.letter}/${alternateNoteInfo.octave}`],
-          //   duration: 'q',
-          //   auto_stem: true
-          // });
-          // alternateNote.addAccidental(
-          //   0,
-          //   new Vex.Flow.Accidental(alternateNoteInfo.accidental as '#' | 'b')
-          // );
-          // vexNotes.push(alternateNote);
         }
 
         return vexNote;

@@ -11,16 +11,7 @@
     "sequence": {
       "title": "Sequence",
       "type": "string",
-      "enum": [
-        "majMin",
-        "maj251",
-        "min251",
-        "majBlues",
-        "minBlues",
-        "random",
-        "majorScale",
-        "minorScale"
-      ],
+      "enum": ["majMin", "maj251", "min251", "majBlues", "minBlues", "random", "majorScale"],
       "enumNames": [
         "Major/Minor",
         "Major 2-5-1",
@@ -28,8 +19,7 @@
         "Major Blues",
         "Minor Blues",
         "Random",
-        "Major Scale",
-        "Minor Scale"
+        "Major Scale"
       ]
     }
   },

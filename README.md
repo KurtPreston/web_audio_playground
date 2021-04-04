@@ -37,6 +37,25 @@ With credit to the bubble android game + puyo
 Blob of notes (graph of notes)
 Sing a chord of adjacent notes to pop them
 
+## Solo
+
+1. Pick an Exercise
+
+Sample Exercise 1: major-minor
+
+- Choose numPlayers
+- Round 1: all together, then each player plays root C | C | A- | A-
+- Round 2: add the fifth
+- Round 3: add the third, up down up arpeggion
+- Round 4: the pentatonic
+- Round 5: the scale
+
+2.  Play the exercise
+
+- Eventually, use a mic to listen to the user input,
+- give them a score
+  (is there a way to make it less competitive? like only compete against your best score?)
+
 ## Ideas
 
 Dynamically render background --- multiple layers rotating, random walk in blend mode

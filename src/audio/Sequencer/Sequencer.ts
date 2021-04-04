@@ -3,12 +3,10 @@ import {
   circleOfFifths,
   majorProgression,
   majorScaleProgression,
-  minorProgression,
-  minorScaleProgression
+  minorProgression
 } from '../chordProgression';
 import {Chord, randomChord} from '../chords';
 import {generateRelatedChord} from '../harmony';
-import {NoteValue} from '../Note';
 import {Sequence, SequencerOptions} from './SequencerOptions.generated';
 
 type SequencerCallback = (chord: Chord) => void;
@@ -20,7 +18,6 @@ const chordProgressions: {[key in Sequence]: () => Chord[]} = {
   majBlues: () => circleOfFifths(majorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
   minBlues: () => circleOfFifths(minorProgression([1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])),
   majorScale: () => circleOfFifths(majorScaleProgression),
-  minorScale: () => circleOfFifths(minorScaleProgression, NoteValue.A),
   random: () => {
     let chord: Chord = randomChord();
     const chords: Chord[] = [chord];
