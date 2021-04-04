@@ -101,6 +101,7 @@ export class SheetMusic implements Sprite {
     );
 
     const voice = new Vex.Flow.Voice({num_beats: vexNotes.length, beat_value: 4});
+    voice.setStrict(false); // <--- but why?
     voice.addTickables(vexNotes);
     const formatter = new Vex.Flow.Formatter();
     formatter.joinVoices([voice]).format([voice], width);

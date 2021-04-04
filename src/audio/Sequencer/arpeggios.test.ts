@@ -26,4 +26,19 @@ describe('upDownArp', () => {
       )
     );
   });
+
+  it('handles Db minor', () => {
+    const actual: MelodyNote[] = upDownArp([NoteValue.Dflat, NoteValue.Gflat, NoteValue.Bflat], 4);
+
+    const expected: Note[] = [NoteValue.Dflat, NoteValue.Gflat, NoteValue.Bflat, NoteValue.Gflat];
+
+    expect(actual).toEqual(
+      expected.map(
+        (note: NoteValue): MelodyNote => ({
+          note,
+          beats: 1
+        })
+      )
+    );
+  });
 });
