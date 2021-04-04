@@ -28,6 +28,7 @@ export type NoteAnnotator = {
 };
 
 const beatsToDurationMap: {[beats: number]: string} = {
+  0.5: '8',
   1: 'q',
   2: 'h',
   4: 'w'

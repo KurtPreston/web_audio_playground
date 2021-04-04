@@ -40,7 +40,13 @@ export const rootFifthMelodyGenerator: MelodyGenerator = (chart: Chart): Melody 
 export const chordMelodyGenerator: MelodyGenerator = (chart: Chart): Melody => {
   return chart.sections
     .map((section: ChartSection) =>
-      section.chords.map((chord: Chord) => upDownArp(chord.notes, section.beatsPerChord))
+      section.chords.map((chord: Chord) =>
+        upDownArp({
+          notes: chord.notes,
+          totalBeats: section.beatsPerChord,
+          beatsPerNote: 1
+        })
+      )
     )
     .flat(2);
 };
@@ -55,7 +61,11 @@ export const scaleMelodyGenerator: MelodyGenerator = (chart: Chart) => {
     .map(({beatsPerChord, chords, key}) =>
       chords.map((chord: Chord) => {
         const scale: Scale = scaleForChord(key, chord);
-        return upDownArp(scale.notes, beatsPerChord);
+        return upDownArp({
+          notes: scale.notes,
+          totalBeats: beatsPerChord,
+          beatsPerNote: 0.5
+        });
       })
     )
     .flat(2);
