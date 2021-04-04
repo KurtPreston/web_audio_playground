@@ -89,7 +89,8 @@ export class DopplerSynthGame implements Game {
     };
     this.sequencerOptions = {
       bpm: 90,
-      chart: 'random'
+      chart: 'random',
+      melody: 'chord'
     };
     this.bg = new OuterSpace(dimensions);
     this.noteGraph = new NoteGraph({

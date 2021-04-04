@@ -49,7 +49,8 @@ export class SoloGame implements Game {
 
     this.sequencerOptions = {
       bpm: 60,
-      chart: 'majMin'
+      chart: 'majMin',
+      melody: 'chord'
     };
     this.bg = new OuterSpace(dimensions);
     this.sequencer = new Sequencer(this.sequencerOptions);

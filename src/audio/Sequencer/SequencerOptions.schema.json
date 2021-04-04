@@ -9,7 +9,7 @@
       "maximum": 180
     },
     "chart": {
-      "title": "Chart Preset",
+      "title": "Sequencer Chart",
       "type": "string",
       "enum": ["majMin", "maj251", "min251", "majBlues", "minBlues", "random"],
       "enumNames": [
@@ -20,8 +20,14 @@
         "Minor Blues",
         "Random"
       ]
+    },
+    "melody": {
+      "title": "Sequencer Melody",
+      "type": "string",
+      "enum": ["roots", "fifths", "chord", "pentatonic", "scale"],
+      "default": "chord"
     }
   },
   "additionalProperties": false,
-  "required": ["bpm", "chart"]
+  "required": ["bpm", "chart", "melody"]
 }

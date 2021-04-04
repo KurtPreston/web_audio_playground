@@ -1,6 +1,7 @@
 import {autobind} from 'core-decorators';
 import Vex from 'vexflow';
 import {getNoteInfo, Note, NoteAccidental, NoteInfo} from '../../audio/Note';
+import {MelodyNote} from '../../audio/Sequencer/melody';
 import {Sequencer} from '../../audio/Sequencer/Sequencer';
 import {WorldState} from '../../types/State';
 import {Sprite} from '../Sprite';
@@ -26,6 +27,12 @@ export type NoteAnnotator = {
   render: (params: NoteAnnotatorParams) => void;
 };
 
+const beatsToDurationMap: {[beats: number]: string} = {
+  1: 'q',
+  2: 'h',
+  4: 'w'
+};
+
 @autobind
 export class SheetMusic implements Sprite {
   private readonly vexCanvasContext: Vex.Flow.CanvasContext;
@@ -45,9 +52,9 @@ export class SheetMusic implements Sprite {
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
     const {vexCanvasContext} = this;
-    const {chord} = this.sequencer;
+    const {chord, measureMelody} = this.sequencer;
+    const notes = measureMelody;
     const chordAccidental = chord.accidental;
-    const notes: Note[] = chord.trebleClefChord();
     const x = world.dimensions.width / (2 * this.canvasScale);
     const y = 50 / this.canvasScale;
     const width = Math.min(
@@ -70,13 +77,18 @@ export class SheetMusic implements Sprite {
 
     // Draw notes
     const vexNotes: Vex.Flow.StaveNote[] = notes.map(
-      (note: Note): Vex.Flow.StaveNote => {
+      ({note, beats}: MelodyNote): Vex.Flow.StaveNote => {
         const {letter, accidental, octave}: NoteInfo = getNoteInfo(note, chordAccidental);
         const noteName = `${letter}/${octave}`;
+
+        const duration = beatsToDurationMap[beats];
+        if (!duration) {
+          throw new Error(`No Vex symbol set for ${beats} beats`);
+        }
         const vexNote = new Vex.Flow.StaveNote({
           clef,
           keys: [noteName],
-          duration: 'q',
+          duration,
           auto_stem: true
         });
 
@@ -100,7 +112,7 @@ export class SheetMusic implements Sprite {
     for (const noteAnnotator of this.noteAnnotators) {
       const annotatorHeight = noteAnnotator.height;
       for (const [i, vexNote] of vexNotes.entries()) {
-        const note = notes[i];
+        const note = notes[i].note;
         const annotatorX = vexNote.getAbsoluteX() + vexNote.getWidth() / 2;
 
         noteAnnotator.render({

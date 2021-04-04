@@ -1,7 +1,8 @@
-import {ChordNum, majorProgression, minorProgression} from '../chordProgression';
+import {ChordNum, circleOfFifths, majorProgression, minorProgression} from '../chordProgression';
 import {Chord, randomChord} from '../chords';
 import {generateRelatedChord} from '../harmony';
 import {NoteValue} from '../Note';
+import {SequencerChart} from './SequencerOptions.generated';
 
 // A chart is the underlying data structure that the sequencer uses
 // It's a like a fakebook entry -- a key, time signature, and list of chords
@@ -58,3 +59,37 @@ export function randomProgressionChart(): Chart {
     ]
   });
 }
+
+export const Charts: {[key in SequencerChart]: () => Chart} = {
+  majMin: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        majorProgressionChartSection(key, [1, 1, 6, 6])
+      )
+    }),
+  maj251: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        majorProgressionChartSection(key, [2, 5, 1, 1])
+      )
+    }),
+  min251: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        minorProgressionChartSection(key, [2, 5, 1, 1])
+      )
+    }),
+  majBlues: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        majorProgressionChartSection(key, [1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])
+      )
+    }),
+  minBlues: () =>
+    new Chart({
+      sections: circleOfFifths.map((key: NoteValue) =>
+        minorProgressionChartSection(key, [1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])
+      )
+    }),
+  random: randomProgressionChart
+};

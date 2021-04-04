@@ -1,63 +1,26 @@
 import {Transport} from 'tone';
-import {NoteValue} from '../../midi/sources/MidiInputSource/MidiInputSourceOptions.generated';
-import {circleOfFifths} from '../chordProgression';
 import {Chord} from '../chords';
-import {
-  Chart,
-  majorProgressionChartSection,
-  minorProgressionChartSection,
-  randomProgressionChart
-} from './chart';
-import {ChartPreset, SequencerOptions} from './SequencerOptions.generated';
+import {Chart, Charts} from './chart';
+import {Melody} from './melody';
+import {MelodyGenerators} from './melodyGenerators';
+import {SequencerMelody, SequencerOptions} from './SequencerOptions.generated';
 
-type SequencerCallback = (chord: Chord) => void;
-
-const Charts: {[key in ChartPreset]: () => Chart} = {
-  majMin: () =>
-    new Chart({
-      sections: circleOfFifths.map((key: NoteValue) =>
-        majorProgressionChartSection(key, [1, 1, 6, 6])
-      )
-    }),
-  maj251: () =>
-    new Chart({
-      sections: circleOfFifths.map((key: NoteValue) =>
-        majorProgressionChartSection(key, [2, 5, 1, 1])
-      )
-    }),
-  min251: () =>
-    new Chart({
-      sections: circleOfFifths.map((key: NoteValue) =>
-        minorProgressionChartSection(key, [2, 5, 1, 1])
-      )
-    }),
-  majBlues: () =>
-    new Chart({
-      sections: circleOfFifths.map((key: NoteValue) =>
-        majorProgressionChartSection(key, [1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])
-      )
-    }),
-  minBlues: () =>
-    new Chart({
-      sections: circleOfFifths.map((key: NoteValue) =>
-        minorProgressionChartSection(key, [1, 1, 1, 1, 4, 4, 1, 1, 5, 4, 1, 1])
-      )
-    }),
-  random: randomProgressionChart
-};
+type SequencerCallback = (chord: Chord, melody: Melody) => void;
 
 export class Sequencer {
   private readonly subscribers = new Set<SequencerCallback>();
   public chart: Chart;
-  public chords: Chord[]; // derived from chart
-  private chordIdx: number = 0;
+  public chords: Chord[]; // derived from charts
+  public melodyPerMeasure: {[measure: number]: Melody}; // derived from charts
+  private measure: number = 0;
 
   private readonly scheduledRepeat: number;
 
   constructor(private sequencerOptions: SequencerOptions) {
-    // Fix typing complaings
+    // Fix typing complaints
     this.chart = Charts[sequencerOptions.chart]();
     this.chords = this.chart.sections.map(({chords}) => chords).flat();
+    this.melodyPerMeasure = this.buildMelodyPerMeasure(sequencerOptions.melody);
 
     this.setOptions(sequencerOptions);
     Transport.position = '0:0:0';
@@ -71,10 +34,14 @@ export class Sequencer {
   }
 
   public setOptions(options: SequencerOptions) {
-    if (this.sequencerOptions.chart !== options.chart) {
-      this.chordIdx = -1;
+    if (
+      this.sequencerOptions.chart !== options.chart ||
+      this.sequencerOptions.melody !== options.melody
+    ) {
+      this.measure = -1;
       this.chart = Charts[options.chart]();
       this.chords = this.chart.sections.map(({chords}) => chords).flat();
+      this.melodyPerMeasure = this.buildMelodyPerMeasure(options.melody);
       this.nextMeasure();
     }
     this.sequencerOptions = options;
@@ -82,23 +49,52 @@ export class Sequencer {
     Transport.bpm.rampTo(options.bpm);
   }
 
-  public setChordIdx(idx: number) {
-    this.chordIdx = idx;
-    const chord: Chord = this.chords[this.chordIdx];
-    if (!chord) {
-      debugger;
+  private buildMelodyPerMeasure(melodyType: SequencerMelody): {[measure: number]: Melody} {
+    const melody = MelodyGenerators[melodyType](this.chart);
+    const melodyPerMeasure: {[measureIdx: number]: Melody} = {};
+    let beats = 0;
+    let measureIdx = 0;
+    for (const melodyNote of melody) {
+      if (!melodyPerMeasure[measureIdx]) {
+        melodyPerMeasure[measureIdx] = [melodyNote];
+      } else {
+        melodyPerMeasure[measureIdx].push(melodyNote);
+      }
+
+      beats += melodyNote.beats;
+      if (beats >= 4) {
+        measureIdx++;
+      }
+      beats = beats % 4;
     }
+
+    return melodyPerMeasure;
+  }
+
+  public setChordIdx(idx: number) {
+    this.measure = idx;
+
+    const chord: Chord = this.chords[this.measure];
+    const melody: Melody = this.melodyPerMeasure[this.measure];
     this.subscribers.forEach((sub: SequencerCallback) => {
-      sub(chord);
+      sub(chord, melody);
     });
   }
 
   public get chord(): Chord {
-    return this.chords[this.chordIdx];
+    return this.chords[this.measure];
+  }
+
+  public get measureMelody(): Melody {
+    return this.melodyPerMeasure[this.measure].map(({note, beats}) => ({
+      // TODO: octave adjustment. Move somewhere else
+      note: note + 5 * 12,
+      beats
+    }));
   }
 
   public get idx(): number {
-    return this.chordIdx;
+    return this.measure;
   }
 
   public subscribe(callback: SequencerCallback): () => void {
@@ -109,7 +105,7 @@ export class Sequencer {
   }
 
   private nextMeasure() {
-    const chordIdx = (this.chordIdx + 1) % this.chords.length;
+    const chordIdx = (this.measure + 1) % this.chords.length;
     this.setChordIdx(chordIdx);
   }
 

@@ -3,6 +3,7 @@ import {Scale, scaleForChord} from '../scales';
 import {upDownArp} from './arpeggios';
 import {Chart, ChartSection} from './chart';
 import {Melody} from './melody';
+import {SequencerMelody} from './SequencerOptions.generated';
 
 // MelodyGenerators take a Chart and produce a practice melody
 // For example, scales and arpeggios over the chord progression
@@ -58,4 +59,12 @@ export const scaleMelodyGenerator: MelodyGenerator = (chart: Chart) => {
       })
     )
     .flat(2);
+};
+
+export const MelodyGenerators: {[key in SequencerMelody]: MelodyGenerator} = {
+  roots: rootNoteMelodyGenerator,
+  fifths: rootFifthMelodyGenerator,
+  chord: chordMelodyGenerator,
+  pentatonic: pentatonicMelodyGenerator,
+  scale: scaleMelodyGenerator
 };
