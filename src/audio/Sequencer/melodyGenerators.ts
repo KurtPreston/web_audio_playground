@@ -84,13 +84,14 @@ function arpeggioGenerator(
   }
 
   return measures
-    .map(({chord, key, numBeats}) =>
-      upDownArp({
-        notes: chordToNotes(chord, key),
+    .map(({chord, key, numBeats}) => {
+      const notes = chordToNotes(chord, key);
+      return upDownArp({
+        notes,
         totalBeats: numBeats,
-        beatsPerNote: 1
-      })
-    )
+        beatsPerNote: notes.length > numBeats ? 0.5 : 1
+      });
+    })
     .flat();
 }
 

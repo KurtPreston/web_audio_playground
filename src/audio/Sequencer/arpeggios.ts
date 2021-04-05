@@ -10,7 +10,7 @@ export function upDownArp(params: {
   const melodyNotes: MelodyNote[] = [];
   let direction = -1;
   let noteIdx = 0;
-  for (let i = 0; i < totalBeats; i++) {
+  for (let i = 0; i < totalBeats; i += beatsPerNote) {
     const note = notes[noteIdx];
     melodyNotes.push({
       note,
