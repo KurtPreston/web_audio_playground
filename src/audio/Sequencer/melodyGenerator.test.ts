@@ -5,7 +5,7 @@ import {Chart} from './chart';
 import {Melody} from './melody';
 import {scaleMelodyGenerator} from './melodyGenerators';
 
-fdescribe('scaleMelodyGenerator', () => {
+describe('scaleMelodyGenerator', () => {
   it('generates modes in the key', () => {
     // 2-5-1 progression in
     const chart: Chart = new Chart({
@@ -24,6 +24,35 @@ fdescribe('scaleMelodyGenerator', () => {
         ...Scales.D.Dorian.notes.slice(0, 4),
         ...Scales.G.Mixolydian.notes.slice(0, 4),
         ...Scales.C.Major.notes.slice(0, 4)
+      ].map((note: Note) => ({
+        note,
+        beats: 1
+      }))
+    );
+  });
+
+  it('aggregates consecutive scales', () => {
+    const chart: Chart = new Chart({
+      sections: [
+        {
+          key: NoteValue.C,
+          beatsPerChord: 4,
+          chords: [Chords.C.major, Chords.C.major]
+        }
+      ]
+    });
+
+    const melody: Melody = scaleMelodyGenerator(chart);
+    expect(melody).toEqual(
+      [
+        NoteValue.C,
+        NoteValue.D,
+        NoteValue.E,
+        NoteValue.F,
+        NoteValue.G,
+        NoteValue.A,
+        NoteValue.B,
+        NoteValue.C + 12
       ].map((note: Note) => ({
         note,
         beats: 1

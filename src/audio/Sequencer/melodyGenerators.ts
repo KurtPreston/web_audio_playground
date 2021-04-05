@@ -1,7 +1,9 @@
+import {NoteValue} from '../../midi/sources/MidiInputSource/MidiInputSourceOptions.generated';
 import {Chord} from '../chords';
+import {Note} from '../Note';
 import {Scale, scaleForChord} from '../scales';
 import {upDownArp} from './arpeggios';
-import {Chart, ChartSection} from './chart';
+import {Chart} from './chart';
 import {Melody} from './melody';
 import {SequencerMelody} from './SequencerOptions.generated';
 
@@ -38,17 +40,9 @@ export const rootFifthMelodyGenerator: MelodyGenerator = (chart: Chart): Melody 
 };
 
 export const chordMelodyGenerator: MelodyGenerator = (chart: Chart): Melody => {
-  return chart.sections
-    .map((section: ChartSection) =>
-      section.chords.map((chord: Chord) =>
-        upDownArp({
-          notes: chord.notes,
-          totalBeats: section.beatsPerChord,
-          beatsPerNote: 1
-        })
-      )
-    )
-    .flat(2);
+  return arpeggioGenerator(chart, (chord: Chord, key: NoteValue): Note[] => {
+    return chord.notes;
+  });
 };
 
 export const pentatonicMelodyGenerator: MelodyGenerator = (chart: Chart) => {
@@ -57,19 +51,48 @@ export const pentatonicMelodyGenerator: MelodyGenerator = (chart: Chart) => {
 };
 
 export const scaleMelodyGenerator: MelodyGenerator = (chart: Chart) => {
-  return chart.sections
-    .map(({beatsPerChord, chords, key}) =>
-      chords.map((chord: Chord) => {
-        const scale: Scale = scaleForChord(key, chord);
-        return upDownArp({
-          notes: scale.notes,
-          totalBeats: beatsPerChord,
-          beatsPerNote: 0.5
+  return arpeggioGenerator(chart, (chord: Chord, key: NoteValue): Note[] => {
+    const scale: Scale = scaleForChord(key, chord);
+    return [...scale.notes, scale.notes[0] + 12];
+  });
+};
+
+function arpeggioGenerator(
+  chart: Chart,
+  chordToNotes: (chord: Chord, key: NoteValue) => Note[]
+): Melody {
+  let lastChord: Chord | undefined;
+  const measures: {
+    chord: Chord;
+    key: NoteValue;
+    numBeats: number;
+  }[] = [];
+
+  for (const section of chart.sections) {
+    for (const chord of section.chords) {
+      if (chord.name !== lastChord?.name) {
+        lastChord = chord;
+        measures.push({
+          chord,
+          key: section.key,
+          numBeats: section.beatsPerChord
         });
+      } else {
+        measures[measures.length - 1].numBeats += section.beatsPerChord;
+      }
+    }
+  }
+
+  return measures
+    .map(({chord, key, numBeats}) =>
+      upDownArp({
+        notes: chordToNotes(chord, key),
+        totalBeats: numBeats,
+        beatsPerNote: 1
       })
     )
-    .flat(2);
-};
+    .flat();
+}
 
 export const MelodyGenerators: {[key in SequencerMelody]: MelodyGenerator} = {
   roots: rootNoteMelodyGenerator,
