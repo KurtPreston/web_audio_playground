@@ -21,12 +21,15 @@ describe('scaleMelodyGenerator', () => {
     const melody: Melody = scaleMelodyGenerator(chart);
     expect(melody).toEqual(
       [
-        ...Scales.D.Dorian.notes.slice(0, 4),
-        ...Scales.G.Mixolydian.notes.slice(0, 4),
-        ...Scales.C.Major.notes.slice(0, 4)
+        ...Scales.D.Dorian.notes.slice(0, 7),
+        NoteValue.D + 12,
+        ...Scales.G.Mixolydian.notes.slice(0, 7),
+        NoteValue.G + 12,
+        ...Scales.C.Major.notes.slice(0, 7),
+        NoteValue.C + 12
       ].map((note: Note) => ({
         note,
-        beats: 1
+        beats: 0.5
       }))
     );
   });

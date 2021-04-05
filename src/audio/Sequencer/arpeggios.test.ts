@@ -4,7 +4,11 @@ import {MelodyNote} from './melody';
 
 describe('upDownArp', () => {
   it('generates an ascending then descending arpeggio', () => {
-    const actual: MelodyNote[] = upDownArp([NoteValue.C, NoteValue.E, NoteValue.G], 8);
+    const actual: MelodyNote[] = upDownArp({
+      notes: [NoteValue.C, NoteValue.E, NoteValue.G],
+      beatsPerNote: 1,
+      totalBeats: 8
+    });
 
     const expected: Note[] = [
       NoteValue.C,
@@ -28,7 +32,11 @@ describe('upDownArp', () => {
   });
 
   it('handles Db minor', () => {
-    const actual: MelodyNote[] = upDownArp([NoteValue.Dflat, NoteValue.Gflat, NoteValue.Bflat], 4);
+    const actual: MelodyNote[] = upDownArp({
+      notes: [NoteValue.Dflat, NoteValue.Gflat, NoteValue.Bflat],
+      beatsPerNote: 1,
+      totalBeats: 4
+    });
 
     const expected: Note[] = [NoteValue.Dflat, NoteValue.Gflat, NoteValue.Bflat, NoteValue.Gflat];
 
