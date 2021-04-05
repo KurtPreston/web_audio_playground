@@ -38,9 +38,11 @@ describe('majorScale', () => {
   });
 });
 
-describe.only('scaleForChord', () => {
+describe('scaleForChord', () => {
   it('finds the scale for the chord in the key', () => {
     expect(scaleForChord(NoteValue.C, Chords.D.minor)).toEqual(Scales.D.Dorian);
+    expect(scaleForChord(NoteValue.C, Chords.A.minor)).toEqual(Scales.A.Aeolian);
+    expect(scaleForChord(NoteValue.G, Chords.E.minor)).toEqual(Scales.E.Aeolian);
   });
 
   it('errors if the chord cannot be found in the scale', () => {

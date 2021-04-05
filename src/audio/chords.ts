@@ -342,6 +342,7 @@ export const Chords = {
   D: chordSetFor(NoteValue.D, '#'),
   Dsharp: chordSetFor(NoteValue.Dsharp, '#'),
   Eflat: chordSetFor(NoteValue.Eflat, 'b'),
+  E: chordSetFor(NoteValue.E, '#'),
   F: chordSetFor(NoteValue.F, 'b'),
   Fsharp: chordSetFor(NoteValue.Fsharp, '#'),
   Gflat: chordSetFor(NoteValue.Gflat, 'b'),

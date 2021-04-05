@@ -128,7 +128,8 @@ export function scaleForChord(key: NoteValue, chord: Chord): Scale {
     }
   }
 
-  const rootIdx = majorScaleNotes(key).findIndex((k) => k === chord.root);
+  const notes = majorScaleNotes(key);
+  const rootIdx = notes.findIndex((k) => noteToNoteValue(k) === chord.root);
   const mode: Mode = (rootIdx + 1) as Mode;
   return new Scale({
     key,
@@ -148,6 +149,7 @@ export const Scales = {
   D: scaleSetFor(NoteValue.D, '#'),
   Dsharp: scaleSetFor(NoteValue.Dsharp, '#'),
   Eflat: scaleSetFor(NoteValue.Eflat, 'b'),
+  E: scaleSetFor(NoteValue.E, '#'),
   F: scaleSetFor(NoteValue.F, 'b'),
   Fsharp: scaleSetFor(NoteValue.Fsharp, '#'),
   Gflat: scaleSetFor(NoteValue.Gflat, 'b'),
