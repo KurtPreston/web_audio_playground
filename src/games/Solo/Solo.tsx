@@ -1,5 +1,5 @@
 import {autobind} from 'core-decorators';
-import {chunk} from 'lodash';
+import {chunk, isFinite} from 'lodash';
 import React from 'react';
 import {Compressor, ToneAudioNode} from 'tone';
 import {Chord} from '../../audio/chords';
@@ -36,6 +36,7 @@ export class SoloGame implements Game {
   private sequencerOptions: SequencerOptions;
   private colorTheme: ColorTheme = 'rainbow';
   private readonly channel: ToneAudioNode;
+  private loop: [number | null, number | null] = [null, null];
 
   // References
   private readonly updateMenu: () => void;
@@ -132,9 +133,26 @@ export class SoloGame implements Game {
                       this.updateMenu();
                     };
 
+                    const [start, stop] = this.loop;
+                    const cellIsLooping =
+                      isFinite(start) &&
+                      chordIdx >= (start as number) &&
+                      isFinite(stop) &&
+                      chordIdx <= (stop as number);
+                    const cellStyle: React.CSSProperties = cellIsLooping
+                      ? {
+                          backgroundColor: 'rgba(255, 255, 255, 0.3)'
+                        }
+                      : {};
+
                     return (
-                      <td key={i}>
-                        <button className={btnClass} onClick={setChord}>
+                      <td key={i} style={cellStyle}>
+                        <button
+                          className={btnClass}
+                          onClick={setChord}
+                          onMouseDown={(event) => this.setLoopStart(chordIdx)}
+                          onMouseUp={() => this.setLoopEnd(chordIdx)}
+                        >
                           {chord.name}
                         </button>
                       </td>
@@ -144,9 +162,37 @@ export class SoloGame implements Game {
               ))}
             </tbody>
           </table>
+          {this.sequencer.isLooping ? (
+            <div className='clear-loop-btn'>
+              <button onClick={this.clearLoop}>Clear Loop</button>
+            </div>
+          ) : null}
         </fieldset>
       </div>
     );
+  }
+
+  private setLoopStart(chordIdx: number) {
+    this.loop[0] = chordIdx;
+  }
+
+  private setLoopEnd(chordIdx: number) {
+    this.loop[1] = chordIdx;
+    const [start, stop] = this.loop;
+    if (isFinite(start) && isFinite(stop)) {
+      if (stop > (start as number)) {
+        this.sequencer.setLoop(start as number, stop);
+      } else {
+        this.loop = [null, null];
+      }
+    }
+    this.updateMenu();
+  }
+
+  private clearLoop() {
+    this.loop = [null, null];
+    this.sequencer.clearLoop();
+    this.updateMenu();
   }
 
   public destroy() {

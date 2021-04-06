@@ -13,6 +13,7 @@ export class Sequencer {
   public chords: Chord[]; // derived from charts
   public melodyPerMeasure: {[measure: number]: Melody}; // derived from charts
   private measure: number = 0;
+  private loop: [number, number] | null = null;
 
   private readonly scheduledRepeat: number;
 
@@ -47,6 +48,21 @@ export class Sequencer {
     this.sequencerOptions = options;
 
     Transport.bpm.rampTo(options.bpm);
+  }
+
+  public get isLooping(): boolean {
+    return Boolean(this.loop);
+  }
+
+  public setLoop(startIdx: number, endIdx: number) {
+    this.loop = [startIdx, endIdx];
+    if (this.measure < startIdx || this.measure > endIdx) {
+      this.measure = endIdx;
+    }
+  }
+
+  public clearLoop() {
+    this.loop = null;
   }
 
   private buildMelodyPerMeasure(melodyType: SequencerMelody): {[measure: number]: Melody} {
@@ -105,7 +121,10 @@ export class Sequencer {
   }
 
   private nextMeasure() {
-    const chordIdx = (this.measure + 1) % this.chords.length;
+    let chordIdx = (this.measure + 1) % this.chords.length;
+    if (this.loop && chordIdx > this.loop[1]) {
+      chordIdx = this.loop[0];
+    }
     this.setChordIdx(chordIdx);
   }
 
