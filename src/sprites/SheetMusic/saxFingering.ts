@@ -517,7 +517,7 @@ export const drawSaxFingeringChart: NoteAnnotator = {
   name: 'Sax',
   height: 80,
   render: (params: NoteAnnotatorParams) => {
-    const {canvas, note, x, y, width, height} = params;
+    const {canvas, note, x, y, width, height, color} = params;
 
     const saxKeys: SaxKeys = fingering[note - 12]?.[0];
     if (!saxKeys) {
@@ -527,8 +527,8 @@ export const drawSaxFingeringChart: NoteAnnotator = {
     // Derived constants
     const unit = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)) / 20;
     const mainKeySize = unit * 2;
-    const fill = 'white';
-    const stroke = 'white';
+    const fill = color;
+    const stroke = color;
 
     const {left1, left2, left3, right1, right2, right3} = saxKeys;
 

@@ -5,10 +5,10 @@ export const noteNameAnnotator: NoteAnnotator = {
   name: 'Note',
   height: 30,
   render: (params: NoteAnnotatorParams) => {
-    const {x, y, canvas, note, accidental} = params;
+    const {x, y, canvas, note, accidental, color} = params;
     canvas.font = '20px Arial';
     canvas.textAlign = 'center';
-    canvas.fillStyle = 'white';
+    canvas.fillStyle = color;
     canvas.fillText(
       getNoteName(note, {
         accidental,

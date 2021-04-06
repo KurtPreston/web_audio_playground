@@ -15,8 +15,10 @@ import {noteNameAnnotator} from '../../sprites/SheetMusic/noteName';
 import {drawSaxFingeringChart} from '../../sprites/SheetMusic/saxFingering';
 import {SheetMusic} from '../../sprites/SheetMusic/SheetMusic';
 import {Sprite} from '../../sprites/Sprite';
-import {SequencerOptionsSchema} from '../../types/schemas.generated';
+import {colorThemeSchema, SequencerOptionsSchema} from '../../types/schemas.generated';
 import {WorldState} from '../../types/State';
+import {ColorThemes} from '../../util/color';
+import {ColorTheme} from '../../util/colorTheme.generated';
 import {Game, GameInfo, ResourceInitializers} from '../Game';
 import './Solo.scss';
 
@@ -32,6 +34,7 @@ export class SoloGame implements Game {
 
   // Other state
   private sequencerOptions: SequencerOptions;
+  private colorTheme: ColorTheme = 'rainbow';
   private readonly channel: ToneAudioNode;
 
   // References
@@ -56,7 +59,8 @@ export class SoloGame implements Game {
     this.sequencer = new Sequencer(this.sequencerOptions);
     this.sheetMusic = new SheetMusic({
       sequencer: this.sequencer,
-      noteAnnotators: [noteNameAnnotator, drawSaxFingeringChart]
+      noteAnnotators: [noteNameAnnotator, drawSaxFingeringChart],
+      noteColor: this.noteColor
     });
     this.chordName = new ChordName(this.sequencer);
     this.metronome = new Metronome();
@@ -85,6 +89,15 @@ export class SoloGame implements Game {
     this.updateMenu();
   }
 
+  private updateColorTheme(colorTheme: ColorTheme) {
+    this.colorTheme = colorTheme;
+    this.updateMenu();
+  }
+
+  private noteColor(note: Note) {
+    return ColorThemes[this.colorTheme](note);
+  }
+
   public menu() {
     return (
       <div className='solo-menu'>
@@ -93,6 +106,13 @@ export class SoloGame implements Game {
             value={this.sequencerOptions}
             onChange={this.updateSequencerOptions}
             schema={SequencerOptionsSchema}
+          />
+        </fieldset>
+        <fieldset>
+          <JsonSchemaForm
+            value={this.colorTheme}
+            onChange={this.updateColorTheme}
+            schema={colorThemeSchema}
           />
         </fieldset>
         <fieldset>

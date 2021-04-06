@@ -1,0 +1,5 @@
+{
+  "title": "Color Theme",
+  "type": "string",
+  "enum": ["white", "rainbow"]
+}

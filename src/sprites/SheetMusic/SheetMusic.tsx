@@ -9,6 +9,7 @@ import {Sprite} from '../Sprite';
 export interface SheetMusicProps {
   sequencer: Sequencer;
   noteAnnotators: NoteAnnotator[];
+  noteColor: (note: Note) => string;
 }
 
 export interface NoteAnnotatorParams {
@@ -19,6 +20,7 @@ export interface NoteAnnotatorParams {
   y: number;
   width: number;
   height: number;
+  color: string;
 }
 
 export type NoteAnnotator = {
@@ -41,6 +43,8 @@ export class SheetMusic implements Sprite {
   private readonly noteAnnotators: NoteAnnotator[];
   private readonly canvasScale: number = 1.25; // Increase size
 
+  private noteColor: (note: Note) => string;
+
   constructor(params: SheetMusicProps) {
     const canvasEl: HTMLCanvasElement = document.querySelector('.game canvas') as HTMLCanvasElement;
     this.vexCanvasContext = Vex.Flow.Renderer.getCanvasContext(
@@ -49,6 +53,7 @@ export class SheetMusic implements Sprite {
     );
     this.sequencer = params.sequencer;
     this.noteAnnotators = params.noteAnnotators;
+    this.noteColor = params.noteColor;
   }
 
   public render(canvas: CanvasRenderingContext2D, world: WorldState): void {
@@ -97,6 +102,11 @@ export class SheetMusic implements Sprite {
           vexNote.addAccidental(0, new Vex.Flow.Accidental(accidental));
         }
 
+        vexNote.setStyle({
+          fillStyle: this.noteColor(note),
+          strokeStyle: this.noteColor(note)
+        });
+
         return vexNote;
       }
     );
@@ -124,7 +134,8 @@ export class SheetMusic implements Sprite {
           canvas,
           note,
           width: annotatorWidth,
-          height: annotatorHeight
+          height: annotatorHeight,
+          color: this.noteColor(note)
         });
       }
       annotatorY += annotatorHeight;
