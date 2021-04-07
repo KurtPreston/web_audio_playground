@@ -2,7 +2,7 @@ import {Sprite} from './Sprite';
 
 import {autobind} from 'core-decorators';
 import {times} from 'lodash';
-import {Transport} from 'tone';
+import {Draw, Player, ToneAudioNode, Transport} from 'tone';
 import {Seconds} from 'tone/build/esm/core/type/Units';
 import {WorldState} from '../types/State';
 import {circle} from './renderHelpers/circle';
@@ -12,15 +12,33 @@ export class Metronome implements Sprite {
   private beat: number = 0;
   private readonly transportSubscription: () => void;
 
-  constructor() {
+  private readonly kick = new Player('/samples/kick.wav');
+  private readonly hat = new Player('/samples/hihat.wav');
+
+  constructor(channel: ToneAudioNode) {
     const tonejsScheduleId = Transport.scheduleRepeat(this.onBeat, '4n');
 
     this.transportSubscription = () => Transport.cancel(tonejsScheduleId);
+    this.kick.connect(channel);
+    this.hat.connect(channel);
   }
 
   private onBeat(time: Seconds): void {
-    const beat = Transport.position.toString().split(':')[1];
-    this.beat = parseInt(beat);
+    const position = Transport.position.toString();
+    const beat = parseInt(position.split(':')[1]);
+    Draw.schedule(() => {
+      this.beat = beat;
+    }, time + 0.05);
+
+    if (beat % 4 === 0) {
+      if (this.kick.loaded) {
+        this.kick.start(time);
+      }
+    } else {
+      if (this.hat.loaded) {
+        this.hat.start(time);
+      }
+    }
   }
 
   public tick(): void {}

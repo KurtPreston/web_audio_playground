@@ -64,7 +64,7 @@ export class SoloGame implements Game {
       noteColor: this.noteColor
     });
     this.chordName = new ChordName(this.sequencer);
-    this.metronome = new Metronome();
+    this.metronome = new Metronome(this.channel);
     const activeNotes = new Set<Note>();
     this.keyboard = new Keyboard(activeNotes);
     this.updateMenu = updateMenu;
