@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import NoSleep from 'nosleep.js';
 import React from 'react';
-import {Context as AudioContext, setContext} from 'tone';
+import {Context as AudioContext, getContext} from 'tone';
 import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser, fakeAudioAnalyserSingleton, IAudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
@@ -39,6 +39,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     dimensions: undefined
   };
   private container: HTMLElement | null = null;
+  private initialized: boolean = false;
 
   // World state
   private readonly keysDown = new Set<string>();
@@ -79,6 +80,10 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private async initializeGame() {
+    if (this.initialized) {
+      return;
+    }
+
     if (this.game) {
       console.info(`Game ${this.props.gameInfo.title} already running`);
       return;
@@ -89,33 +94,35 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     }
 
     // Create audio first
-    const audioContext: AudioContext = new AudioContext();
-    const analyserNode = audioContext.createAnalyser();
-    const audioAnalyser: IAudioAnalyser = this.props.preview
-      ? fakeAudioAnalyserSingleton
-      : new AudioAnalyser(analyserNode);
+    if (!this.audio) {
+      const audioContext: AudioContext = getContext() as AudioContext;
+      const analyserNode = audioContext.createAnalyser();
+      const audioAnalyser: IAudioAnalyser = this.props.preview
+        ? fakeAudioAnalyserSingleton
+        : new AudioAnalyser(analyserNode);
+      this.audio = {
+        audioContext,
+        analyserNode,
+        audioAnalyser
+      };
+    }
+    const {audioContext, analyserNode} = this.audio;
 
     if (!this.props.preview) {
       if (audioContext.state !== 'running') {
-        await audioContext.resume();
-      }
-      if (audioContext.state !== 'running') {
         console.warn(`AudioContext is ${audioContext.state}. Cannot create game.`);
+        audioContext.resume().then(this.initializeGame);
         this.setState({
           requireClickToStart: true
         });
         return;
       }
-      setContext(audioContext);
     }
+
+    this.initialized = true;
 
     this.noSleep.enable();
 
-    this.audio = {
-      audioContext,
-      analyserNode,
-      audioAnalyser
-    };
     const Game = this.props.preview ? this.props.gameInfo.preview : this.props.gameInfo.game;
     this.game = new Game(
       this.world(),
@@ -286,7 +293,15 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
   }
 
   private tick() {
-    if (!this.game || this.audio?.audioContext.state !== 'running') {
+    if (!this.game) {
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
+
+    if (!this.props.preview && this.audio?.audioContext.state !== 'running') {
+      console.info('AudioContext is not yet running', this.audio);
       this.setState({
         requireClickToStart: true
       });

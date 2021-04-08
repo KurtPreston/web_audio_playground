@@ -28,7 +28,7 @@ export class Metronome implements Sprite {
     const beat = parseInt(position.split(':')[1]);
     Draw.schedule(() => {
       this.beat = beat;
-    }, time + 0.05);
+    }, time);
 
     if (beat % 4 === 0) {
       if (this.kick.loaded) {
