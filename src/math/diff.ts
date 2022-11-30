@@ -1,5 +1,4 @@
-import {omitBy, mapValues, isUndefined, isEqual} from 'lodash';
-import {isObject} from 'util';
+import {omitBy, mapValues, isUndefined, isEqual, isObject} from 'lodash';
 
 export function diff(a: any, b: any): any {
   if (a === b) {
@@ -7,8 +6,9 @@ export function diff(a: any, b: any): any {
   } else if (isObject(a) && isObject(b)) {
     return omitBy(
       mapValues(a, (value: any, key: string) => {
-        if (!isEqual(value, (b as any)[key])) {
-          return diff(value, b[key]);
+        const bValue = (b as any)[key];
+        if (!isEqual(value, bValue)) {
+          return diff(value, bValue);
         }
       }),
       isUndefined

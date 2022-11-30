@@ -61,7 +61,7 @@ describe('doppler', () => {
           },
           settings: {
             speedOfSound: 1000,
-            mode: DopplerMode.On
+            dopplerMode: DopplerMode.On
           }
         })
       ).toEqual(1005 / 1000);
@@ -94,7 +94,7 @@ describe('doppler', () => {
           },
           settings: {
             speedOfSound: 1000,
-            mode: DopplerMode.On
+            dopplerMode: DopplerMode.On
           }
         })
       ).toEqual(995 / 1000);
@@ -125,7 +125,7 @@ describe('doppler', () => {
           },
           settings: {
             speedOfSound: 1000,
-            mode: DopplerMode.On
+            dopplerMode: DopplerMode.On
           }
         })
       ).toEqual(995 / 1000);

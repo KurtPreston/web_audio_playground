@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+// @ts-ignore
 import WavDecoder from 'wav-decoder';
 import {Pitchfinder} from '../src';
 import {PitchDetector} from '../src/detectors/types';
