@@ -61,7 +61,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "tslint --project .",
-    "prettify": "prettier-tslint fix src/**/*.ts*"
+    "prettify": "prettier-tslint fix src/**/*.ts*",
+    "generate_certs": "mkdir -p .cert && openssl genrsa 2048 > .cert/server.key && chmod 400 .cert/server.key && openssl req -new -x509 -nodes -sha256 -days 365 -key .cert/server.key -out .cert/server.crt"
   },
   "eslintConfig": {
     "extends": "react-app"
