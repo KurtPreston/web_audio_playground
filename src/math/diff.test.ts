@@ -4,6 +4,7 @@ import {CablesOptions} from '../games/Cables/CablesOptions.generated';
 import {defaultCablesOptions} from '../games/Cables/defaultCablesOptions';
 import {MidiFileOptions} from '../midi/sources/MidiFileSource/MidiFileSourceOptions.generated';
 import {diff} from './diff';
+import {MidiSourceConfig} from '../midi/sources/MidiSourceConfig.generated';
 
 describe('diff', () => {
   it('returns the partial diff', () => {
@@ -39,8 +40,8 @@ describe('diff', () => {
         source: 'midiFile',
         options: {
           midiFileUri: '/midi/moonlight_sonata.mid'
-        } as MidiFileOptions
-      },
+        }
+      } as MidiSourceConfig,
       synth: {
         ...defaultCablesOptions.synth,
         envelope: {
