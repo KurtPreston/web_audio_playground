@@ -36,6 +36,10 @@ export default tseslint.config(
         {
           destructuring: 'all'
         }
+      ],
+      'object-curly-spacing': [
+        'error',
+        'never'
       ]
     }
   },
