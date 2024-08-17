@@ -1,4 +1,5 @@
 import {defineConfig} from 'vite';
+import basicSsl from '@vitejs/plugin-basic-ssl'
 import react from '@vitejs/plugin-react-swc';
 import {comlink} from 'vite-plugin-comlink';
 
@@ -9,6 +10,7 @@ export default defineConfig({
     comlink(),
     react({
       tsDecorators: true
-    })
+    }),
+    basicSsl()
   ]
 });
