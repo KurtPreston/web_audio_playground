@@ -1,5 +1,6 @@
+import type {FileInfo} from '@apidevtools/json-schema-ref-parser/dist/lib/types'
 import {readFileSync, unlinkSync, writeFileSync} from 'fs';
-import glob from 'glob';
+import {sync} from 'glob';
 import gulp from 'gulp'; // or import * as gulp from 'gulp'
 import {compileFromFile} from 'json-schema-to-typescript';
 import {map} from 'lodash';
@@ -9,7 +10,7 @@ import prettierOptions from './.prettierrc.json';
 import {JsonSchema} from './src/types/JsonSchema';
 
 gulp.task('jsonschema', async () => {
-  const jsonSchemaFiles: string[] = glob.sync('src/**/*.schema.json');
+  const jsonSchemaFiles: string[] = sync('src/**/*.schema.json');
 
   // Create schema index file
   const schemas: {[id: string]: JsonSchema} = {};
@@ -30,7 +31,7 @@ gulp.task('jsonschema', async () => {
         `export const ${$id}Schema: JsonSchema = ${JSON.stringify(schema)}`
     )
   ].join('\n');
-  const prettified = prettier.format(
+  const prettified = await prettier.format(
     generatedSchemaTypescript,
     prettierOptions as prettier.Options
   );
@@ -44,7 +45,7 @@ gulp.task('jsonschema', async () => {
         $refOptions: {
           resolve: {
             file: {
-              read: (file) => {
+              read: (file: FileInfo) => {
                 const $id = fileToId(file.url);
                 const refdSchema: JsonSchema = schemas[$id];
                 if (!refdSchema) {
@@ -63,7 +64,7 @@ gulp.task('jsonschema', async () => {
 });
 
 gulp.task('clean', async () => {
-  const generatedFiles = glob.sync('src/**/*.generated.ts');
+  const generatedFiles = sync('src/**/*.generated.ts');
   generatedFiles.forEach(unlinkSync);
 });
 
