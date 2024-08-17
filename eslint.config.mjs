@@ -1,12 +1,23 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import stylistic from '@stylistic/eslint-plugin'
 
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
   {
+    plugins: {
+      '@stylistic': stylistic
+    },
     rules: {
+      '@stylistic/quotes': [
+        'error',
+        'single',
+        {
+          avoidEscape: true
+        }
+      ],
       '@typescript-eslint/consistent-indexed-object-style': 'off',
       '@typescript-eslint/consistent-type-definitions': 'off',
       '@typescript-eslint/no-duplicate-enum-values': 'off',

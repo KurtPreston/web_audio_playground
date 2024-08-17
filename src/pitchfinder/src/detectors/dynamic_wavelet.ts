@@ -1,4 +1,4 @@
-import { PitchDetector } from "./types";
+import { PitchDetector } from './types';
 
 const MAX_FLWT_LEVELS = 6;
 const MAX_F = 3000;
