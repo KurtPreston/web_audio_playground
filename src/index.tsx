@@ -4,8 +4,8 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 import { createRoot } from 'react-dom/client';
-const container = document.getElementById('root');
-const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+const container = document.getElementById('root') as HTMLElement;
+const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <App />

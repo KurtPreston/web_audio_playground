@@ -121,8 +121,8 @@ export class NoteGraph implements Sprite {
     }
 
     const nodes: NoteNode[] = Array.from(largestGroup);
-    const group1: Set<NoteNode> = new Set(sampleSize(nodes, Math.round(nodes.length / 2)));
-    const group2: Set<NoteNode> = new Set(without(nodes, ...Array.from(group1)));
+    const group1: Set<NoteNode> = new Set<NoteNode>(sampleSize(nodes, Math.round(nodes.length / 2)));
+    const group2: Set<NoteNode> = new Set<NoteNode>(without(nodes, ...Array.from(group1)));
 
     this.edges.forEach((edge) => {
       const {node1, node2} = edge;

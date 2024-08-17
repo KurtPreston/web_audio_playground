@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-// @ts-ignore
+// @ts-expect-error No types for wav-decoder
 import WavDecoder from 'wav-decoder';
 import {Pitchfinder} from '../src';
 import {PitchDetector} from '../src/detectors/types';

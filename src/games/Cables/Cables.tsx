@@ -83,7 +83,7 @@ export class CablesGame implements Game {
     if (optionsString) {
       try {
         partialOptions = unzip(optionsString);
-      } catch (err) {
+      } catch {
         console.warn('Invalid query params', optionsString);
       }
     }

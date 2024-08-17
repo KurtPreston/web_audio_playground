@@ -15,7 +15,7 @@ import {Wamflap} from './games/Wamflap';
 const games: GameInfo[] = [Wamflap, DopplerSynth, Tadpole, Hadouken, Demo, Cables, Solo];
 
 @autobind
-export class App extends React.Component<{}> {
+export class App extends React.Component {
   public async componentDidMount() {
     if (window.location.protocol !== 'https:') {
       window.location.protocol = 'https:';

@@ -34,8 +34,6 @@ interface SaxKeys {
   rightSide3?: boolean;
 }
 
-type SaxKey = keyof SaxKeys;
-
 const allLeft: SaxKeys = {
   left1: true,
   left2: true,

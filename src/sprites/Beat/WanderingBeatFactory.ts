@@ -29,7 +29,7 @@ export interface WanderingBeatFactoryParams extends WanderingBeatParams {
 
 @autobind
 export class WanderingBeatFactory implements Sprite {
-  private readonly beats: Map<WanderingBeatType, Set<WanderingBeat>> = new Map();
+  private readonly beats = new Map<WanderingBeatType, Set<WanderingBeat>>();
   private readonly unsubscribeFromSequencer: () => void;
   private readonly mic: Microphone;
   private dimensions: Dimensions;

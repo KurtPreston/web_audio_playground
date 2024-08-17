@@ -28,14 +28,12 @@ export function scale(props: ScaleProps): number {
     if (input > inputMax) {
       if (overflowMode === OverflowMode.Warn) {
         console.warn('scale() received out-of-bounds input', props);
-        debugger;
       }
       return outputMax;
     }
     if (input < inputMin) {
       if (overflowMode === OverflowMode.Warn) {
         console.warn('scale() received out-of-bounds input', props);
-        debugger;
       }
       return outputMin;
     }

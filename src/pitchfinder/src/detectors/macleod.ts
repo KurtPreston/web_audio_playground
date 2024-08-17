@@ -196,8 +196,7 @@ export function Macleod(params: Partial<MacleodConfig> = {}): PitchDetector {
 
     let highestAmplitude = -Infinity;
 
-    for (let i = 0; i < maxPositions.length; i++) {
-      const tau = maxPositions[i];
+    for (const tau of maxPositions) {
       // make sure every annotation has a probability attached
       highestAmplitude = Math.max(highestAmplitude, nsdf[tau]);
 
