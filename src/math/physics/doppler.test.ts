@@ -1,3 +1,4 @@
+import {describe, it, expect} from 'vitest';
 import {DopplerMode} from '../../sprites/Microphone/MicrophoneAudioSettings.generated';
 import {doppler} from './doppler';
 

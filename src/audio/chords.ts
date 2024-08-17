@@ -350,6 +350,4 @@ export const Chords = {
   Gsharp: chordSetFor(NoteValue.Gsharp, '#')
 };
 
-(window as any).Chords = Chords;
-
 export const SampleProgression: Chord[] = [Chords.C.major, Chords.A.minor];

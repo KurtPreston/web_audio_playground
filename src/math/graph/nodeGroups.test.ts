@@ -1,3 +1,4 @@
+import {describe, it, expect} from 'vitest';
 import {nodeGroups} from './nodeGroups';
 
 describe('nodeGroups', () => {

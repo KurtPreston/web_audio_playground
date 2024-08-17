@@ -1,4 +1,6 @@
 import {range} from 'lodash';
+import {describe, it, expect} from 'vitest';
+
 import {ouroboros} from './ouroboros';
 
 describe('ouroboros', () => {

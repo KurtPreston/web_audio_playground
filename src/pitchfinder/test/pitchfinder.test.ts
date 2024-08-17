@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import {describe, it, expect} from 'vitest';
 // @ts-expect-error No types for wav-decoder
 import WavDecoder from 'wav-decoder';
 import {Pitchfinder} from '../src';
@@ -30,7 +31,7 @@ const decode = async (buffer: Buffer): Promise<Float32Array> => {
   return decoded.channelData[0];
 };
 
-xdescribe('Pitchfinder', () => {
+describe.skip('Pitchfinder', () => {
   const detectors: {[name: string]: PitchDetector} = {
     AMDF: Pitchfinder.AMDF(),
     DynamicWavelet: Pitchfinder.DynamicWavelet(),
@@ -335,7 +336,7 @@ xdescribe('Pitchfinder', () => {
             });
         });
 
-        xit('Average of multiple detectors is good but very slow', () => {
+        it.skip('Average of multiple detectors is good but very slow', () => {
           return readFileAsync('melodies', sample)
             .then(decode)
             .then((data) =>

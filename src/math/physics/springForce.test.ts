@@ -1,3 +1,4 @@
+import {describe, it, expect} from 'vitest';
 import {springForce} from './springForce';
 
 describe('springForce', () => {

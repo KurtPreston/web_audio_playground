@@ -1,3 +1,4 @@
+import {describe, it, expect} from 'vitest';
 import {unzip, zip} from './zip';
 
 describe('zip', () => {

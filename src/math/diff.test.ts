@@ -1,4 +1,5 @@
 import {merge} from 'lodash';
+import {describe, it, expect} from 'vitest';
 import {CablesOptions} from '../games/Cables/CablesOptions.generated';
 import {defaultCablesOptions} from '../games/Cables/defaultCablesOptions';
 import {MidiFileOptions} from '../midi/sources/MidiFileSource/MidiFileSourceOptions.generated';

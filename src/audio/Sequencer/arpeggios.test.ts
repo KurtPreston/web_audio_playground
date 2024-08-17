@@ -1,3 +1,4 @@
+import {describe, it, expect} from 'vitest';
 import {Note, NoteValue} from '../Note';
 import {upDownArp} from './arpeggios';
 import {MelodyNote} from './melody';

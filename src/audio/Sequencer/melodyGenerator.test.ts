@@ -1,3 +1,4 @@
+import {describe, it, expect} from 'vitest';
 import {Chords} from '../chords';
 import {Note, NoteValue} from '../Note';
 import {Scales} from '../scales';
