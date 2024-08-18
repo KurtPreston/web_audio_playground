@@ -75,7 +75,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
           width: clientWidth,
           height: clientHeight
         }
-      });
+      }, this.initializeGame);
     }
   }
 
@@ -123,7 +123,9 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
 
     this.noSleep.enable();
 
-    const Game = this.props.preview ? this.props.gameInfo.preview : this.props.gameInfo.game;
+    const Game = this.props.preview
+      ? this.props.gameInfo.preview
+      : this.props.gameInfo.game;
     this.game = new Game(
       this.world(),
       {
