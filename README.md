@@ -1,95 +1,86 @@
-# Wamdag and the Quest for the Violin
+# Web Audio Playground
 
-## Notes
+Interactive browser experiments that turn your microphone, MIDI keyboard, and device sensors into games and musical visuals. Built with the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), [Tone.js](https://tonejs.github.io/), and canvas rendering.
 
-### Super-Saiyan
+**Live site:** [webaudioplayground.kurtpreston.com](https://webaudioplayground.kurtpreston.com)
 
-Character at bottom
-Evil floating thing at top, that goes back and forth between notes laid out on x-axis
-Player yells with Super-Saiyan charge up. The longer + louder, the larger their ball.
-When they release, the ball shoots towards the note board.
-Player tries to hit the villain by using volume to create more powerful balls
+## Demos
 
-### Wamdag Game
+| Demo | Path | Description |
+| --- | --- | --- |
+| **Wamflap** | `/wamflap` | Fly a bird by singing notes and collect wisps |
+| **DopplerSynth** | `/doppler` | Explore doppler-shifted sound in a starfield with an astronaut listener |
+| **Tadpoles** | `/tadpole` | Wisps rise to the surface when you call to them |
+| **Hadouken** | `/hadouken` | Charge and launch fireballs with your voice, like a super-saiyan |
+| **Light Factory** | `/factory` | Toggle visual/audio building blocks — spectrogram, note grid, wisps, and more |
+| **Cables** | `/cables` | Patch together MIDI sources and synths in a visual playground |
+| **Solo** | `/solo` | Practice chords with sheet music, keyboard, metronome, and sax fingering charts |
 
-Overhead view
-One player controls wamdag
-One person plays violin
-One person plays guitar (or whatever)
+Each demo runs in the browser and may request microphone access (and device orientation for Hadouken). HTTPS is required for microphone input.
 
-Wamdag runs around, trying to chase the violin, and avoid the guitar
-Each instrument will be rendered as a circle whose size is based on amplitude and with a vibrating surface reflecting a FFT
-At first, the instrument sprites will move forward at a constant pace, randomly going straight, or rotating their direction (ideally leaving a trail?)
-(maybe the drums will be bullets fired from the guitar)
-(maybe the velocity of everything will be the song BPM?)
+## Tech stack
 
-### Doppler synth
+- **React 18** + **TypeScript** + **Vite**
+- **Tone.js** for synthesis and audio routing
+- **Web MIDI** and file-based MIDI playback
+- **Pitch detection** via a vendored [pitchfinder](src/pitchfinder/) library (runs in a Web Worker)
+- **Canvas** sprites for visuals; **VexFlow** for sheet music
+- **Vitest** for tests; **ESLint** + **Prettier** for linting
 
-Options:
+## Getting started
 
-- Toggle doppler
-- Toggle notes and number
-- Toggle physics
+Requires [Node.js](https://nodejs.org/) 20+ and [Yarn](https://yarnpkg.com/).
 
-### Chordblob
+```bash
+yarn install
+yarn start
+```
 
-With credit to the bubble android game + puyo
-Blob of notes (graph of notes)
-Sing a chord of adjacent notes to pop them
+Open [https://localhost:5173](https://localhost:5173). The dev server uses HTTPS (via `@vitejs/plugin-basic-ssl`) because browsers require a secure context for microphone access.
 
-## Solo
+### Scripts
 
-1. Pick an Exercise
+| Command | Description |
+| --- | --- |
+| `yarn start` | Generate JSON Schema types and start the Vite dev server |
+| `yarn build` | Production build to `dist/` |
+| `yarn test` | Run tests with Vitest |
+| `yarn validate` | Typecheck, lint, and test |
+| `yarn generate_certs` | Generate local self-signed certs for HTTPS dev (optional; Vite plugin handles this by default) |
 
-Sample Exercise 1: major-minor
+## Project layout
 
-- Choose numPlayers
-- Round 1: all together, then each player plays root C | C | A- | A-
-- Round 2: add the fifth
-- Round 3: add the third, up down up arpeggion
-- Round 4: the pentatonic
-- Round 5: the scale
+```
+src/
+  games/          # Demo apps (Wamflap, DopplerSynth, Cables, …)
+  sprites/        # Canvas-rendered visual/audio objects
+  audio/          # Notes, scales, sequencers, harmony helpers
+  midi/           # MIDI sources, subscribers, and routing
+  pitchfinder/    # Vendored pitch detection algorithms
+  workers/        # Web Workers (pitch detection)
+public/
+  midi/           # Bundled MIDI files
+  samples/        # Drum and synth sample WAVs
+```
 
-2.  Play the exercise
-
-- Eventually, use a mic to listen to the user input,
-- give them a score
-  (is there a way to make it less competitive? like only compete against your best score?)
-
-## Ideas
-
-Dynamically render background --- multiple layers rotating, random walk in blend mode
-One instrument controls x
-One controls y
-Try to hit player
-
-## Development
-
-### `yarn start`
-
-Runs the app in development mode. Open [https://localhost:5173](https://localhost:5173) to view it in the browser (HTTPS is required for microphone access).
-
-### `yarn test`
-
-Runs the test suite with Vitest.
-
-### `yarn build`
-
-Builds the app for production to the `dist` folder.
-
-### `yarn validate`
-
-Runs TypeScript, ESLint, and tests.
+Future ideas and design notes live in [docs/Ideas.md](docs/Ideas.md).
 
 ## Deployment
 
-The site is deployed to [GitHub Pages](https://pages.github.com/) at [webaudioplayground.kurtpreston.com](https://webaudioplayground.kurtpreston.com) via GitHub Actions (`.github/workflows/deploy.yml`). Pushes to `main` build with `yarn build` and publish the `dist/` folder.
+The site deploys to [GitHub Pages](https://pages.github.com/) via GitHub Actions ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)). Pushes to `main` run `yarn build` and publish the `dist/` folder.
 
 Client-side routing uses a `404.html` SPA fallback so direct links like `/wamflap` work on GitHub Pages.
 
-### One-time setup
+### Custom domain setup
 
 1. In the GitHub repo, go to **Settings → Pages** and set **Source** to **GitHub Actions**.
-2. At your domain registrar, add a **CNAME** record for `webaudioplayground.kurtpreston.com` pointing to `kurtpreston.github.io`.
-3. After the first successful deploy, in **Settings → Pages** set **Custom domain** to `webaudioplayground.kurtpreston.com` and enable **Enforce HTTPS** once the certificate provisions.
-4. Shut down the Heroku app once GitHub Pages is verified working.
+2. At your domain registrar, add a **CNAME** record pointing to `<username>.github.io`.
+3. After the first deploy, set **Custom domain** under **Settings → Pages** and enable **Enforce HTTPS** once the certificate provisions.
+
+The live site uses `webaudioplayground.kurtpreston.com` (see [`public/CNAME`](public/CNAME)).
+
+## License
+
+[MIT](LICENSE) — see [LICENSE](LICENSE) for details.
+
+Third-party code: the YIN pitch detector in `src/pitchfinder/src/detectors/yin.ts` is derived from [aubio](https://aubio.org/) and licensed under the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
