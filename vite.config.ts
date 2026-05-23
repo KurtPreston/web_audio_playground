@@ -12,5 +12,8 @@ export default defineConfig({
       tsDecorators: true
     }),
     basicSsl()
-  ]
+  ],
+  worker: {
+    plugins: () => [comlink()]
+  }
 });
