@@ -59,7 +59,7 @@ export class NoteGraphMidiPlayer implements NoteGraphController {
 
   private async playMidiTrack() {
     const Player = new MidiPlayer.Player();
-    const response = await fetch('/moonlight_sonata.mid');
+    const response = await fetch('/midi/moonlight_sonata.mid');
     const blob = await response.blob();
     const buffer = await (blob as any).arrayBuffer();
     Player.loadArrayBuffer(buffer);
