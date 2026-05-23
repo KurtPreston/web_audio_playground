@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import NoSleep from 'nosleep.js';
 import React from 'react';
-import {Context as AudioContext, getContext} from 'tone';
+import {Context as AudioContext, getContext, setContext, start} from 'tone';
 import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser, fakeAudioAnalyserSingleton, IAudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
@@ -21,8 +21,8 @@ export interface GameRunnerState {
 }
 
 interface AudioNodes {
-  audioContext: AudioContext;
-  analyserNode: AnalyserNode;
+  audioContext?: AudioContext;
+  analyserNode?: AnalyserNode;
   audioAnalyser: IAudioAnalyser;
 }
 
@@ -93,31 +93,30 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       return;
     }
 
-    // Create audio first
-    if (!this.audio) {
-      const audioContext: AudioContext = getContext() as AudioContext;
-      const analyserNode = audioContext.createAnalyser();
-      const audioAnalyser: IAudioAnalyser = this.props.preview
-        ? fakeAudioAnalyserSingleton
-        : new AudioAnalyser(analyserNode);
-      this.audio = {
-        audioContext,
-        analyserNode,
-        audioAnalyser
-      };
-    }
-    const {audioContext, analyserNode} = this.audio;
-
     if (!this.props.preview) {
-      if (audioContext.state !== 'running') {
-        console.warn(`AudioContext is ${audioContext.state}. Cannot create game.`);
-        audioContext.resume().then(this.initializeGame);
+      if (!(await this.ensureAudioRunning())) {
         this.setState({
           requireClickToStart: true
         });
         return;
       }
+
+      if (!this.audio) {
+        const audioContext: AudioContext = getContext() as AudioContext;
+        const analyserNode = audioContext.createAnalyser();
+        this.audio = {
+          audioContext,
+          analyserNode,
+          audioAnalyser: new AudioAnalyser(analyserNode)
+        };
+      }
+    } else if (!this.audio) {
+      this.audio = {
+        audioAnalyser: fakeAudioAnalyserSingleton
+      };
     }
+
+    const {analyserNode, audioContext} = this.audio;
 
     this.initialized = true;
 
@@ -126,16 +125,20 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     const Game = this.props.preview
       ? this.props.gameInfo.preview
       : this.props.gameInfo.game;
-    this.game = new Game(
-      this.world(),
-      {
-        mic: this.requestMic,
-        deviceOrientation: this.requestDeviceOrientation,
-        analyserNode,
-        audioContext
-      },
-      () => this.forceUpdate()
-    );
+    const initializers = this.props.preview
+      ? {
+          mic: () => {},
+          deviceOrientation: () => {},
+          analyserNode: null as unknown as AnalyserNode,
+          audioContext: null as unknown as AudioContext
+        }
+      : {
+          mic: this.requestMic,
+          deviceOrientation: this.requestDeviceOrientation,
+          analyserNode: analyserNode!,
+          audioContext: audioContext!
+        };
+    this.game = new Game(this.world(), initializers, () => this.forceUpdate());
     this.runGame();
 
     this.setState({
@@ -149,7 +152,6 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     window.document.removeEventListener('keypress', this.onKeyPress);
     window.removeEventListener('deviceorientation', this.onDeviceOrientation);
     this.pauseGame();
-    this.audio?.audioContext.close();
     this.noSleep.disable();
     if (this.game?.destroy) {
       this.game.destroy();
@@ -187,6 +189,24 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     }, 5);
   }
 
+  private async ensureAudioRunning(): Promise<boolean> {
+    let audioContext = getContext() as AudioContext;
+    if (audioContext.state === 'closed') {
+      setContext(new AudioContext(), true);
+      audioContext = getContext() as AudioContext;
+    }
+    if (audioContext.state === 'running') {
+      return true;
+    }
+    try {
+      await start();
+    } catch (error) {
+      console.warn('Failed to start audio context', error);
+      return false;
+    }
+    return (getContext() as AudioContext).state === 'running';
+  }
+
   private renderTitle() {
     const {gameInfo} = this.props;
     return (
@@ -194,6 +214,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
         <div className='title'>
           <h1>{gameInfo.title}</h1>
           <div>{gameInfo.description}</div>
+          {!this.props.preview ? <p className='title-hint'>Click to start</p> : null}
         </div>
       </div>
     );
@@ -302,7 +323,7 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
       return;
     }
 
-    if (!this.props.preview && this.audio?.audioContext.state !== 'running') {
+    if (!this.props.preview && this.audio?.audioContext?.state !== 'running') {
       console.info('AudioContext is not yet running', this.audio);
       this.setState({
         requireClickToStart: true
@@ -391,6 +412,13 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     }
 
     const {audioContext, analyserNode} = this.audio;
+    if (!audioContext || !analyserNode) {
+      console.warn('Audio nodes not initialized');
+      this.setState({
+        requireClickToStart: true
+      });
+      return;
+    }
 
     // Get from mic
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({

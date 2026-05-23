@@ -77,6 +77,14 @@ main {
       .title {
         color: white;
         margin: 2rem;
+        text-align: center;
+
+        .title-hint {
+          margin-top: 1.5rem;
+          font-size: 1.25rem;
+          opacity: 0.85;
+          animation: pulse 1.5s ease-in-out infinite;
+        }
       }
     }
 
@@ -135,5 +143,16 @@ main {
         }
       }
     }
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+
+  50% {
+    opacity: 0.45;
   }
 }
