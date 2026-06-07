@@ -3,7 +3,7 @@ import {sync} from 'glob';
 import {join} from 'path';
 import type {Plugin} from 'vite';
 
-function discoverSpaRoutes(root: string): string[] {
+export function discoverSpaRoutes(root: string): string[] {
   const files = sync('src/games/**/*.{ts,tsx}', {cwd: root});
   const routes = new Set<string>();
 
@@ -18,6 +18,19 @@ function discoverSpaRoutes(root: string): string[] {
   return [...routes].sort();
 }
 
+export function generateRouteHtml(root: string, outDir: string): string[] {
+  const indexHtml = join(outDir, 'index.html');
+  const routes = discoverSpaRoutes(root);
+
+  for (const route of routes) {
+    const dir = join(outDir, route.slice(1));
+    mkdirSync(dir, {recursive: true});
+    copyFileSync(indexHtml, join(dir, 'index.html'));
+  }
+
+  return routes;
+}
+
 export function spaRouteHtmlPlugin(): Plugin {
   return {
     name: 'spa-route-html',
@@ -25,14 +38,7 @@ export function spaRouteHtmlPlugin(): Plugin {
     closeBundle() {
       const root = process.cwd();
       const outDir = join(root, 'dist');
-      const indexHtml = join(outDir, 'index.html');
-      const routes = discoverSpaRoutes(root);
-
-      for (const route of routes) {
-        const dir = join(outDir, route.slice(1));
-        mkdirSync(dir, {recursive: true});
-        copyFileSync(indexHtml, join(dir, 'index.html'));
-      }
+      const routes = generateRouteHtml(root, outDir);
 
       this.info(`Generated index.html for ${routes.length} SPA routes`);
     }
