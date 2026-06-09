@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import NoSleep from 'nosleep.js';
 import React from 'react';
-import {Context as AudioContext, getContext, setContext, start} from 'tone';
+import {Context as AudioContext, getContext, setContext, start, Transport} from 'tone';
 import {clearInterval, setInterval} from 'worker-timers';
 import {AudioAnalyser, fakeAudioAnalyserSingleton, IAudioAnalyser} from '../audio/AudioAnalyser';
 import {emptyAudioData} from '../types/AudioData';
@@ -156,6 +156,10 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
     this.noSleep.disable();
     if (this.game?.destroy) {
       this.game.destroy();
+    }
+    if (!this.props.preview) {
+      Transport.stop();
+      Transport.cancel();
     }
   }
 

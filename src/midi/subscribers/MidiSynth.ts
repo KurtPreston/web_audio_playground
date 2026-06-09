@@ -39,6 +39,7 @@ export class MidiSynth implements IMidiSubscriber {
 
   public destroy() {
     this.subscription();
+    this.synth.dispose();
   }
 }
 

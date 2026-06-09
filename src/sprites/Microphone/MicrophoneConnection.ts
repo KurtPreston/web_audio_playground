@@ -85,12 +85,16 @@ export class MicrophoneConnection {
     this.pitchBend(pitchShiftRatio);
   }
 
+  public dispose() {
+    this.panVol.dispose();
+  }
+
   public async destroy() {
     const fadeOutTime = 1000;
     this.panVol.volume.rampTo(-200, fadeOutTime / 1000);
     return new Promise<void>((resolve) => {
       setTimeout(() => {
-        this.panVol.dispose();
+        this.dispose();
         resolve();
       });
     });

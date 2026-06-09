@@ -51,6 +51,7 @@ export class Microphone {
   }
 
   public destroy() {
-    this.connections.forEach((connection) => connection.destroy());
+    this.connections.forEach((connection) => connection.dispose());
+    this.connections.clear();
   }
 }

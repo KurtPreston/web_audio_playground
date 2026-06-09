@@ -41,6 +41,7 @@ export class WanderingBeat implements Sprite {
   private readonly shipSize: number;
 
   // Audio
+  private readonly source: ToneAudioNode;
   private readonly loop: number;
   private readonly triggerSample: (time: Time) => boolean;
   private readonly micConnection: MicrophoneConnection;
@@ -82,6 +83,7 @@ export class WanderingBeat implements Sprite {
     });
 
     // Connect
+    this.source = sourceAudio.source;
     this.micConnection = mic.connect({
       sourceAudio: sourceAudio.source,
       sourcePosition: () => {
@@ -176,8 +178,9 @@ export class WanderingBeat implements Sprite {
   }
 
   public destroy() {
-    this.micConnection.destroy();
-    this.fireworks.clear();
     Transport.clear(this.loop);
+    this.micConnection.dispose();
+    this.source.dispose();
+    this.fireworks.clear();
   }
 }

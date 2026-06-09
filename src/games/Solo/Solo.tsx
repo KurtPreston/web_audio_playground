@@ -197,6 +197,9 @@ export class SoloGame implements Game {
 
   public destroy() {
     this.sequencerSubscription();
+    this.metronome.destroy();
+    this.sequencer.destroy();
+    this.channel.dispose();
   }
 }
 

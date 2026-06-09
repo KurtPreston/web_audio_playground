@@ -220,6 +220,14 @@ export class DopplerSynthGame implements Game {
     this.updateMenu();
   }
 
+  public destroy() {
+    this.noteGraphController.destroy();
+    this.beat.destroy();
+    this.sequencer.destroy();
+    this.mic.destroy();
+    this.channel.dispose();
+  }
+
   public updateMode(mode: DopplerSynthMode) {
     this.noteGraphController.destroy();
     if (mode === 'midi') {

@@ -1,7 +1,7 @@
 import {autobind} from 'core-decorators';
 import {merge} from 'lodash';
 import React from 'react';
-import {Compressor} from 'tone';
+import {Compressor, ToneAudioNode} from 'tone';
 import {Note} from '../../audio/Note';
 import {JsonSchemaForm} from '../../forms/JsonSchemaForm';
 import {diff} from '../../math/diff';
@@ -33,6 +33,9 @@ export class CablesGame implements Game {
   private readonly keyboard: Keyboard;
   private readonly background: OuterSpace;
 
+  // Audio
+  private readonly channel: ToneAudioNode;
+
   // Midi
   private readonly midiNoteBus: MidiNoteBus;
   private midiSource: IMidiSource<any> | undefined;
@@ -45,12 +48,12 @@ export class CablesGame implements Game {
     private readonly updateMenu: () => void
   ) {
     // Setup audio
-    const channel = new Compressor({
+    this.channel = new Compressor({
       threshold: -10,
       ratio: 5
     });
-    channel.toDestination();
-    channel.connect(initializers.analyserNode);
+    this.channel.toDestination();
+    this.channel.connect(initializers.analyserNode);
 
     // Build sprites
     this.background = new OuterSpace(world.dimensions);
@@ -60,7 +63,7 @@ export class CablesGame implements Game {
     });
     this.midiSynth = new MidiSynth({
       options: this.options.synth,
-      channel,
+      channel: this.channel,
       midiNoteSubscribe: this.midiNoteBus.subscribe
     });
     this.keyboard = new Keyboard(this.midiNoteBus.notes);
@@ -99,6 +102,10 @@ export class CablesGame implements Game {
 
   public destroy() {
     this.midiListeners.forEach((listener: IMidiSubscriber) => listener.destroy());
+    if (this.midiSource) {
+      this.midiSource.destroy();
+    }
+    this.channel.dispose();
   }
 
   public gameTick(world: WorldState) {}

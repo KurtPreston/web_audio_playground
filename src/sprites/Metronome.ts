@@ -61,5 +61,7 @@ export class Metronome implements Sprite {
 
   public destroy() {
     this.transportSubscription();
+    this.kick.dispose();
+    this.hat.dispose();
   }
 }

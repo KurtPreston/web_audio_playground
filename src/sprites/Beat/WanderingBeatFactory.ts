@@ -262,6 +262,15 @@ export class WanderingBeatFactory implements Sprite {
     });
   }
 
+  public destroy() {
+    this.unsubscribeFromSequencer();
+    this.beats.forEach((beatSet) => {
+      beatSet.forEach((beat) => beat.destroy());
+      beatSet.clear();
+    });
+    this.beats.clear();
+  }
+
   private createBassWanderer(params: WanderingBeatParams): WanderingBeat {
     const octave = random(2, 3);
     return this.createInstrumentWanderer({

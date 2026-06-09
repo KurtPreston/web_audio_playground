@@ -336,8 +336,13 @@ export class NoteGraphAutoplayer implements NoteGraphController {
   }
 
   public destroy() {
-    this.noteValues.forEach(this.deleteNote);
-    this.noteGraph.destroy();
     this.unsubscribeFromSequencer();
+    this.nodeSynths.forEach(({synth, connection}) => {
+      synth.stop();
+      connection.dispose();
+      synth.dispose();
+    });
+    this.nodeSynths.clear();
+    this.noteGraph.destroy();
   }
 }
