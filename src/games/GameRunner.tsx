@@ -7,6 +7,7 @@ import {AudioAnalyser, fakeAudioAnalyserSingleton, IAudioAnalyser} from '../audi
 import {emptyAudioData} from '../types/AudioData';
 import {DeviceOrientation, Dimensions, FRAME_RATE, IPosition, WorldState} from '../types/State';
 import {Game, GameInfo} from './Game';
+import {GameIntro} from './GameIntro';
 
 export interface GameRunnerProps {
   gameInfo: GameInfo;
@@ -177,8 +178,20 @@ export class GameRunner extends React.Component<GameRunnerProps, GameRunnerState
           />
         ) : null}
         {this.renderMenu()}
+        {this.renderIntro()}
       </div>
     );
+  }
+
+  private renderIntro() {
+    const {gameInfo, preview} = this.props;
+    const {requireClickToStart} = this.state;
+
+    if (preview || requireClickToStart || !gameInfo.intro) {
+      return null;
+    }
+
+    return <GameIntro>{gameInfo.intro}</GameIntro>;
   }
 
   private containerRefFn(ref: HTMLElement | null) {

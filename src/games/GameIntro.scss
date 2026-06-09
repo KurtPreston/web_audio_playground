@@ -1,0 +1,38 @@
+.game-intro {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  pointer-events: none;
+  color: white;
+  text-align: center;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  max-width: 32rem;
+  margin: 0 auto;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+  animation: game-intro-fade 8s ease forwards;
+}
+
+@keyframes game-intro-fade {
+  0% {
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  49% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

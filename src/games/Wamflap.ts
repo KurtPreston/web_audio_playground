@@ -93,5 +93,7 @@ export const Wamflap: GameInfo = {
   description: 'Move the wambird by singing notes to collect the wisps',
   url: '/wamflap',
   game: WamflapGame,
-  preview: WamflapPreview
+  preview: WamflapPreview,
+  intro:
+    "Sing, hum, or play an instrument to control the wambird's movement. Try to collect all the wisps!"
 };

@@ -9,6 +9,7 @@ export interface GameInfo {
   url: string;
   game: GameClass;
   preview: GameClass;
+  intro?: React.ReactNode;
 }
 
 export interface GameClass {

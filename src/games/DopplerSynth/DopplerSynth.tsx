@@ -381,6 +381,8 @@ export const DopplerSynth: GameInfo = {
       <p>The astronaut is your ears to hear the sounds which whirl around the stars.</p>
     </div>
   ),
+  intro:
+    'One brave astronaut set out to prove there was music in the vacuum of space. This is what he heard.',
   game: DopplerSynthGame,
   preview: DopplerSynthPreview
 };
