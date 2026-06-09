@@ -61,6 +61,8 @@ export const Tadpole: GameInfo = {
   title: 'Tadpoles',
   url: '/tadpole',
   description: 'The tadpoles come to the surface when called',
+  intro:
+    "The tadpoles were as shy as they were curious. They couldn't resist surfacing when they heard sound from the world above.",
   game: TadpoleGame,
   preview: TadpolePreview
 };
